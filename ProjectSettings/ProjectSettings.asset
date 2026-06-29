@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 28
-  productGUID: 6f301e22fd4a49e44b193d2c5452b49c
+  productGUID: 16d506cea8c2f1f47a4496a67f6591c2
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: ProjectJAK
+  productName: "\uC791\uC0B4\uC7A1\uC774 \uC720\uB2C8\uD2F0 \uD504\uB85C\uC81D\uD2B8"
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -693,14 +693,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: ProjectJAK
+  metroPackageName: "\uC791\uC0B4\uC7A1\uC774 \uC720\uB2C8\uD2F0 \uD504\uB85C\uC81D\uD2B8"
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: ProjectJAK
+  metroApplicationDescription: "\uC791\uC0B4\uC7A1\uC774 \uC720\uB2C8\uD2F0 \uD504\uB85C\uC81D\uD2B8"
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -771,10 +771,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 4e1c93c7-6842-495f-a7dc-d4160edc7465
+  cloudProjectId: cb5e89c8-b46a-4d3a-8320-22da6bfb9b9a
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: ProjectJAK
+  projectName: "\uC791\uC0B4\uC7A1\uC774 \uC720\uB2C8\uD2F0 \uD504\uB85C\uC81D\uD2B8
+    2026-06-29_13-55-36"
   organizationId: kimdoheon1227
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
