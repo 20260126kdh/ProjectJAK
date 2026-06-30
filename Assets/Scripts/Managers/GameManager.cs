@@ -1,0 +1,87 @@
+using UnityEngine;
+
+/// <summary>
+/// 게임 전체를 관리하는 핵심 매니저
+///
+/// 역할
+/// 1. 씬이 변경되어도 유지된다.
+/// 2. PlayerData를 관리한다.
+/// 3. 다른 Manager들이 PlayerData에 접근할 수 있도록 한다.
+///
+/// ※ 게임 진행은 GameFlowManager가 담당한다.
+/// ※ 스테이지 정보는 StageManager가 담당한다.
+/// </summary>
+public class GameManager : MonoBehaviour
+{
+    #region Singleton
+
+    /// <summary>
+    /// GameManager는 게임 전체에서 하나만 존재한다.
+    /// </summary>
+    public static GameManager Instance { get; private set; }
+
+    #endregion
+
+    #region Inspector
+
+    [Header("Data")]
+
+    [Tooltip("플레이어 데이터")]
+    [SerializeField]
+    private PlayerData playerData;
+
+    #endregion
+
+    #region Property
+
+    /// <summary>
+    /// 다른 스크립트에서 PlayerData를 읽을 수 있도록 공개
+    /// </summary>
+    public PlayerData PlayerData => playerData;
+
+    #endregion
+
+    #region Unity
+
+    private void Awake()
+    {
+        // 이미 GameManager가 존재한다면
+        // 새로 생성된 GameManager는 제거한다.
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
+        // 씬이 바뀌어도 삭제되지 않도록 설정
+        DontDestroyOnLoad(gameObject);
+
+        // PlayerData가 연결되어 있지 않다면 경고 출력
+        if (playerData == null)
+        {
+            Debug.LogWarning("PlayerData가 연결되어 있지 않습니다.");
+        }
+    }
+
+    #endregion
+
+    #region Public
+
+    /// <summary>
+    /// 새로운 게임을 시작할 때 호출
+    /// </summary>
+    public void InitializeGame()
+    {
+        Debug.Log("===== 새 게임 시작 =====");
+
+        // 플레이어 데이터를 기본값으로 초기화
+        playerData.SetClass(PlayerClass.None);
+        playerData.SetHP(100);
+
+        Debug.Log("PlayerData 초기화 완료");
+    }
+
+    #endregion
+}
