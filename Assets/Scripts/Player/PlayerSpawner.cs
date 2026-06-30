@@ -24,8 +24,18 @@ public class PlayerSpawner : MonoBehaviour
     /// </summary>
     public GameObject SpawnedPlayer { get; private set; }
 
+    private void Awake()
+    {
+        Debug.Log("PlayerSpawner Awake");
+    }
+
     private void Start()
     {
+        Debug.Log($"GameManager : {GameManager.Instance}");
+
+        if (GameManager.Instance != null)
+            Debug.Log($"PlayerData : {GameManager.Instance.PlayerData}");
+
         SpawnPlayer();
     }
 
@@ -34,15 +44,19 @@ public class PlayerSpawner : MonoBehaviour
     /// </summary>
     private void SpawnPlayer()
     {
+        Debug.Log(GameManager.Instance);
+
+        Debug.Log(GameManager.Instance.PlayerData);
+
+        Debug.Log(spawnPoint);
+
         PlayerClass playerClass = GameManager.Instance.PlayerData.PlayerClass;
+
+        Debug.Log(playerClass);
 
         GameObject prefab = GetPlayerPrefab(playerClass);
 
-        if (prefab == null)
-        {
-            Debug.LogError("생성할 플레이어 프리팹이 없습니다.");
-            return;
-        }
+        Debug.Log(prefab);
 
         SpawnedPlayer = Instantiate(
             prefab,
