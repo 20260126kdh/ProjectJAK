@@ -1,0 +1,2 @@
+﻿CardID,Order,EffectType,Value,Target
+PHY_ATK_001,1,DealDamage,10,Enemy

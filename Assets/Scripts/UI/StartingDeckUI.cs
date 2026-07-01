@@ -19,14 +19,14 @@ public class StartingDeckUI : MonoBehaviour
     [SerializeField]
     private CardUI cardPrefab;
 
-    public void ShowStartingDeck(List<CardInfo> deck)
+    public void ShowStartingDeck(List<CardData> deck)
     {
         startingDeckPanel.SetActive(true);
         battlePanel.SetActive(false);
 
         ClearCards();
 
-        foreach (CardInfo card in deck)
+        foreach (CardData card in deck)
         {
             CardUI cardUI = Instantiate(cardPrefab, cardGridParent);
             cardUI.SetCard(card);

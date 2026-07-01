@@ -11,11 +11,11 @@ public class HandUI : MonoBehaviour
     [SerializeField]
     private CardUI cardPrefab;
 
-    public void ShowCards(List<CardInfo> cards)
+    public void ShowCards(List<CardData> cards)
     {
         ClearCards();
 
-        foreach (CardInfo card in cards)
+        foreach (CardData card in cards)
         {
             CardUI cardUI = Instantiate(cardPrefab, cardParent);
             cardUI.SetCard(card);

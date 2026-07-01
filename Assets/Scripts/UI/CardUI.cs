@@ -28,14 +28,13 @@ public class CardUI : MonoBehaviour
     [SerializeField]
     private TMP_Text cardRarityText;
 
-    public void SetCard(CardInfo cardInfo)
+    public void SetCard(CardData cardData)
     {
-        cardNameText.text = cardInfo.cardName;
-        descriptionText.text = cardInfo.description;
-        cardTypeText.text = cardInfo.cardType.ToString();
-        cardRarityText.text = cardInfo.cardRarity.ToString();
+        cardNameText.text = cardData.cardName;
+        descriptionText.text = cardData.description;
+        cardTypeText.text = cardData.cardType.ToString();
+        cardRarityText.text = cardData.cardRarity.ToString();
 
-        // 아직 일러스트 데이터가 없으므로 비워둠
-        artworkImage.sprite = null;
+        artworkImage.gameObject.SetActive(false);
     }
 }
