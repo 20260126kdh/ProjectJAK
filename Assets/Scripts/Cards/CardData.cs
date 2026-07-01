@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewCardData", menuName = "Game/Card Data")]
@@ -25,12 +26,9 @@ public class CardData : ScriptableObject
     [Header("카드 일러스트 경로")]
     public string artworkPath;
 
-    [Header("시작 덱 포함 여부")]
-    public bool isStartingCard;
-
-    [Header("시작 덱 포함 개수")]
-    public int startingCount;
-
     [Header("카드 일러스트")]
     public Sprite artwork;
+
+    [Header("카드 효과 목록")]
+    public List<CardEffectData> effects = new List<CardEffectData>();
 }

@@ -7,6 +7,10 @@ public class DeckManager : MonoBehaviour
     [SerializeField]
     private CardDatabase cardDatabase;
 
+    [Header("Starting Deck Database")]
+    [SerializeField]
+    private StartingDeckDatabase startingDeckDatabase;
+
     [Header("현재 덱")]
     [SerializeField]
     private List<CardData> currentDeck = new List<CardData>();
@@ -21,7 +25,10 @@ public class DeckManager : MonoBehaviour
     {
         CreateStartingDeck();
 
-        startingDeckUI.ShowStartingDeck(currentDeck);
+        if (startingDeckUI != null)
+        {
+            startingDeckUI.ShowStartingDeck(currentDeck);
+        }
     }
 
     private void CreateStartingDeck()
@@ -30,7 +37,21 @@ public class DeckManager : MonoBehaviour
 
         PlayerClass playerClass = GameManager.Instance.PlayerData.PlayerClass;
 
-        currentDeck = cardDatabase.GetStartingDeck(playerClass);
+        foreach (StartingDeckEntry entry in startingDeckDatabase.entries)
+        {
+            if (entry.ownerClass != playerClass)
+                continue;
+
+            CardData card = cardDatabase.GetCardByID(entry.cardID);
+
+            if (card == null)
+                continue;
+
+            for (int i = 0; i < entry.count; i++)
+            {
+                currentDeck.Add(card);
+            }
+        }
 
         Debug.Log($"시작 덱 생성 완료: {currentDeck.Count}장");
     }
