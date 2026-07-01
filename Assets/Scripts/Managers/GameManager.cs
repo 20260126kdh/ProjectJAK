@@ -27,6 +27,16 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
 
+        if (playerData == null)
+        {
+            playerData = GetComponent<PlayerData>();
+
+            if (playerData == null)
+            {
+                Debug.LogError("GameManager에 PlayerData가 연결되지 않았습니다.");
+            }
+        }
+
         DontDestroyOnLoad(gameObject);
     }
 

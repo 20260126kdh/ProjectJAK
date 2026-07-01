@@ -117,7 +117,7 @@ public class ClassSelectManager : MonoBehaviour
 
             classNameText.text = info.className;
 
-            hpText.text = $"체력 : {info.maxHP}";
+            hpText.text = $"{info.maxHP} / {info.maxHP}";
 
             passiveText.text = info.passiveDescription;
 
