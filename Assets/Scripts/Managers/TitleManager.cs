@@ -2,21 +2,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ¸ŞÀÎ Å¸ÀÌÆ² °ü¸®
+/// ë©”ì¸ íƒ€ì´í‹€ ê´€ë¦¬
 /// </summary>
 public class TitleManager : MonoBehaviour
 {
     [Header("Scene Settings")]
-    [Tooltip("Å¬·¡½º ¼±ÅÃ ¾À ÀÌ¸§")]
+    [Tooltip("í´ë˜ìŠ¤ ì„ íƒ ì”¬ ì´ë¦„")]
     [SerializeField]
     private string classSelectScene = "ClassSelectScene";
 
     /// <summary>
-    /// ½ÃÀÛ ¹öÆ°
+    /// ê²Œì„ ì‹œì‘ ë²„íŠ¼
     /// </summary>
     public void StartGame()
     {
-        Debug.Log("°ÔÀÓ ½ÃÀÛ");
+        Debug.Log("ê²Œì„ ì‹œì‘");
 
         GameManager.Instance.InitializeGame();
 

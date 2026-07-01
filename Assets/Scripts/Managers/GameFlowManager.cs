@@ -26,7 +26,7 @@ public class GameFlowManager : MonoBehaviour
     //========================================================
 
     [Header("Current State")]
-    [Tooltip("ÇöÀç °ÔÀÓ »óÅÂ")]
+    [Tooltip("í˜„ì¬ ê²Œì„ ìƒíƒœ")]
     [SerializeField]
     private GameState currentState = GameState.MainMenu;
 
@@ -38,7 +38,7 @@ public class GameFlowManager : MonoBehaviour
     private bool printStateLog = true;
 
     [Header("Events")]
-    [Tooltip("»óÅÂ°¡ º¯°æµÇ¸é È£ÃâµË´Ï´Ù.")]
+    [Tooltip("ìƒíƒœê°€ ë³€ê²½ë˜ë©´ í˜¸ì¶œë©ë‹ˆë‹¤.")]
     [SerializeField]
     private UnityEvent<GameState> onStateChanged;
 
@@ -62,7 +62,7 @@ public class GameFlowManager : MonoBehaviour
     //========================================================
 
     /// <summary>
-    /// °ÔÀÓ ½ÃÀÛ
+    /// ê²Œì„ ì‹œì‘
     /// </summary>
     public void StartGame()
     {
@@ -70,7 +70,7 @@ public class GameFlowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÀüÅõ ÁøÀÔ
+    /// ì „íˆ¬ ì‹œì‘
     /// </summary>
     public void EnterBattle()
     {
@@ -78,7 +78,7 @@ public class GameFlowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// º¸»ó È­¸é
+    /// ë³´ìƒ í™”ë©´
     /// </summary>
     public void EnterReward()
     {
@@ -86,7 +86,7 @@ public class GameFlowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ÈŞ½Ä
+    /// íœ´ì‹
     /// </summary>
     public void EnterRest()
     {
@@ -94,7 +94,7 @@ public class GameFlowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// º¸½º ÀüÅõ
+    /// ë³´ìŠ¤ ì „íˆ¬
     /// </summary>
     public void EnterBossBattle()
     {
@@ -102,7 +102,7 @@ public class GameFlowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ÔÀÓ ¿À¹ö
+    /// ê²Œì„ ì˜¤ë²„
     /// </summary>
     public void GameOver()
     {
@@ -110,7 +110,7 @@ public class GameFlowManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ÔÀÓ Å¬¸®¾î
+    /// ê²Œì„ í´ë¦¬ì–´
     /// </summary>
     public void GameClear()
     {
@@ -149,56 +149,56 @@ public class GameFlowManager : MonoBehaviour
             case GameState.MainMenu:
 
                 if (debugMode)
-                    Debug.Log("¸ŞÀÎ ¸Ş´º");
+                    Debug.Log("ë©”ì¸ ë©”ë‰´");
 
                 break;
 
             case GameState.ClassSelect:
 
                 if (debugMode)
-                    Debug.Log("Å¬·¡½º ¼±ÅÃ");
+                    Debug.Log("í´ë˜ìŠ¤ ì„ íƒ");
 
                 break;
 
             case GameState.Battle:
 
                 if (debugMode)
-                    Debug.Log("ÀüÅõ ½ÃÀÛ");
+                    Debug.Log("ì „íˆ¬ ì‹œì‘");
 
                 break;
 
             case GameState.Reward:
 
                 if (debugMode)
-                    Debug.Log("º¸»ó È­¸é");
+                    Debug.Log("ë³´ìƒ í™”ë©´");
 
                 break;
 
             case GameState.Rest:
 
                 if (debugMode)
-                    Debug.Log("ÈŞ½Ä");
+                    Debug.Log("íœ´ì‹");
 
                 break;
 
             case GameState.BossBattle:
 
                 if (debugMode)
-                    Debug.Log("º¸½º ÀüÅõ");
+                    Debug.Log("ë³´ìŠ¤ ì „íˆ¬");
 
                 break;
 
             case GameState.GameOver:
 
                 if (debugMode)
-                    Debug.Log("°ÔÀÓ ¿À¹ö");
+                    Debug.Log("ê²Œì„ ì˜¤ë²„");
 
                 break;
 
             case GameState.GameClear:
 
                 if (debugMode)
-                    Debug.Log("°ÔÀÓ Å¬¸®¾î");
+                    Debug.Log("ê²Œì„ í´ë¦¬ì–´");
 
                 break;
         }
