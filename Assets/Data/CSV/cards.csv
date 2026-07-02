@@ -1,2 +1,3 @@
 ﻿CardID,CardName,Description,OwnerClass,CardType,CardRariy,Artwork
 PHY_ATK_001,강타,적에게 피해를 줍니다.,Physique,Attack,Common,PHY_ATK_001
+PHY_DEF_001,버티기,방어도를 획득,Physique,Defense,Common,PHY_DEF_001

@@ -1,2 +1,3 @@
 ﻿CardID,Order,EffectType,Value,Target
 PHY_ATK_001,1,DealDamage,10,Enemy
+PHY_DEF_001,1,GainBlock,8,Self
