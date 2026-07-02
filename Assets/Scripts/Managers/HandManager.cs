@@ -23,6 +23,10 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private CardUI cardPrefab;
 
+    [Header("현재 선택된 카드")]
+    [SerializeField]
+    private CardUI selectedCardUI;
+
     /// <summary>
     /// 현재 손패 카드 목록을 반환합니다.
     /// </summary>
@@ -60,6 +64,7 @@ public class HandManager : MonoBehaviour
 
     /// <summary>
     /// 손패 UI를 현재 손패 목록 기준으로 다시 생성합니다.
+    /// 카드들을 하단 중앙에 부채꼴로 배치합니다.
     /// </summary>
     public void RefreshHandUI()
     {
@@ -77,13 +82,58 @@ public class HandManager : MonoBehaviour
             return;
         }
 
-        foreach (CardData card in handCards)
+        int cardCount = handCards.Count;
+
+        float cardSpacing = 180f;
+        float rotationSpacing = 8f;
+        float curveHeight = 25f;
+
+        for (int i = 0; i < cardCount; i++)
         {
             CardUI cardUI = Instantiate(cardPrefab, handCardParent);
-            cardUI.SetCard(card);
+
+            RectTransform rect = cardUI.GetComponent<RectTransform>();
+
+            float centerIndex = (cardCount - 1) / 2f;
+            float offset = i - centerIndex;
+
+            float x = offset * cardSpacing;
+            float y = -Mathf.Abs(offset) * curveHeight;
+            float zRotation = -offset * rotationSpacing;
+
+            rect.anchoredPosition = new Vector2(x, y);
+            rect.localRotation = Quaternion.Euler(0f, 0f, zRotation);
+
+            cardUI.Initialize(handCards[i], this);
         }
 
         Debug.Log("[HandManager] 손패 UI 갱신 완료");
+    }
+
+    /// <summary>
+    /// 손패 카드 중 하나를 선택합니다.
+    /// 이미 선택된 카드가 있으면 선택 해제 후 새 카드를 선택합니다.
+    /// </summary>
+    public void SelectCard(CardUI cardUI)
+    {
+        if (selectedCardUI == cardUI)
+        {
+            selectedCardUI.SetDeselected();
+            selectedCardUI = null;
+
+            Debug.Log("[HandManager] 카드 선택 해제");
+            return;
+        }
+
+        if (selectedCardUI != null)
+        {
+            selectedCardUI.SetDeselected();
+        }
+
+        selectedCardUI = cardUI;
+        selectedCardUI.SetSelected();
+
+        Debug.Log($"[HandManager] 카드 선택: {selectedCardUI.GetCardData().cardName}");
     }
 
     /// <summary>
@@ -91,6 +141,7 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void ClearHand()
     {
+        selectedCardUI = null;
         handCards.Clear();
         ClearHandUI();
 
