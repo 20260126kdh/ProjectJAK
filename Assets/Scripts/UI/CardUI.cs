@@ -91,7 +91,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        handManager.SelectCard(this);
+        handManager.RequestSelectCard(this);
     }
 
     /// <summary>

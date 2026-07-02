@@ -11,6 +11,10 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private DeckManager deckManager;
 
+    [Header("Battle Manager")]
+    [SerializeField]
+    private BattleManager battleManager;
+
     [Header("현재 손패")]
     [SerializeField]
     private List<CardData> handCards = new List<CardData>();
@@ -22,10 +26,6 @@ public class HandManager : MonoBehaviour
     [Header("카드 UI 프리팹")]
     [SerializeField]
     private CardUI cardPrefab;
-
-    [Header("현재 선택된 카드")]
-    [SerializeField]
-    private CardUI selectedCardUI;
 
     /// <summary>
     /// 현재 손패 카드 목록을 반환합니다.
@@ -111,29 +111,41 @@ public class HandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 손패 카드 중 하나를 선택합니다.
-    /// 이미 선택된 카드가 있으면 선택 해제 후 새 카드를 선택합니다.
+    /// 카드 선택 요청을 BattleManager에 전달합니다.
     /// </summary>
-    public void SelectCard(CardUI cardUI)
+    public void RequestSelectCard(CardUI cardUI)
     {
-        if (selectedCardUI == cardUI)
+        if (battleManager == null)
         {
-            selectedCardUI.SetDeselected();
-            selectedCardUI = null;
-
-            Debug.Log("[HandManager] 카드 선택 해제");
+            Debug.LogError("[HandManager] BattleManager가 연결되지 않았습니다.");
             return;
         }
 
-        if (selectedCardUI != null)
+        battleManager.SelectCard(cardUI);
+    }
+
+    /// <summary>
+    /// 손패에서 지정한 카드 데이터를 제거합니다.
+    /// </summary>
+    public void RemoveCardFromHand(CardData cardData)
+    {
+        if (cardData == null)
         {
-            selectedCardUI.SetDeselected();
+            Debug.LogWarning("[HandManager] 제거할 카드 데이터가 없습니다.");
+            return;
         }
 
-        selectedCardUI = cardUI;
-        selectedCardUI.SetSelected();
+        if (handCards.Contains(cardData))
+        {
+            handCards.Remove(cardData);
+            RefreshHandUI();
 
-        Debug.Log($"[HandManager] 카드 선택: {selectedCardUI.GetCardData().cardName}");
+            Debug.Log($"[HandManager] 손패에서 카드 제거 : {cardData.cardName}");
+        }
+        else
+        {
+            Debug.LogWarning($"[HandManager] 손패에 해당 카드가 없습니다 : {cardData.cardName}");
+        }
     }
 
     /// <summary>
@@ -141,7 +153,6 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void ClearHand()
     {
-        selectedCardUI = null;
         handCards.Clear();
         ClearHandUI();
 
