@@ -3,6 +3,14 @@ using UnityEngine;
 
 public class StartingDeckUI : MonoBehaviour
 {
+    [Header("Deck Manager")]
+    [SerializeField]
+    private DeckManager deckManager;
+
+    [Header("Hand Manager")]
+    [SerializeField]
+    private HandManager handManager;
+
     [Header("시작 덱 패널")]
     [SerializeField]
     private GameObject startingDeckPanel;
@@ -35,6 +43,29 @@ public class StartingDeckUI : MonoBehaviour
 
     public void ConfirmStartingDeck()
     {
+        Debug.Log("[StartingDeckUI] Confirm 버튼 클릭됨");
+
+        if (deckManager != null)
+        {
+            deckManager.PrepareDrawPileForBattle();
+        }
+        else
+        {
+            Debug.LogError("[StartingDeckUI] DeckManager가 연결되지 않았습니다.");
+            return;
+        }
+
+        if (handManager != null)
+        {
+            handManager.ClearHand();
+            handManager.DrawCards(4);
+        }
+        else
+        {
+            Debug.LogError("[StartingDeckUI] HandManager가 연결되지 않았습니다.");
+            return;
+        }
+
         startingDeckPanel.SetActive(false);
         battlePanel.SetActive(true);
     }
