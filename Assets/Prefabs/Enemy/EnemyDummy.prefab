@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2395329796861106145}
   - component: {fileID: 5262638531733677898}
   - component: {fileID: 7487632797748664024}
+  - component: {fileID: 4714577768804223752}
   m_Layer: 0
   m_Name: EnemyDummy
   m_TagString: Enemy
@@ -154,3 +155,16 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.50000006
+--- !u!114 &4714577768804223752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4558508858516679380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31ace8601f2db7441b2a92c232553a54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statusEffects: []

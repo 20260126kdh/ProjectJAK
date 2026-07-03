@@ -4,6 +4,7 @@
 public enum PlayerClass
 {
     None,       // 아직 선택되지 않음
+    All,        // 모든 클래스
     Physique,   // 피지크
     Technician, // 테크니션
     Captain     // 캡틴

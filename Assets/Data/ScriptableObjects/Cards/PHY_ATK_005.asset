@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa3808b75889b848ab3101e9ac10627, type: 3}
+  m_Name: PHY_ATK_005
+  m_EditorClassIdentifier: 
+  cardID: PHY_ATK_005
+  cardName: "\uD53C\uB97C \uBD80\uB974\uB294 \uC790"
+  description: "\uD53C\uD574\uB97C 6 \uC90D\uB2C8\uB2E4. \uC774 \uCE74\uB4DC\uB85C
+    \uC785\uD78C \uD53C\uD574\uB7C9\uB9CC\uD07C \uCCB4\uB825\uC744 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  ownerClass: 2
+  cardType: 0
+  cardRarity: 1
+  artworkPath: PHY_ATK_005
+  artwork: {fileID: 0}
+  effects: []

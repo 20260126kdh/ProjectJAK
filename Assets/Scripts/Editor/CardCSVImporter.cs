@@ -88,8 +88,9 @@ public static class CardCSVImporter
             {
                 order = int.Parse(values[1]),
                 effectType = Enum.Parse<CardEffectType>(values[2]),
-                value = int.Parse(values[3]),
-                target = Enum.Parse<CardTargetType>(values[4])
+                statusEffectType = Enum.Parse<StatusEffectType>(values[3]),
+                value = int.Parse(values[4]),
+                target = Enum.Parse<CardTargetType>(values[5])
             };
 
             cardMap[cardID].effects.Add(effect);
@@ -122,7 +123,7 @@ public static class CardCSVImporter
             if (string.IsNullOrEmpty(line))
                 continue;
 
-            string[] values = line.Split(',');
+            List<string> values = ParseCSVLine(line);
 
             StartingDeckEntry entry = new StartingDeckEntry
             {
@@ -150,5 +151,39 @@ public static class CardCSVImporter
         }
 
         return cardData;
+    }
+
+    /// <summary>
+    /// CSV 한 줄을 쉼표 기준으로 나누되, 따옴표 안의 쉼표는 무시합니다.
+    /// </summary>
+    private static List<string> ParseCSVLine(string line)
+    {
+        List<string> result = new List<string>();
+        bool insideQuote = false;
+        string currentValue = "";
+
+        for (int i = 0; i < line.Length; i++)
+        {
+            char currentChar = line[i];
+
+            if (currentChar == '"')
+            {
+                insideQuote = !insideQuote;
+                continue;
+            }
+
+            if (currentChar == ',' && !insideQuote)
+            {
+                result.Add(currentValue.Trim());
+                currentValue = "";
+                continue;
+            }
+
+            currentValue += currentChar;
+        }
+
+        result.Add(currentValue.Trim());
+
+        return result;
     }
 }

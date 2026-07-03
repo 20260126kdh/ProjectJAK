@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: PHY_ATK_001
   m_EditorClassIdentifier: 
   cardID: PHY_ATK_001
-  cardName: "\uAC15\uD0C0"
-  description: "\uC801\uC5D0\uAC8C \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
-  ownerClass: 1
+  cardName: "\uBD84\uB178"
+  description: "\uD53C\uD574\uB97C 8 \uC90D\uB2C8\uB2E4."
+  ownerClass: 2
   cardType: 0
   cardRarity: 0
   artworkPath: PHY_ATK_001
@@ -23,5 +23,6 @@ MonoBehaviour:
   effects:
   - order: 1
     effectType: 0
-    value: 10
+    statusEffectType: 0
+    value: 8
     target: 1

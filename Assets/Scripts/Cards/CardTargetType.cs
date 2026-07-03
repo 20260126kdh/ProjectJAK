@@ -2,6 +2,10 @@ public enum CardTargetType
 {
     Self,
     Enemy,
+    All,
     AllEnemies,
-    Summon
+    RandomEnemy,
+    Undead,
+    AllUndeads,
+    RandomUndead
 }

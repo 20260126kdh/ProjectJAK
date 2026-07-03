@@ -608,8 +608,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allCards:
-  - {fileID: 11400000, guid: 178635a10a1ab3b40b15df37724cab61, type: 2}
-  - {fileID: 11400000, guid: 8d215c7ecbf0be645b9d7b211e080c5d, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &612383019
 GameObject:
   m_ObjectHideFlags: 0
