@@ -12,4 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e70f8ec3390882743a5f270ca3712230, type: 3}
   m_Name: StartingDeckDatabase
   m_EditorClassIdentifier: 
-  entries: []
+  entries:
+  - ownerClass: 2
+    cardID: ALL_ATK_001
+    count: 4
+  - ownerClass: 2
+    cardID: ALL_DEF_001
+    count: 4
+  - ownerClass: 2
+    cardID: PHY_SKL_001
+    count: 1
+  - ownerClass: 2
+    cardID: PHY_SKL_002
+    count: 1
+  - ownerClass: 3
+    cardID: ALL_ATK_001
+    count: 4
+  - ownerClass: 3
+    cardID: ALL_DEF_001
+    count: 4
+  - ownerClass: 3
+    cardID: TEC_SKL_001
+    count: 1
+  - ownerClass: 3
+    cardID: TEC_SKL_002
+    count: 1
+  - ownerClass: 4
+    cardID: ALL_ATK_001
+    count: 4
+  - ownerClass: 4
+    cardID: ALL_DEF_001
+    count: 4
+  - ownerClass: 4
+    cardID: CAP_SKL_001
+    count: 1
+  - ownerClass: 4
+    cardID: CAP_SKL_002
+    count: 1

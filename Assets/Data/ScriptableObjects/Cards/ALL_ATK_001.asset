@@ -20,4 +20,9 @@ MonoBehaviour:
   cardRarity: 0
   artworkPath: ALL_ATK_001
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 0
+    statusEffectType: 0
+    value: 6
+    target: 1

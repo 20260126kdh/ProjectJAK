@@ -13,12 +13,32 @@ MonoBehaviour:
   m_Name: TEC_ATK_005
   m_EditorClassIdentifier: 
   cardID: TEC_ATK_005
-  cardName: "\uC815\uBC00\uD55C \uC800\uACA9"
-  description: "\uD53C\uD574\uB97C 11 \uC90D\uB2C8\uB2E4. \uC791\uC0B4\uC7A1\uC774
-    \uC2A4\uD0DD\uC744 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  cardName: "\uC804\uCC3D \uD22C\uCC99"
+  description: "\uBB34\uC791\uC704 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C 4\uB9CC\uD07C
+    4\uBC88 \uC90D\uB2C8\uB2E4."
   ownerClass: 3
   cardType: 0
-  cardRarity: 0
+  cardRarity: 1
   artworkPath: TEC_ATK_005
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 0
+    statusEffectType: 0
+    value: 4
+    target: 4
+  - order: 2
+    effectType: 0
+    statusEffectType: 0
+    value: 4
+    target: 4
+  - order: 3
+    effectType: 0
+    statusEffectType: 0
+    value: 4
+    target: 4
+  - order: 4
+    effectType: 0
+    statusEffectType: 0
+    value: 4
+    target: 4

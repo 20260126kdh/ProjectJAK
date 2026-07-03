@@ -26,3 +26,8 @@ MonoBehaviour:
     statusEffectType: 0
     value: 7
     target: 1
+  - order: 2
+    effectType: 5
+    statusEffectType: 15
+    value: 1
+    target: 1

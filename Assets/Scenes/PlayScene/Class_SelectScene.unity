@@ -2791,7 +2791,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   classDetailPanel: {fileID: 533476692}
   classInfos:
-  - playerClass: 1
+  - playerClass: 2
     className: "\uD53C\uC9C0\uD06C"
     maxHP: 95
     passiveDescription: "\uC804\uD22C \uC885\uB8CC \uC2DC \uCCB4\uB825\uC744 20 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
@@ -2803,7 +2803,7 @@ MonoBehaviour:
       \uD55C, \uB04A\uC784\uC5C6\uB294 \uD798\uACFC \uC18D\uC0BC\uC784\uC774 \uD568\uAED8
       \uD560 \uAC83\uC785\uB2C8\uB2E4."
     classImage: {fileID: 0}
-  - playerClass: 2
+  - playerClass: 3
     className: "\uD14C\uD06C\uB2C8\uC158"
     maxHP: 75
     passiveDescription: "\uC801\uC5D0\uAC8C \uC791\uC0B4\uC7A1\uC774 \uC2A4\uD0DD\uC744
@@ -2815,7 +2815,7 @@ MonoBehaviour:
       \uC801\uB4E4\uC758 \uC2EC\uC7A5\uC744 \uAFF0\uB6AB\uACE0 \uC9C0\uB098\uAC08
       \uAC83\uC785\uB2C8\uB2E4."
     classImage: {fileID: 0}
-  - playerClass: 3
+  - playerClass: 4
     className: "\uCEA1\uD2F4"
     maxHP: 75
     passiveDescription: "\uC120\uC6D0\uC744 1\uBA85 \uC18C\uD658\uD569\uB2C8\uB2E4.

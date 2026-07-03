@@ -3,10 +3,10 @@ Physique,ALL_ATK_001,4
 Physique,ALL_DEF_001,4
 Physique,PHY_SKL_001,1
 Physique,PHY_SKL_002,1
-Techniciar,ALL_ATK_001,4
-Techniciar,ALL_DEF_001,4
-Techniciar,TEC_SKL_001,1
-Techniciar,TEC_SKL_002,1
+Technician,ALL_ATK_001,4
+Technician,ALL_DEF_001,4
+Technician,TEC_SKL_001,1
+Technician,TEC_SKL_002,1
 Captain,ALL_ATK_001,4
 Captain,ALL_DEF_001,4
 Captain,CAP_SKL_001,1

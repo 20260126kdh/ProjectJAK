@@ -21,4 +21,9 @@ MonoBehaviour:
   cardRarity: 0
   artworkPath: PHY_SKL_001
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 10
+    statusEffectType: 0
+    value: 2
+    target: 0

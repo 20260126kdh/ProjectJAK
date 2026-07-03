@@ -21,4 +21,19 @@ MonoBehaviour:
   cardRarity: 2
   artworkPath: CAP_DEF_004
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 14
+    statusEffectType: 0
+    value: 1
+    target: 6
+  - order: 2
+    effectType: 1
+    statusEffectType: 0
+    value: 25
+    target: 0
+  - order: 3
+    effectType: 5
+    statusEffectType: 2
+    value: 2
+    target: 0

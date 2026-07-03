@@ -13,11 +13,22 @@ MonoBehaviour:
   m_Name: CAP_ATK_002
   m_EditorClassIdentifier: 
   cardID: CAP_ATK_002
-  cardName: "\uB358\uC838\uB77C!"
-  description: "\uC120\uC6D0 \uD55C \uBA85\uC774 \uD53C\uD574\uB97C 7 \uC90D\uB2C8\uB2E4."
+  cardName: "\uD654\uC57D \uD3ED\uBC1C"
+  description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C 4 \uC8FC\uACE0
+    \uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uCDE8\uC57D\uC744 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   ownerClass: 4
   cardType: 0
   cardRarity: 0
   artworkPath: CAP_ATK_002
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 0
+    statusEffectType: 0
+    value: 4
+    target: 3
+  - order: 2
+    effectType: 5
+    statusEffectType: 15
+    value: 1
+    target: 3

@@ -74,7 +74,13 @@ public static class CardCSVImporter
             if (string.IsNullOrEmpty(line))
                 continue;
 
-            string[] values = line.Split(',');
+            List<string> values = ParseCSVLine(line);
+
+            if (values.Count < 6)
+            {
+                Debug.LogError($"[CardCSVImporter] CSV 열 개수가 부족합니다. (줄 {i + 1})");
+                continue;
+            }
 
             string cardID = values[0];
 
@@ -84,13 +90,43 @@ public static class CardCSVImporter
                 continue;
             }
 
+            if (!int.TryParse(values[1], out int order))
+            {
+                Debug.LogError($"[CardCSVImporter] Order 파싱 실패 (줄 {i + 1}) : {values[1]}");
+                continue;
+            }
+
+            if (!Enum.TryParse(values[2], out CardEffectType effectType))
+            {
+                Debug.LogError($"[CardCSVImporter] EffectType 파싱 실패 (줄 {i + 1}) : {values[2]}");
+                continue;
+            }
+
+            if (!Enum.TryParse(values[3], out StatusEffectType statusEffectType))
+            {
+                Debug.LogError($"[CardCSVImporter] StatusEffectType 파싱 실패 (줄 {i + 1}) : {values[3]}");
+                continue;
+            }
+
+            if (!int.TryParse(values[4], out int value))
+            {
+                Debug.LogError($"[CardCSVImporter] Value 파싱 실패 (줄 {i + 1}) : {values[4]}");
+                continue;
+            }
+
+            if (!Enum.TryParse(values[5], out CardTargetType target))
+            {
+                Debug.LogError($"[CardCSVImporter] Target 파싱 실패 (줄 {i + 1}) : {values[5]}");
+                continue;
+            }
+
             CardEffectData effect = new CardEffectData
             {
-                order = int.Parse(values[1]),
-                effectType = Enum.Parse<CardEffectType>(values[2]),
-                statusEffectType = Enum.Parse<StatusEffectType>(values[3]),
-                value = int.Parse(values[4]),
-                target = Enum.Parse<CardTargetType>(values[5])
+                order = order,
+                effectType = effectType,
+                statusEffectType = statusEffectType,
+                value = value,
+                target = target
             };
 
             cardMap[cardID].effects.Add(effect);

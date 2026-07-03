@@ -22,4 +22,14 @@ MonoBehaviour:
   cardRarity: 1
   artworkPath: PHY_DEF_003
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 1
+    statusEffectType: 0
+    value: 8
+    target: 0
+  - order: 2
+    effectType: 9
+    statusEffectType: 0
+    value: 8
+    target: 0

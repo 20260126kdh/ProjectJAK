@@ -13,11 +13,21 @@ MonoBehaviour:
   m_Name: TEC_SKL_001
   m_EditorClassIdentifier: 
   cardID: TEC_SKL_001
-  cardName: "\uB0A0 \uC138\uC6B0\uAE30"
-  description: "\uC791\uC0B4\uC7A1\uC774 \uC2A4\uD0DD\uC744 5 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  cardName: "\uC9C4\uC555"
+  description: "\uD53C\uD574\uB97C 4 \uC90D\uB2C8\uB2E4. \uC57D\uD654\uB97C 2 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   ownerClass: 3
   cardType: 2
   cardRarity: 0
   artworkPath: TEC_SKL_001
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 0
+    statusEffectType: 0
+    value: 4
+    target: 1
+  - order: 2
+    effectType: 5
+    statusEffectType: 14
+    value: 2
+    target: 1

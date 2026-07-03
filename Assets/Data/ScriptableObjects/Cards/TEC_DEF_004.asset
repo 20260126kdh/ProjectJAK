@@ -13,12 +13,22 @@ MonoBehaviour:
   m_Name: TEC_DEF_004
   m_EditorClassIdentifier: 
   cardID: TEC_DEF_004
-  cardName: "\uD750\uB9BF\uD568"
-  description: "\uBC29\uC5B4\uB3C4\uB97C 13 \uC5BB\uC2B5\uB2C8\uB2E4. \uBAA8\uB4E0
-    \uC801\uC5D0\uAC8C \uC791\uC0B4\uC7A1\uC774 \uC2A4\uD0DD\uC744 4 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  cardName: "\uADF8\uB9BC\uC790 \uC740\uC2E0"
+  description: "\uC18D\uB3C4\uB97C 2 \uC5BB\uC2B5\uB2C8\uB2E4. \uBC29\uC5B4\uB3C4\uB97C
+    20 \uC5BB\uC2B5\uB2C8\uB2E4."
   ownerClass: 3
   cardType: 1
-  cardRarity: 1
-  artworkPath: TEC_DEF_004
+  cardRarity: 2
+  artworkPath: TEC_DEF_005
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 5
+    statusEffectType: 2
+    value: 2
+    target: 0
+  - order: 2
+    effectType: 1
+    statusEffectType: 0
+    value: 20
+    target: 0

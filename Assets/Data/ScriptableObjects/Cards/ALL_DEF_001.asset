@@ -20,4 +20,9 @@ MonoBehaviour:
   cardRarity: 0
   artworkPath: ALL_DEF_001
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 1
+    statusEffectType: 0
+    value: 5
+    target: 0

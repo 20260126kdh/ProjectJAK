@@ -13,11 +13,37 @@ MonoBehaviour:
   m_Name: TEC_ATK_007
   m_EditorClassIdentifier: 
   cardID: TEC_ATK_007
-  cardName: "\uD658\uC601 \uD22C\uCC3D"
-  description: "\uD53C\uD574\uB97C 9\uB9CC\uD07C 2\uBC88 \uC90D\uB2C8\uB2E4."
+  cardName: "\uD22C\uCC3D\uC758 \uCC9C\uC7AC"
+  description: "\uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uD53C\uD574\uB97C 6\uB9CC\uD07C
+    5\uBC88 \uC90D\uB2C8\uB2E4."
   ownerClass: 3
   cardType: 0
-  cardRarity: 1
+  cardRarity: 2
   artworkPath: TEC_ATK_007
   artwork: {fileID: 0}
-  effects: []
+  effects:
+  - order: 1
+    effectType: 0
+    statusEffectType: 0
+    value: 6
+    target: 3
+  - order: 2
+    effectType: 0
+    statusEffectType: 0
+    value: 6
+    target: 3
+  - order: 3
+    effectType: 0
+    statusEffectType: 0
+    value: 6
+    target: 3
+  - order: 4
+    effectType: 0
+    statusEffectType: 0
+    value: 6
+    target: 3
+  - order: 5
+    effectType: 0
+    statusEffectType: 0
+    value: 6
+    target: 3
