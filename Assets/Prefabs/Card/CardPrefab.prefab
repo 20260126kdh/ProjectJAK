@@ -662,6 +662,8 @@ MonoBehaviour:
   descriptionText: {fileID: 495315718679473204}
   cardTypeText: {fileID: 2614397478277929380}
   cardRarityText: {fileID: 4058983926442795809}
+  selectedMoveY: 40
+  selectedScale: 1.08
 --- !u!1 &6440049573879309873
 GameObject:
   m_ObjectHideFlags: 0
@@ -796,7 +798,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 1}
+  m_Color: {r: 0.13207549, g: 0.110270575, b: 0.110270575, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

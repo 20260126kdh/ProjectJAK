@@ -39,7 +39,7 @@ public static class CardCSVImporter
             if (string.IsNullOrEmpty(line))
                 continue;
 
-            string[] values = line.Split(',');
+            List<string> values = ParseCSVLine(line);
 
             string cardID = values[0];
 
@@ -52,6 +52,25 @@ public static class CardCSVImporter
             cardData.cardType = Enum.Parse<CardType>(values[4]);
             cardData.cardRarity = Enum.Parse<CardRarity>(values[5]);
             cardData.artworkPath = values[6];
+
+            if (!string.IsNullOrEmpty(cardData.artworkPath))
+            {
+                Sprite artworkSprite = AssetDatabase.LoadAssetAtPath<Sprite>(cardData.artworkPath);
+
+                if (artworkSprite != null)
+                {
+                    cardData.artwork = artworkSprite;
+                }
+                else
+                {
+                    Debug.LogWarning($"[CardCSVImporter] 카드 이미지를 찾지 못했습니다: {cardData.cardID} / 경로: {cardData.artworkPath}");
+                    cardData.artwork = null;
+                }
+            }
+            else
+            {
+                cardData.artwork = null;
+            }
 
             cardData.effects.Clear();
 

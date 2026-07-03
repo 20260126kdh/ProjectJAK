@@ -66,7 +66,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
-    /// 카드 데이터를 UI 텍스트에 반영합니다.
+    /// 카드 데이터를 UI 텍스트와 이미지에 반영합니다.
     /// </summary>
     public void SetCard(CardData newCardData)
     {
@@ -77,7 +77,16 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         cardTypeText.text = cardData.cardType.ToString();
         cardRarityText.text = cardData.cardRarity.ToString();
 
-        artworkImage.gameObject.SetActive(false);
+        if (artworkImage != null && cardData.artwork != null)
+        {
+            artworkImage.sprite = cardData.artwork;
+            artworkImage.gameObject.SetActive(true);
+        }
+        else if (artworkImage != null)
+        {
+            artworkImage.sprite = null;
+            artworkImage.gameObject.SetActive(false);
+        }
     }
 
     /// <summary>

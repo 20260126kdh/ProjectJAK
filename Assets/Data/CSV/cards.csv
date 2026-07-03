@@ -1,5 +1,5 @@
 ﻿CardID,CardName,Description,OwnerClass,CardType,CardRariy,Artwork
-ALL_ATK_001,투창,피해를 6 줍니다.,All,Attack,Common,ALL_ATK_001
+ALL_ATK_001,투창,피해를 6 줍니다.,All,Attack,Common,Assets/Art/Cards/Physique/ALL_ATK_001.png
 ALL_DEF_001,회피,방어도를 5 얻습니다.,All,Defense,Common,ALL_DEF_001
 PHY_ATK_001,분노,피해를 8 줍니다.,Physique,Attack,Common,PHY_ATK_001
 PHY_ATK_002,사슬 투창,피해를 7 줍니다. 취약을 1 부여합니다.,Physique,Attack,Common,PHY_ATK_002
