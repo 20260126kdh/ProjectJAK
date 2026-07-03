@@ -158,4 +158,20 @@ public class DeckManager : MonoBehaviour
 
         return card;
     }
+
+    /// <summary>
+    /// 사용한 카드를 버린 카드 더미에 추가합니다.
+    /// </summary>
+    public void AddToDiscardPile(CardData cardData)
+    {
+        if (cardData == null)
+        {
+            Debug.LogWarning("[DeckManager] 버린 카드 더미에 추가할 카드 데이터가 없습니다.");
+            return;
+        }
+
+        discardPile.Add(cardData);
+
+        Debug.Log($"[DeckManager] 버린 카드 더미 추가 : {cardData.cardName}");
+    }
 }

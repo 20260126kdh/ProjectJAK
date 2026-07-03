@@ -14,6 +14,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private HandManager handManager;
 
+    [Header("Turn Manager")]
+    [SerializeField]
+    private TurnManager turnManager;
+
     [Header("Card Effect Executor")]
     [SerializeField]
     private CardEffectExecutor cardEffectExecutor;
@@ -91,69 +95,12 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 선택된 카드를 사용합니다.
-    /// 카드 효과 실행 후 손패에서 제거합니다.
-    /// </summary>
-    /*public void UseSelectedCard()
-    {
-        if (!isBattleStarted)
-        {
-            Debug.LogWarning("[BattleManager] 아직 전투가 시작되지 않았습니다.");
-            return;
-        }
-
-        if (selectedCardData == null)
-        {
-            Debug.LogWarning("[BattleManager] 사용할 카드가 선택되지 않았습니다.");
-            return;
-        }
-
-        if (cardEffectExecutor == null)
-        {
-            Debug.LogError("[BattleManager] CardEffectExecutor가 연결되지 않았습니다.");
-            return;
-        }
-
-        Debug.Log($"[BattleManager] 카드 사용 : {selectedCardData.cardName}");
-
-        Enemy targetEnemy = FindTargetEnemyByTag();
-
-        if (targetEnemy == null)
-        {
-            Debug.LogWarning("[BattleManager] 태그로 Enemy를 찾지 못했습니다.");
-            return;
-        }
-
-        cardEffectExecutor.ExecuteEffects(selectedCardData, targetEnemy);
-
-        if (handManager != null)
-        {
-            handManager.RemoveCardFromHand(selectedCardData);
-        }
-        else
-        {
-            Debug.LogError("[BattleManager] HandManager가 연결되지 않았습니다.");
-        }
-
-        ClearSelectedCard();
-    }*/
-
-    /// <summary>
     /// 현재 선택된 카드를 지정한 적에게 사용합니다.
     /// </summary>
     public void UseSelectedCardOnEnemy(Enemy targetEnemy)
     {
-        if (!isBattleStarted)
-        {
-            Debug.LogWarning("[BattleManager] 아직 전투가 시작되지 않았습니다.");
+        if (!CanUseSelectedCard())
             return;
-        }
-
-        if (selectedCardData == null)
-        {
-            Debug.LogWarning("[BattleManager] 사용할 카드가 선택되지 않았습니다.");
-            return;
-        }
 
         if (targetEnemy == null)
         {
@@ -171,9 +118,82 @@ public class BattleManager : MonoBehaviour
 
         cardEffectExecutor.ExecuteEffects(selectedCardData, targetEnemy);
 
+        FinishCardUse();
+    }
+
+    /// <summary>
+    /// 현재 선택된 카드를 플레이어 자신에게 사용합니다.
+    /// Self 대상 카드 처리를 위해 사용합니다.
+    /// </summary>
+    public void UseSelectedCardOnPlayer(PlayerCombat targetPlayer)
+    {
+        if (!CanUseSelectedCard())
+            return;
+
+        if (targetPlayer == null)
+        {
+            Debug.LogWarning("[BattleManager] 대상 PlayerCombat이 비어 있습니다.");
+            return;
+        }
+
+        if (cardEffectExecutor == null)
+        {
+            Debug.LogError("[BattleManager] CardEffectExecutor가 연결되지 않았습니다.");
+            return;
+        }
+
+        Debug.Log($"[BattleManager] 플레이어에게 카드 사용 : {selectedCardData.cardName}");
+
+        cardEffectExecutor.ExecuteEffects(selectedCardData, null);
+
+        FinishCardUse();
+    }
+
+    /// <summary>
+    /// 선택된 카드를 사용할 수 있는지 확인합니다.
+    /// 전투 시작 여부, 카드 선택 여부, 턴 상태, 카드 사용 제한을 검사합니다.
+    /// </summary>
+    private bool CanUseSelectedCard()
+    {
+        if (!isBattleStarted)
+        {
+            Debug.LogWarning("[BattleManager] 아직 전투가 시작되지 않았습니다.");
+            return false;
+        }
+
+        if (selectedCardData == null)
+        {
+            Debug.LogWarning("[BattleManager] 사용할 카드가 선택되지 않았습니다.");
+            return false;
+        }
+
+        if (turnManager == null)
+        {
+            Debug.LogError("[BattleManager] TurnManager가 연결되지 않았습니다.");
+            return false;
+        }
+
+        return turnManager.CanUseCard(selectedCardData);
+    }
+
+    /// <summary>
+    /// 카드 사용 성공 후 공통 처리를 수행합니다.
+    /// 사용 횟수 기록, 손패 제거, 버림 더미 이동, 선택 해제를 처리합니다.
+    /// </summary>
+    private void FinishCardUse()
+    {
+        if (turnManager != null)
+        {
+            turnManager.RecordCardUse(selectedCardData);
+        }
+
         if (handManager != null)
         {
-            handManager.RemoveCardFromHand(selectedCardData);
+            handManager.DiscardUsedCard(selectedCardData);
+        }
+        else
+        {
+            Debug.LogError("[BattleManager] HandManager가 연결되지 않았습니다.");
         }
 
         ClearSelectedCard();
