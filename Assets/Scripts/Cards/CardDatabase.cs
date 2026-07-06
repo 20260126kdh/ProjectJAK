@@ -7,6 +7,8 @@ public class CardDatabase : MonoBehaviour
     [SerializeField]
     private List<CardData> allCards = new List<CardData>();
 
+    public List<CardData> AllCards => allCards;
+
     public CardData GetCardByID(string cardID)
     {
         foreach (CardData card in allCards)

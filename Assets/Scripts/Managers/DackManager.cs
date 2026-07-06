@@ -164,4 +164,18 @@ public class DeckManager : MonoBehaviour
 
         Debug.Log($"[DeckManager] 버린 카드 더미 추가 : {cardData.cardName}");
     }
+
+    public void AddCardToDeck(CardData cardData)
+    {
+        if (cardData == null)
+        {
+            Debug.LogWarning("[DeckManager] 덱에 추가할 카드 데이터가 없습니다.");
+            return;
+        }
+
+        currentDeck.Add(cardData);
+        SortCurrentDeckByCardName();
+
+        Debug.Log($"[DeckManager] 카드 덱 추가 : {cardData.cardName} / 현재 덱 {currentDeck.Count}장");
+    }
 }

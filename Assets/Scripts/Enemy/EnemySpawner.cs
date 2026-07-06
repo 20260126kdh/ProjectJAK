@@ -13,9 +13,6 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField]
     private GameObject enemyPrefab;
 
-    /// <summary>
-    /// 생성된 적
-    /// </summary>
     public GameObject SpawnedEnemy { get; private set; }
 
     private void Start()
@@ -23,20 +20,35 @@ public class EnemySpawner : MonoBehaviour
         SpawnEnemy();
     }
 
-    /// <summary>
-    /// 적을 생성합니다.
-    /// </summary>
-    private void SpawnEnemy()
+    public void SpawnEnemy()
     {
         if (enemyPrefab == null)
         {
-            Debug.LogError("Enemy Prefab이 지정되지 않았습니다.");
+            Debug.LogError("[EnemySpawner] Enemy Prefab이 지정되지 않았습니다.");
             return;
         }
 
-        SpawnedEnemy = Instantiate(
-            enemyPrefab,
-            spawnPoint.position,
-            Quaternion.identity);
+        if (spawnPoint == null)
+        {
+            Debug.LogError("[EnemySpawner] Spawn Point가 지정되지 않았습니다.");
+            return;
+        }
+
+        ClearEnemy();
+
+        SpawnedEnemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+
+        Debug.Log("[EnemySpawner] 적 생성 완료");
+    }
+
+    public void ClearEnemy()
+    {
+        if (SpawnedEnemy != null)
+        {
+            Destroy(SpawnedEnemy);
+            SpawnedEnemy = null;
+
+            Debug.Log("[EnemySpawner] 기존 적 제거");
+        }
     }
 }

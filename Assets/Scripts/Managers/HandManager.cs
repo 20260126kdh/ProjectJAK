@@ -352,6 +352,23 @@ public class HandManager : MonoBehaviour
         Debug.Log("[HandManager] 손패 초기화 완료");
     }
 
+    public void ResetHandForNewBattle()
+    {
+        handCards.Clear();
+        preservedCard = null;
+        selectedPreserveCardUI = null;
+        isPreserveMode = false;
+
+        ClearHandUI();
+
+        if (endTurnButtonObject != null)
+        {
+            endTurnButtonObject.SetActive(true);
+        }
+
+        Debug.Log("[HandManager] 새 전투용 손패 완전 초기화");
+    }
+
     private void ClearHandUI()
     {
         if (handCardParent == null)

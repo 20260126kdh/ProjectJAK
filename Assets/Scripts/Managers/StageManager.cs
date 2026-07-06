@@ -114,6 +114,39 @@ public class StageManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 리워드 패널의 Next 버튼 이후 다음 진행을 결정합니다.
+    /// 현재는 NormalBattle이면 다음 전투를 시작합니다.
+    /// Rest, Boss는 다음 단계에서 구현합니다.
+    /// </summary>
+    public void ProceedAfterReward(BattleManager battleManager)
+    {
+        if (battleManager == null)
+        {
+            Debug.LogError("[StageManager] BattleManager가 없습니다.");
+            return;
+        }
+
+        if (currentPhase == StagePhase.NormalBattle)
+        {
+            Debug.Log("[StageManager] 다음 일반 전투로 진행");
+            battleManager.StartNextBattle();
+            return;
+        }
+
+        if (currentPhase == StagePhase.Rest)
+        {
+            Debug.Log("[StageManager] 휴식 단계 진입 예정 - 아직 미구현");
+            return;
+        }
+
+        if (currentPhase == StagePhase.BossBattle)
+        {
+            Debug.Log("[StageManager] 보스 전투 진입 예정 - 아직 미구현");
+            return;
+        }
+    }
+
+    /// <summary>
     /// 휴식 완료
     /// </summary>
     public void RestComplete()
@@ -168,9 +201,9 @@ public class StageManager : MonoBehaviour
             return;
 
         Debug.Log(
-            $"[{action}]\n" +
-            $"Stage : {currentStage}\n" +
-            $"Phase : {currentPhase}\n" +
+            $"[{action}] " +
+            $"Stage : {currentStage} / " +
+            $"Phase : {currentPhase} / " +
             $"Battle : {currentBattleCount}/{maxBattleCount}"
         );
     }

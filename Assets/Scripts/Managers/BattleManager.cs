@@ -34,6 +34,14 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private CardData selectedCardData;
 
+    [Header("Deck Manager")]
+    [SerializeField]
+    private DeckManager deckManager;
+
+    [Header("Enemy Spawner")]
+    [SerializeField]
+    private EnemySpawner enemySpawner;
+
     private CardUI selectedCardUI;
 
     public CardData SelectedCardData => selectedCardData;
@@ -54,6 +62,72 @@ public class BattleManager : MonoBehaviour
         selectedCardUI = null;
 
         Debug.Log("[BattleManager] 전투 시작");
+
+        if (StageManager.Instance != null)
+        {
+            Debug.Log(
+                $"[BattleManager] 현재 진행도 - " +
+                $"Stage : {StageManager.Instance.CurrentStage} / " +
+                $"Phase : {StageManager.Instance.CurrentPhase} / " +
+                $"Battle : {StageManager.Instance.CurrentBattleCount}"
+            );
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] StageManager.Instance가 없습니다.");
+        }
+    }
+
+    public void StartNextBattle()
+    {
+        Debug.Log("[BattleManager] 다음 전투 준비 시작");
+
+        isBattleStarted = false;
+
+        ClearSelectedCard();
+
+        if (handManager != null)
+        {
+            handManager.ResetHandForNewBattle();
+        }
+
+        if (deckManager != null)
+        {
+            deckManager.PrepareDrawPileForBattle();
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] DeckManager가 연결되지 않았습니다.");
+        }
+
+        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+
+        if (playerCombat != null)
+        {
+            playerCombat.ResetCombat();
+        }
+
+        if (enemySpawner != null)
+        {
+            enemySpawner.SpawnEnemy();
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] EnemySpawner가 연결되지 않았습니다.");
+        }
+
+        StartBattle();
+
+        if (turnManager != null)
+        {
+            turnManager.StartPlayerTurn();
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] TurnManager가 연결되지 않았습니다.");
+        }
+
+        Debug.Log("[BattleManager] 다음 전투 시작 완료");
     }
 
     /// <summary>
@@ -62,6 +136,8 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void SelectCard(CardUI cardUI)
     {
+        Debug.Log("[BattleManager] SelectCard 호출됨");
+
         if (!isBattleStarted)
         {
             Debug.LogWarning("[BattleManager] 아직 전투가 시작되지 않았습니다.");
@@ -103,6 +179,8 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void UseSelectedCardOnEnemy(Enemy targetEnemy)
     {
+        Debug.Log("[BattleManager] UseSelectedCardOnEnemy 호출됨");
+
         if (!CanUseSelectedCard())
             return;
 
@@ -118,11 +196,13 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[BattleManager] 적에게 카드 사용 : {selectedCardData.cardName}");
+        CardData usedCardData = selectedCardData;
 
-        cardEffectExecutor.ExecuteEffects(selectedCardData, targetEnemy);
+        Debug.Log($"[BattleManager] 적에게 카드 사용 : {usedCardData.cardName}");
 
-        FinishCardUse();
+        cardEffectExecutor.ExecuteEffects(usedCardData, targetEnemy);
+
+        FinishCardUse(usedCardData);
     }
 
     /// <summary>
@@ -146,11 +226,13 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[BattleManager] 플레이어에게 카드 사용 : {selectedCardData.cardName}");
+        CardData usedCardData = selectedCardData;
 
-        cardEffectExecutor.ExecuteEffects(selectedCardData, null);
+        Debug.Log($"[BattleManager] 플레이어에게 카드 사용 : {usedCardData.cardName}");
 
-        FinishCardUse();
+        cardEffectExecutor.ExecuteEffects(usedCardData, null);
+
+        FinishCardUse(usedCardData);
     }
 
     /// <summary>
@@ -159,6 +241,8 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private bool CanUseSelectedCard()
     {
+        Debug.Log($"[BattleManager] CanUseSelectedCard 호출 / isBattleStarted : {isBattleStarted}");
+
         if (!isBattleStarted)
         {
             Debug.LogWarning("[BattleManager] 아직 전투가 시작되지 않았습니다.");
@@ -184,16 +268,22 @@ public class BattleManager : MonoBehaviour
     /// 카드 사용 성공 후 공통 처리를 수행합니다.
     /// 사용 횟수 기록, 손패 제거, 버림 더미 이동, 선택 해제를 처리합니다.
     /// </summary>
-    private void FinishCardUse()
+    private void FinishCardUse(CardData usedCardData)
     {
+        if (usedCardData == null)
+        {
+            Debug.LogWarning("[BattleManager] 사용 완료 처리할 카드 데이터가 없습니다.");
+            return;
+        }
+
         if (turnManager != null)
         {
-            turnManager.RecordCardUse(selectedCardData);
+            turnManager.RecordCardUse(usedCardData);
         }
 
         if (handManager != null)
         {
-            handManager.DiscardUsedCard(selectedCardData);
+            handManager.DiscardUsedCard(usedCardData);
         }
         else
         {
@@ -262,26 +352,15 @@ public class BattleManager : MonoBehaviour
         EndBattle();
     }
 
-    /// <summary>
-    /// 전투를 종료합니다.
-    /// 현재는 리워드로 넘어가기 전 로그만 출력합니다.
-    /// </summary>
     private void EndBattle()
     {
         isBattleStarted = false;
 
         ClearSelectedCard();
 
-        if (StageManager.Instance != null)
-        {
-            StageManager.Instance.BattleWin();
-        }
-        else
-        {
-            Debug.LogWarning("[BattleManager] StageManager.Instance가 없습니다.");
-        }
-
         Debug.Log("[BattleManager] 전투 종료 - 모든 적 처치");
+
+        HealPlayerAfterBattle();
 
         StageManager stageManager = StageManager.Instance;
 
@@ -296,7 +375,36 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[BattleManager] StageManager를 찾지 못했습니다.");
+            Debug.LogWarning("[BattleManager] StageManager를 찾지 못했습니다. 전투 카운트는 증가하지 않습니다.");
         }
+
+        if (rewardPanelUI != null)
+        {
+            rewardPanelUI.ShowRewardPanel();
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] RewardPanelUI가 연결되지 않았습니다.");
+        }
+    }
+
+    /// <summary>
+    /// 전투 종료 후 플레이어 최대 체력의 15%를 회복합니다.
+    /// </summary>
+    private void HealPlayerAfterBattle()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.PlayerData == null)
+        {
+            Debug.LogWarning("[BattleManager] PlayerData를 찾지 못해 전투 후 회복을 처리할 수 없습니다.");
+            return;
+        }
+
+        PlayerData playerData = GameManager.Instance.PlayerData;
+
+        int healAmount = Mathf.CeilToInt(playerData.MaxHP * 0.15f);
+
+        playerData.Heal(healAmount);
+
+        Debug.Log($"[BattleManager] 전투 후 회복 : 최대 체력의 15% ({healAmount})");
     }
 }

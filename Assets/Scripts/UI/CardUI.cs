@@ -47,6 +47,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     private Quaternion defaultRotation;
     private Vector3 defaultScale;
 
+    private RewardPanelUI rewardPanelUI;
+    private bool isRewardCard;
+
     /// <summary>
     /// 카드 UI를 초기화합니다.
     /// 카드 데이터와 소유 HandManager를 설정합니다.
@@ -94,6 +97,18 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (isRewardCard)
+        {
+            if (rewardPanelUI == null)
+            {
+                Debug.LogWarning("[CardUI] RewardPanelUI가 연결되지 않았습니다.");
+                return;
+            }
+
+            rewardPanelUI.SelectRewardCard(cardData);
+            return;
+        }
+
         if (handManager == null)
         {
             Debug.LogWarning("[CardUI] HandManager가 연결되지 않았습니다.");
@@ -129,5 +144,25 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     public CardData GetCardData()
     {
         return cardData;
+    }
+
+    /// <summary>
+    /// 리워드 카드 UI로 초기화합니다.
+    /// 클릭 시 RewardPanelUI에 선택을 요청합니다.
+    /// </summary>
+    public void InitializeAsReward(CardData newCardData, RewardPanelUI ownerRewardPanelUI)
+    {
+        cardData = newCardData;
+        rewardPanelUI = ownerRewardPanelUI;
+        handManager = null;
+        isRewardCard = true;
+
+        rectTransform = GetComponent<RectTransform>();
+
+        defaultPosition = rectTransform.anchoredPosition;
+        defaultRotation = rectTransform.localRotation;
+        defaultScale = rectTransform.localScale;
+
+        SetCard(cardData);
     }
 }
