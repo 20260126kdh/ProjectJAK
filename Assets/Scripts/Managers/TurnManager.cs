@@ -1,15 +1,24 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 /// <summary>
 /// 전투 중 턴 상태와 카드 사용 제한을 관리하는 클래스입니다.
-/// 플레이어 턴 여부, 공격/방어 카드 사용 횟수를 담당합니다.
+/// 플레이어 턴, 적 턴, 공격/방어 카드 사용 횟수, 다음 턴 드로우를 담당합니다.
 /// </summary>
 public class TurnManager : MonoBehaviour
 {
     [Header("현재 플레이어 턴 여부")]
     [SerializeField]
     private bool isPlayerTurn;
+
+    [Header("Hand Manager")]
+    [SerializeField]
+    private HandManager handManager;
+
+    [Header("손패 최대 장수")]
+    [SerializeField]
+    private int maxHandCount = 4;
 
     [Header("공격/방어 카드 최대 사용 횟수")]
     [SerializeField]
@@ -23,19 +32,12 @@ public class TurnManager : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI attackDefenseUseCountText;
 
-    /// <summary>
-    /// 현재 플레이어 턴인지 반환합니다.
-    /// </summary>
+    [Header("적 턴 설정")]
+    [SerializeField]
+    private float enemyTurnDelay = 0.7f;
+
     public bool IsPlayerTurn => isPlayerTurn;
-
-    /// <summary>
-    /// 현재 공격/방어 카드 사용 횟수를 반환합니다.
-    /// </summary>
     public int CurrentAttackDefenseCardUseCount => currentAttackDefenseCardUseCount;
-
-    /// <summary>
-    /// 공격/방어 카드 최대 사용 횟수를 반환합니다.
-    /// </summary>
     public int MaxAttackDefenseCardUseCount => maxAttackDefenseCardUseCount;
 
     private void Start()
@@ -43,23 +45,29 @@ public class TurnManager : MonoBehaviour
         StartPlayerTurn();
     }
 
-    /// <summary>
-    /// 플레이어 턴을 시작합니다.
-    /// 공격/방어 카드 사용 횟수를 초기화합니다.
-    /// </summary>
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
         currentAttackDefenseCardUseCount = 0;
 
+        DrawCardsForNewTurn();
         UpdateAttackDefenseUseCountUI();
 
         Debug.Log("[TurnManager] 플레이어 턴 시작");
     }
 
-    /// <summary>
-    /// 플레이어 턴을 종료합니다.
-    /// </summary>
+    public void EndPlayerTurnAndStartNextTurn()
+    {
+        if (!isPlayerTurn)
+        {
+            Debug.LogWarning("[TurnManager] 현재 플레이어 턴이 아닙니다.");
+            return;
+        }
+
+        EndPlayerTurn();
+        StartCoroutine(EnemyTurnRoutine());
+    }
+
     public void EndPlayerTurn()
     {
         if (!isPlayerTurn)
@@ -73,11 +81,70 @@ public class TurnManager : MonoBehaviour
         Debug.Log("[TurnManager] 플레이어 턴 종료");
     }
 
-    /// <summary>
-    /// 해당 카드를 현재 턴에 사용할 수 있는지 확인합니다.
-    /// Skill 카드는 사용 횟수 제한을 받지 않습니다.
-    /// Attack, Defense 카드는 합산하여 제한을 받습니다.
-    /// </summary>
+    private IEnumerator EnemyTurnRoutine()
+    {
+        Debug.Log("[TurnManager] 적 턴 시작");
+
+        yield return new WaitForSeconds(enemyTurnDelay);
+
+        ExecuteEnemyTurn();
+
+        yield return new WaitForSeconds(enemyTurnDelay);
+
+        Debug.Log("[TurnManager] 적 턴 종료");
+
+        StartPlayerTurn();
+    }
+
+    private void ExecuteEnemyTurn()
+    {
+        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+
+        if (playerCombat == null)
+        {
+            Debug.LogError("[TurnManager] 씬에서 PlayerCombat을 찾지 못했습니다.");
+            return;
+        }
+
+        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+
+        if (enemies.Length == 0)
+        {
+            Debug.LogWarning("[TurnManager] 행동할 Enemy가 없습니다.");
+            return;
+        }
+
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy == null)
+                continue;
+
+            enemy.TakeTurn(playerCombat);
+        }
+    }
+
+    private void DrawCardsForNewTurn()
+    {
+        if (handManager == null)
+        {
+            Debug.LogError("[TurnManager] HandManager가 연결되지 않았습니다.");
+            return;
+        }
+
+        int currentHandCount = handManager.HandCards.Count;
+        int drawCount = maxHandCount - currentHandCount;
+
+        if (drawCount <= 0)
+        {
+            Debug.Log("[TurnManager] 손패가 이미 최대 장수입니다.");
+            return;
+        }
+
+        handManager.DrawCards(drawCount);
+
+        Debug.Log($"[TurnManager] 새 턴 드로우 : {drawCount}장");
+    }
+
     public bool CanUseCard(CardData cardData)
     {
         if (!isPlayerTurn)
@@ -112,10 +179,6 @@ public class TurnManager : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// 카드 사용 성공 후 사용 횟수를 기록합니다.
-    /// Skill 카드는 사용 횟수에 포함하지 않습니다.
-    /// </summary>
     public void RecordCardUse(CardData cardData)
     {
         if (cardData == null)
@@ -134,9 +197,6 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 공격/방어 카드 사용 횟수 UI를 갱신합니다.
-    /// </summary>
     private void UpdateAttackDefenseUseCountUI()
     {
         if (attackDefenseUseCountText == null)

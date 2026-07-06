@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// 플레이어 덱을 관리하는 클래스입니다.
-/// 시작 덱 생성, 정렬, 드로우 파일 생성 및 셔플을 담당합니다.
+/// 시작 덱 생성, 정렬, 드로우 파일 생성, 셔플, 버림 더미 재사용을 담당합니다.
 /// </summary>
 public class DeckManager : MonoBehaviour
 {
@@ -31,25 +31,10 @@ public class DeckManager : MonoBehaviour
     [SerializeField]
     private StartingDeckUI startingDeckUI;
 
-    /// <summary>
-    /// 현재 보유 덱을 반환합니다.
-    /// </summary>
     public List<CardData> CurrentDeck => currentDeck;
-
-    /// <summary>
-    /// 현재 드로우 파일을 반환합니다.
-    /// </summary>
     public List<CardData> DrawPile => drawPile;
-
-    /// <summary>
-    /// 버린 카드 더미를 반환합니다.
-    /// </summary>
     public List<CardData> DiscardPile => discardPile;
 
-    /// <summary>
-    /// BattleScene 시작 시 호출됩니다.
-    /// 시작 덱을 생성하고 정렬하여 UI에 표시합니다.
-    /// </summary>
     private void Start()
     {
         CreateStartingDeck();
@@ -61,9 +46,6 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 선택한 클래스에 맞는 시작 덱을 생성합니다.
-    /// </summary>
     private void CreateStartingDeck()
     {
         currentDeck.Clear();
@@ -89,19 +71,11 @@ public class DeckManager : MonoBehaviour
         Debug.Log($"시작 덱 생성 완료 : {currentDeck.Count}장");
     }
 
-    /// <summary>
-    /// 시작 덱을 카드 이름 기준으로 정렬합니다.
-    /// 시작 덱 UI에서 항상 일정한 순서로 표시하기 위해 사용합니다.
-    /// </summary>
     private void SortCurrentDeckByCardName()
     {
         currentDeck.Sort((a, b) => string.Compare(a.cardName, b.cardName));
     }
 
-    /// <summary>
-    /// 현재 보유 덱을 복사하여 드로우 파일을 생성합니다.
-    /// 새로운 전투 시작 시 호출됩니다.
-    /// </summary>
     private void CreateDrawPileFromCurrentDeck()
     {
         drawPile.Clear();
@@ -113,10 +87,6 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 드로우 파일을 무작위로 섞습니다.
-    /// Fisher-Yates Shuffle 방식을 사용합니다.
-    /// </summary>
     private void ShuffleDrawPile()
     {
         for (int i = drawPile.Count - 1; i > 0; i--)
@@ -129,10 +99,6 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 전투 시작 전에 드로우 파일을 생성하고 셔플합니다.
-    /// 시작 덱 확인 후 Confirm 버튼에서 호출됩니다.
-    /// </summary>
     public void PrepareDrawPileForBattle()
     {
         CreateDrawPileFromCurrentDeck();
@@ -143,13 +109,18 @@ public class DeckManager : MonoBehaviour
 
     /// <summary>
     /// 드로우 파일에서 카드 1장을 꺼내 반환합니다.
-    /// 드로우 파일이 비어 있으면 null을 반환합니다.
+    /// 드로우 파일이 비어 있으면 버림 더미를 섞어서 다시 드로우 파일로 사용합니다.
     /// </summary>
     public CardData DrawOneCard()
     {
         if (drawPile.Count <= 0)
         {
-            Debug.LogWarning("[DeckManager] 드로우 파일이 비어 있습니다.");
+            RefillDrawPileFromDiscardPile();
+        }
+
+        if (drawPile.Count <= 0)
+        {
+            Debug.LogWarning("[DeckManager] 드로우할 카드가 없습니다.");
             return null;
         }
 
@@ -160,8 +131,27 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 사용한 카드를 버린 카드 더미에 추가합니다.
+    /// 버림 더미의 카드를 드로우 파일로 옮기고 셔플합니다.
     /// </summary>
+    private void RefillDrawPileFromDiscardPile()
+    {
+        if (discardPile.Count <= 0)
+        {
+            Debug.LogWarning("[DeckManager] 버림 더미도 비어 있어 드로우 파일을 재생성할 수 없습니다.");
+            return;
+        }
+
+        for (int i = 0; i < discardPile.Count; i++)
+        {
+            drawPile.Add(discardPile[i]);
+        }
+
+        discardPile.Clear();
+        ShuffleDrawPile();
+
+        Debug.Log($"[DeckManager] 버림 더미를 섞어 드로우 파일 재생성 : {drawPile.Count}장");
+    }
+
     public void AddToDiscardPile(CardData cardData)
     {
         if (cardData == null)

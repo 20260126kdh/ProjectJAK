@@ -23,9 +23,9 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private CardData preservedCard;
 
-    [Header("현재 보존 선택 중인 카드")]
+    [Header("현재 보존 선택 중인 카드 UI")]
     [SerializeField]
-    private CardData selectedPreserveCard;
+    private CardUI selectedPreserveCardUI;
 
     [Header("보존 모드 여부")]
     [SerializeField]
@@ -38,6 +38,14 @@ public class HandManager : MonoBehaviour
     [Header("카드 UI 프리팹")]
     [SerializeField]
     private CardUI cardPrefab;
+
+    [Header("턴 종료 버튼 오브젝트")]
+    [SerializeField]
+    private GameObject endTurnButtonObject;
+
+    [Header("Turn Manager")]
+    [SerializeField]
+    private TurnManager turnManager;
 
     public List<CardData> HandCards => handCards;
     public CardData PreservedCard => preservedCard;
@@ -109,11 +117,6 @@ public class HandManager : MonoBehaviour
             rect.localRotation = Quaternion.Euler(0f, 0f, zRotation);
 
             cardUI.Initialize(handCards[i], this);
-
-            if (handCards[i] == selectedPreserveCard)
-            {
-                cardUI.SetSelected();
-            }
         }
 
         Debug.Log("[HandManager] 손패 UI 갱신 완료");
@@ -148,7 +151,12 @@ public class HandManager : MonoBehaviour
     public void StartPreserveMode()
     {
         isPreserveMode = true;
-        selectedPreserveCard = null;
+        selectedPreserveCardUI = null;
+
+        if (endTurnButtonObject != null)
+        {
+            endTurnButtonObject.SetActive(false);
+        }
 
         if (battleManager != null)
         {
@@ -161,7 +169,8 @@ public class HandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 보존 모드에서 보존할 카드를 선택합니다.
+    /// 보존 모드에서 보존할 카드 UI를 선택합니다.
+    /// 같은 카드 UI를 다시 선택하면 선택을 해제합니다.
     /// </summary>
     private void SelectPreserveCard(CardUI cardUI)
     {
@@ -179,17 +188,22 @@ public class HandManager : MonoBehaviour
             return;
         }
 
-        if (selectedPreserveCard == cardData)
+        if (selectedPreserveCardUI == cardUI)
         {
-            selectedPreserveCard = null;
-            RefreshHandUI();
+            selectedPreserveCardUI.SetDeselected();
+            selectedPreserveCardUI = null;
 
             Debug.Log("[HandManager] 보존 카드 선택 해제");
             return;
         }
 
-        selectedPreserveCard = cardData;
-        RefreshHandUI();
+        if (selectedPreserveCardUI != null)
+        {
+            selectedPreserveCardUI.SetDeselected();
+        }
+
+        selectedPreserveCardUI = cardUI;
+        selectedPreserveCardUI.SetSelected();
 
         Debug.Log($"[HandManager] 보존 카드 선택 : {cardData.cardName}");
     }
@@ -205,25 +219,40 @@ public class HandManager : MonoBehaviour
             return;
         }
 
-        preservedCard = selectedPreserveCard;
-
-        if (preservedCard != null)
+        if (selectedPreserveCardUI != null)
         {
+            preservedCard = selectedPreserveCardUI.GetCardData();
             Debug.Log($"[HandManager] 보존 카드 확정 : {preservedCard.cardName}");
         }
         else
         {
+            preservedCard = null;
             Debug.Log("[HandManager] 보존 카드 없이 진행");
         }
 
         isPreserveMode = false;
-        selectedPreserveCard = null;
+        selectedPreserveCardUI = null;
 
         DiscardUnpreservedCards();
+
+        if (endTurnButtonObject != null)
+        {
+            endTurnButtonObject.SetActive(true);
+        }
+
+        if (turnManager != null)
+        {
+            turnManager.EndPlayerTurnAndStartNextTurn();
+        }
+        else
+        {
+            Debug.LogError("[HandManager] TurnManager가 연결되지 않았습니다.");
+        }
     }
 
     /// <summary>
     /// 보존 카드를 제외한 손패의 모든 카드를 버림 더미로 이동합니다.
+    /// 같은 CardData가 여러 장 있어도 1장만 보존합니다.
     /// </summary>
     public void DiscardUnpreservedCards()
     {
@@ -233,25 +262,33 @@ public class HandManager : MonoBehaviour
             return;
         }
 
+        List<CardData> newHandCards = new List<CardData>();
         List<CardData> cardsToDiscard = new List<CardData>();
+
+        bool preservedCardKept = false;
 
         for (int i = 0; i < handCards.Count; i++)
         {
             CardData card = handCards[i];
 
-            if (card == preservedCard)
+            if (!preservedCardKept && preservedCard != null && card == preservedCard)
+            {
+                newHandCards.Add(card);
+                preservedCardKept = true;
                 continue;
+            }
 
             cardsToDiscard.Add(card);
         }
 
         for (int i = 0; i < cardsToDiscard.Count; i++)
         {
-            handCards.Remove(cardsToDiscard[i]);
             deckManager.AddToDiscardPile(cardsToDiscard[i]);
-
             Debug.Log($"[HandManager] 턴 종료 버림 : {cardsToDiscard[i].cardName}");
         }
+
+        handCards.Clear();
+        handCards.AddRange(newHandCards);
 
         RefreshHandUI();
 

@@ -22,6 +22,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private CardEffectExecutor cardEffectExecutor;
 
+    [Header("Reward Panel UI")]
+    [SerializeField]
+    private RewardPanelUI rewardPanelUI;
+
     [Header("적 태그")]
     [SerializeField]
     private string enemyTag = "Enemy";
@@ -236,5 +240,63 @@ public class BattleManager : MonoBehaviour
         }
 
         return enemy;
+    }
+
+    /// <summary>
+    /// 모든 적이 사망했는지 확인합니다.
+    /// 모든 적이 사망했다면 전투를 종료합니다.
+    /// </summary>
+    public void CheckBattleEnd()
+    {
+        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy != null && enemy.gameObject.activeSelf && enemy.CurrentHP > 0)
+            {
+                Debug.Log("[BattleManager] 아직 살아있는 적이 있습니다.");
+                return;
+            }
+        }
+
+        EndBattle();
+    }
+
+    /// <summary>
+    /// 전투를 종료합니다.
+    /// 현재는 리워드로 넘어가기 전 로그만 출력합니다.
+    /// </summary>
+    private void EndBattle()
+    {
+        isBattleStarted = false;
+
+        ClearSelectedCard();
+
+        if (StageManager.Instance != null)
+        {
+            StageManager.Instance.BattleWin();
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] StageManager.Instance가 없습니다.");
+        }
+
+        Debug.Log("[BattleManager] 전투 종료 - 모든 적 처치");
+
+        StageManager stageManager = StageManager.Instance;
+
+        if (stageManager == null)
+        {
+            stageManager = FindFirstObjectByType<StageManager>();
+        }
+
+        if (stageManager != null)
+        {
+            stageManager.BattleWin();
+        }
+        else
+        {
+            Debug.LogWarning("[BattleManager] StageManager를 찾지 못했습니다.");
+        }
     }
 }

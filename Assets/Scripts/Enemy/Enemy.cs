@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// 전투 중 적의 체력을 관리하는 임시 Enemy 클래스입니다.
-/// 현재는 데미지 받기와 사망 로그만 처리합니다.
+/// 데미지 받기, 사망 처리, 적 턴 행동을 담당합니다.
 /// </summary>
 public class Enemy : MonoBehaviour
 {
@@ -14,14 +14,15 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private int currentHP;
 
-    /// <summary>
-    /// 적 현재 체력을 반환합니다.
-    /// </summary>
-    public int CurrentHP => currentHP;
+    [Header("적 기본 공격력")]
+    [SerializeField]
+    private int basicAttackDamage = 5;
 
-    /// <summary>
-    /// 적 최대 체력을 반환합니다.
-    /// </summary>
+    [Header("Battle Manager")]
+    [SerializeField]
+    private BattleManager battleManager;
+
+    public int CurrentHP => currentHP;
     public int MaxHP => maxHP;
 
     private void Awake()
@@ -29,11 +30,39 @@ public class Enemy : MonoBehaviour
         currentHP = maxHP;
     }
 
-    /// <summary>
-    /// 적이 데미지를 받습니다.
-    /// </summary>
+    private void Start()
+    {
+        if (battleManager == null)
+        {
+            battleManager = FindFirstObjectByType<BattleManager>();
+        }
+    }
+
+    public void TakeTurn(PlayerCombat playerCombat)
+    {
+        if (playerCombat == null)
+        {
+            Debug.LogWarning("[Enemy] PlayerCombat이 없습니다.");
+            return;
+        }
+
+        if (currentHP <= 0)
+        {
+            return;
+        }
+
+        Debug.Log($"[Enemy] 플레이어에게 {basicAttackDamage} 피해");
+
+        playerCombat.LoseHealth(basicAttackDamage);
+    }
+
     public void TakeDamage(int damage)
     {
+        if (currentHP <= 0)
+        {
+            return;
+        }
+
         currentHP -= damage;
 
         if (currentHP < 0)
@@ -45,7 +74,19 @@ public class Enemy : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            Debug.Log("[Enemy] 적 사망");
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        Debug.Log("[Enemy] 적 사망");
+
+        if (battleManager != null)
+        {
+            battleManager.CheckBattleEnd();
+        }
+
+        gameObject.SetActive(false);
     }
 }
