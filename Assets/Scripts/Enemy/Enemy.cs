@@ -51,9 +51,22 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[Enemy] 플레이어에게 {basicAttackDamage} 피해");
+        int finalDamage = basicAttackDamage;
 
-        playerCombat.LoseHealth(basicAttackDamage);
+        StatusEffectHandler statusEffectHandler = GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler != null && statusEffectHandler.HasStatusEffect(StatusEffectType.Weaken))
+        {
+            int reducedDamage = Mathf.FloorToInt(finalDamage * 0.6f);
+
+            Debug.Log($"[Enemy] 약화 적용 : {finalDamage} → {reducedDamage}");
+
+            finalDamage = reducedDamage;
+        }
+
+        Debug.Log($"[Enemy] 플레이어에게 {finalDamage} 피해");
+
+        playerCombat.LoseHealth(finalDamage);
     }
 
     public void TakeDamage(int damage)
@@ -61,6 +74,17 @@ public class Enemy : MonoBehaviour
         if (currentHP <= 0)
         {
             return;
+        }
+
+        StatusEffectHandler statusEffectHandler = GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler != null && statusEffectHandler.HasStatusEffect(StatusEffectType.Vulnerable))
+        {
+            int increasedDamage = Mathf.FloorToInt(damage * 1.4f);
+
+            Debug.Log($"[Enemy] 취약 적용 : {damage} → {increasedDamage}");
+
+            damage = increasedDamage;
         }
 
         currentHP -= damage;

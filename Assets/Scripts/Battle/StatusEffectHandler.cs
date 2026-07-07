@@ -88,4 +88,15 @@ public class StatusEffectHandler : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// 모든 상태 효과를 제거합니다.
+    /// 전투 종료 또는 새 전투 시작 시 호출합니다.
+    /// </summary>
+    public void ClearAllStatusEffects()
+    {
+        statusEffects.Clear();
+
+        Debug.Log("[StatusEffectHandler] 모든 상태 효과 초기화");
+    }
 }

@@ -87,6 +87,8 @@ public class TurnManager : MonoBehaviour
             return;
         }
 
+        DecreasePlayerStatusDuration();
+
         isPlayerTurn = false;
 
         Debug.Log("[TurnManager] 플레이어 턴 종료");
@@ -99,6 +101,8 @@ public class TurnManager : MonoBehaviour
         yield return new WaitForSeconds(enemyTurnDelay);
 
         ExecuteEnemyTurn();
+
+        DecreaseEnemyStatusDuration();
 
         yield return new WaitForSeconds(enemyTurnDelay);
 
@@ -217,5 +221,50 @@ public class TurnManager : MonoBehaviour
         }
 
         attackDefenseUseCountText.text = $"{currentAttackDefenseCardUseCount} / {maxAttackDefenseCardUseCount}";
+    }
+
+    private void DecreasePlayerStatusDuration()
+    {
+        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+
+        if (playerCombat == null)
+        {
+            Debug.LogWarning("[TurnManager] PlayerCombat을 찾지 못해 플레이어 상태효과 턴을 감소시키지 못했습니다.");
+            return;
+        }
+
+        StatusEffectHandler statusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler == null)
+        {
+            return;
+        }
+
+        statusEffectHandler.DecreaseTurnDuration();
+
+        Debug.Log("[TurnManager] 플레이어 상태효과 지속 턴 감소");
+    }
+
+    private void DecreaseEnemyStatusDuration()
+    {
+        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy == null)
+                continue;
+
+            if (!enemy.gameObject.activeSelf)
+                continue;
+
+            StatusEffectHandler statusEffectHandler = enemy.GetComponent<StatusEffectHandler>();
+
+            if (statusEffectHandler == null)
+                continue;
+
+            statusEffectHandler.DecreaseTurnDuration();
+        }
+
+        Debug.Log("[TurnManager] 적 상태효과 지속 턴 감소");
     }
 }

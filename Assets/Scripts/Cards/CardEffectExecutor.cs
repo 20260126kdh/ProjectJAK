@@ -122,7 +122,41 @@ public class CardEffectExecutor : MonoBehaviour
             return;
         }
 
-        targetEnemy.TakeDamage(effect.value);
+        PlayerCombat playerCombat = FindPlayerCombat();
+
+        int finalDamage = effect.value;
+
+        if (playerCombat != null)
+        {
+            StatusEffectHandler statusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+
+            if (statusEffectHandler != null)
+            {
+                int mightValue = statusEffectHandler.GetStatusValue(StatusEffectType.Might);
+                finalDamage += mightValue;
+
+                if (mightValue > 0)
+                {
+                    Debug.Log($"[CardEffectExecutor] 힘 적용 : 기본 {effect.value} + 힘 {mightValue} = {finalDamage}");
+                }
+
+                if (statusEffectHandler.HasStatusEffect(StatusEffectType.Weaken))
+                {
+                    int reducedDamage = Mathf.FloorToInt(finalDamage * 0.6f);
+
+                    Debug.Log($"[CardEffectExecutor] 약화 적용 : {finalDamage} → {reducedDamage}");
+
+                    finalDamage = reducedDamage;
+                }
+            }
+        }
+
+        if (finalDamage < 0)
+        {
+            finalDamage = 0;
+        }
+
+        targetEnemy.TakeDamage(finalDamage);
     }
 
     /// <summary>
@@ -199,12 +233,8 @@ public class CardEffectExecutor : MonoBehaviour
 
     /// <summary>
     /// 상태 효과 부여를 실행합니다.
-    /// 현재는 Self와 Enemy 대상만 처리합니다.
-    /// </summary>
     private void ExecuteApplyStatus(CardEffectData effect, Enemy targetEnemy)
     {
-        StatusEffectHandler statusEffectHandler = null;
-
         if (effect.target == CardTargetType.Self)
         {
             PlayerCombat playerCombat = FindPlayerCombat();
@@ -215,9 +245,14 @@ public class CardEffectExecutor : MonoBehaviour
                 return;
             }
 
-            statusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+            StatusEffectHandler statusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+
+            ApplyStatusToHandler(statusEffectHandler, effect);
+
+            return;
         }
-        else if (effect.target == CardTargetType.Enemy)
+
+        if (effect.target == CardTargetType.Enemy)
         {
             if (targetEnemy == null)
             {
@@ -225,28 +260,63 @@ public class CardEffectExecutor : MonoBehaviour
                 return;
             }
 
-            statusEffectHandler = targetEnemy.GetComponent<StatusEffectHandler>();
-        }
-        else
-        {
-            Debug.LogWarning($"[CardEffectExecutor] 현재 ApplyStatus는 Self/Enemy만 처리합니다. 현재 대상 : {effect.target}");
+            StatusEffectHandler statusEffectHandler = targetEnemy.GetComponent<StatusEffectHandler>();
+
+            ApplyStatusToHandler(statusEffectHandler, effect);
+
             return;
         }
 
+        if (effect.target == CardTargetType.AllEnemies)
+        {
+            Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+
+            foreach (Enemy enemy in enemies)
+            {
+                if (enemy == null)
+                    continue;
+
+                if (!enemy.gameObject.activeSelf)
+                    continue;
+
+                StatusEffectHandler statusEffectHandler = enemy.GetComponent<StatusEffectHandler>();
+
+                ApplyStatusToHandler(statusEffectHandler, effect);
+            }
+
+            Debug.Log($"[CardEffectExecutor] 모든 적에게 상태 효과 부여 : {effect.statusEffectType}");
+
+            return;
+        }
+
+        Debug.LogWarning($"[CardEffectExecutor] 처리되지 않은 상태 효과 대상 : {effect.target}");
+    }
+
+    private void ApplyStatusToHandler(StatusEffectHandler statusEffectHandler, CardEffectData effect)
+    {
         if (statusEffectHandler == null)
         {
             Debug.LogWarning("[CardEffectExecutor] 대상에 StatusEffectHandler가 없습니다.");
             return;
         }
 
+        bool isPermanent = false;
+        int remainingTurn = effect.value;
+
+        if (effect.statusEffectType == StatusEffectType.Might)
+        {
+            isPermanent = true;
+            remainingTurn = 0;
+        }
+
         statusEffectHandler.AddStatusEffect(
             effect.statusEffectType,
             effect.value,
-            1,
-            false
+            remainingTurn,
+            isPermanent
         );
 
-        Debug.Log($"[CardEffectExecutor] 상태 효과 부여 : {effect.statusEffectType} / 수치 : {effect.value}");
+        Debug.Log($"[CardEffectExecutor] 상태 효과 부여 : {effect.statusEffectType} / 지속 턴 : {remainingTurn}");
     }
 
     /// <summary>

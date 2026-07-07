@@ -66,6 +66,17 @@ public class PlayerCombat : MonoBehaviour
     {
         damagedThisTurn = true;
 
+        StatusEffectHandler statusEffectHandler = GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler != null && statusEffectHandler.HasStatusEffect(StatusEffectType.Vulnerable))
+        {
+            int increasedDamage = Mathf.FloorToInt(amount * 1.4f);
+
+            Debug.Log($"[PlayerCombat] 취약 적용 : {amount} → {increasedDamage}");
+
+            amount = increasedDamage;
+        }
+
         if (currentBlock > 0)
         {
             int absorbed = Mathf.Min(currentBlock, amount);

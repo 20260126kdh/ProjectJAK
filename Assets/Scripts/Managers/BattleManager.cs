@@ -105,6 +105,13 @@ public class BattleManager : MonoBehaviour
         if (playerCombat != null)
         {
             playerCombat.ResetCombat();
+
+            StatusEffectHandler playerStatusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+
+            if (playerStatusEffectHandler != null)
+            {
+                playerStatusEffectHandler.ClearAllStatusEffects();
+            }
         }
 
         if (enemySpawner != null)
