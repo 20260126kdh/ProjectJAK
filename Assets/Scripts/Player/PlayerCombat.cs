@@ -93,6 +93,17 @@ public class PlayerCombat : MonoBehaviour
     }
 
     /// <summary>
+    /// 방어도를 초기화합니다.
+    /// 새 플레이어 턴 시작 시 호출됩니다.
+    /// </summary>
+    public void ClearBlock()
+    {
+        currentBlock = 0;
+
+        Debug.Log("[PlayerCombat] 방어도 초기화");
+    }
+
+    /// <summary>
     /// 턴 종료 시 호출됩니다.
     /// </summary>
     public void EndTurn()

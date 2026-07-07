@@ -171,6 +171,9 @@ public class RewardPanelUI : MonoBehaviour
                 if (card.cardRarity != selectedRarity)
                     continue;
 
+                if (deckManager != null && deckManager.IsStartingDeckCard(card))
+                    continue;
+
                 if (result.Contains(card))
                     continue;
 

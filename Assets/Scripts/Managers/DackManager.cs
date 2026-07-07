@@ -178,4 +178,33 @@ public class DeckManager : MonoBehaviour
 
         Debug.Log($"[DeckManager] 카드 덱 추가 : {cardData.cardName} / 현재 덱 {currentDeck.Count}장");
     }
+
+    public bool IsStartingDeckCard(CardData cardData)
+    {
+        if (cardData == null)
+        {
+            return false;
+        }
+
+        if (startingDeckDatabase == null)
+        {
+            Debug.LogWarning("[DeckManager] StartingDeckDatabase가 연결되지 않았습니다.");
+            return false;
+        }
+
+        PlayerClass playerClass = GameManager.Instance.PlayerData.PlayerClass;
+
+        foreach (StartingDeckEntry entry in startingDeckDatabase.entries)
+        {
+            if (entry.ownerClass != playerClass)
+                continue;
+
+            if (entry.cardID == cardData.cardID)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

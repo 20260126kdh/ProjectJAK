@@ -50,6 +50,17 @@ public class TurnManager : MonoBehaviour
         isPlayerTurn = true;
         currentAttackDefenseCardUseCount = 0;
 
+        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+
+        if (playerCombat != null)
+        {
+            playerCombat.ClearBlock();
+        }
+        else
+        {
+            Debug.LogWarning("[TurnManager] PlayerCombat을 찾지 못해 방어도를 초기화하지 못했습니다.");
+        }
+
         DrawCardsForNewTurn();
         UpdateAttackDefenseUseCountUI();
 
