@@ -53,9 +53,39 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     public void GainBlock(int amount)
     {
-        currentBlock += amount;
+        int finalBlock = amount;
 
-        Debug.Log($"[PlayerCombat] 방어도 획득 : +{amount} (현재 {currentBlock})");
+        StatusEffectHandler statusEffectHandler = GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler != null)
+        {
+            int guardValue = statusEffectHandler.GetStatusValue(StatusEffectType.Guard);
+
+            if (guardValue > 0)
+            {
+                finalBlock += guardValue;
+
+                Debug.Log($"[PlayerCombat] 속도 적용 : 기본 방어도 {amount} + 속도 {guardValue} = {finalBlock}");
+            }
+
+            if (statusEffectHandler.HasStatusEffect(StatusEffectType.Cripple))
+            {
+                int reducedBlock = Mathf.FloorToInt(finalBlock * 0.7f);
+
+                Debug.Log($"[PlayerCombat] 손상 적용 : {finalBlock} → {reducedBlock}");
+
+                finalBlock = reducedBlock;
+            }
+        }
+
+        if (finalBlock < 0)
+        {
+            finalBlock = 0;
+        }
+
+        currentBlock += finalBlock;
+
+        Debug.Log($"[PlayerCombat] 방어도 획득 : +{finalBlock} (현재 {currentBlock})");
     }
 
     /// <summary>
