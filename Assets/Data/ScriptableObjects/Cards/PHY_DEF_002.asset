@@ -25,5 +25,5 @@ MonoBehaviour:
   - order: 1
     effectType: 5
     statusEffectType: 3
-    value: 30
+    value: 1
     target: 0

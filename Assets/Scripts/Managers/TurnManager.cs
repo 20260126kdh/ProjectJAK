@@ -54,6 +54,13 @@ public class TurnManager : MonoBehaviour
 
         if (playerCombat != null)
         {
+            StatusEffectHandler statusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+
+            if (statusEffectHandler != null)
+            {
+                statusEffectHandler.RemoveStatusEffect(StatusEffectType.Resist);
+            }
+
             playerCombat.ClearBlock();
         }
         else

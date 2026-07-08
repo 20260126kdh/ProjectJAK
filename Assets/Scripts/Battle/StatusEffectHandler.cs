@@ -66,6 +66,20 @@ public class StatusEffectHandler : MonoBehaviour
         return statusEffects.Exists(effect => effect.statusEffectType == statusEffectType);
     }
 
+    public void RemoveStatusEffect(StatusEffectType statusEffectType)
+    {
+        StatusEffectData effect = statusEffects.Find(status => status.statusEffectType == statusEffectType);
+
+        if (effect == null)
+        {
+            return;
+        }
+
+        statusEffects.Remove(effect);
+
+        Debug.Log($"[StatusEffectHandler] 상태 효과 직접 제거 : {statusEffectType}");
+    }
+
     /// <summary>
     /// 턴 종료 시 지속 턴을 감소시킵니다.
     /// 영구 효과는 감소하지 않습니다.

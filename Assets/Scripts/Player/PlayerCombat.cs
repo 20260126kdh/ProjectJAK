@@ -107,6 +107,15 @@ public class PlayerCombat : MonoBehaviour
             amount = increasedDamage;
         }
 
+        if (statusEffectHandler != null && statusEffectHandler.HasStatusEffect(StatusEffectType.Resist))
+        {
+            int reducedDamage = Mathf.FloorToInt(amount * 0.7f);
+
+            Debug.Log($"[PlayerCombat] 무감각 적용 : {amount} → {reducedDamage}");
+
+            amount = reducedDamage;
+        }
+
         if (currentBlock > 0)
         {
             int absorbed = Mathf.Min(currentBlock, amount);

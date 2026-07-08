@@ -316,11 +316,37 @@ public class HandManager : MonoBehaviour
         }
 
         handCards.Remove(cardData);
+
+        if (ShouldExhaustCard(cardData))
+        {
+            RefreshHandUI();
+            Debug.Log($"[HandManager] 소멸 카드 사용 : {cardData.cardName} / 이번 전투에서 제외");
+            return;
+        }
+
         deckManager.AddToDiscardPile(cardData);
 
         RefreshHandUI();
 
         Debug.Log($"[HandManager] 사용한 카드 버림 더미 이동 : {cardData.cardName}");
+    }
+
+    private bool ShouldExhaustCard(CardData cardData)
+    {
+        if (cardData == null || cardData.effects == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < cardData.effects.Count; i++)
+        {
+            if (cardData.effects[i].statusEffectType == StatusEffectType.Exit)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void RemoveCardFromHand(CardData cardData)

@@ -304,7 +304,8 @@ public class CardEffectExecutor : MonoBehaviour
         int remainingTurn = effect.value;
 
         if (effect.statusEffectType == StatusEffectType.Might ||
-    effect.statusEffectType == StatusEffectType.Guard)
+    effect.statusEffectType == StatusEffectType.Guard ||
+    effect.statusEffectType == StatusEffectType.Resist)
         {
             isPermanent = true;
             remainingTurn = 0;
