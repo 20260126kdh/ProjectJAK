@@ -188,6 +188,22 @@ public class TurnManager : MonoBehaviour
 
         if (cardData.cardType == CardType.Attack || cardData.cardType == CardType.Defense)
         {
+            if (cardData.cardType == CardType.Attack)
+            {
+                PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+
+                if (playerCombat != null)
+                {
+                    StatusEffectHandler statusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+
+                    if (statusEffectHandler != null && statusEffectHandler.HasStatusEffect(StatusEffectType.Broken))
+                    {
+                        Debug.LogWarning("[TurnManager] 부러짐 적용 : 공격 카드를 사용할 수 없습니다.");
+                        return false;
+                    }
+                }
+            }
+
             if (currentAttackDefenseCardUseCount >= maxAttackDefenseCardUseCount)
             {
                 Debug.LogWarning("[TurnManager] 공격/방어 카드는 한 턴에 최대 2장까지만 사용할 수 있습니다.");

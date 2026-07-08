@@ -50,6 +50,7 @@ public class PlayerCombat : MonoBehaviour
 
     /// <summary>
     /// 방어도를 획득합니다.
+    /// Guard(속도), Paralyze(마비), Cripple(손상), NoBlock(미끄러짐)을 반영합니다.
     /// </summary>
     public void GainBlock(int amount)
     {
@@ -57,16 +58,22 @@ public class PlayerCombat : MonoBehaviour
 
         StatusEffectHandler statusEffectHandler = GetComponent<StatusEffectHandler>();
 
+        if (statusEffectHandler != null && statusEffectHandler.HasStatusEffect(StatusEffectType.NoBlock))
+        {
+            Debug.Log("[PlayerCombat] 미끄러짐 적용 : 방어도를 얻을 수 없습니다.");
+            return;
+        }
+
         if (statusEffectHandler != null)
         {
             int guardValue = statusEffectHandler.GetStatusValue(StatusEffectType.Guard);
+            int paralyzeValue = statusEffectHandler.GetStatusValue(StatusEffectType.Paralyze);
 
-            if (guardValue > 0)
-            {
-                finalBlock += guardValue;
+            int speedValue = guardValue - paralyzeValue;
 
-                Debug.Log($"[PlayerCombat] 속도 적용 : 기본 방어도 {amount} + 속도 {guardValue} = {finalBlock}");
-            }
+            finalBlock += speedValue;
+
+            Debug.Log($"[PlayerCombat] 속도/마비 적용 : 기본 방어도 {amount} + 속도 보정 {speedValue} = {finalBlock}");
 
             if (statusEffectHandler.HasStatusEffect(StatusEffectType.Cripple))
             {
@@ -91,6 +98,7 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// 체력을 잃습니다.
     /// 방어도를 먼저 차감합니다.
+    /// Vulnerable(취약), Resist(무감각)을 반영합니다.
     /// </summary>
     public void LoseHealth(int amount)
     {
