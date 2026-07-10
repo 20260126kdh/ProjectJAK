@@ -238,6 +238,99 @@ public class CrewManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 먼저 소환된 선원부터 지정된 수만큼 희생합니다.
+    /// 희생된 선원들의 현재 체력 합계를 반환합니다.
+    /// </summary>
+    public int SacrificeCrews(int count)
+    {
+        RemoveNullCrews();
+
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        if (crews.Count < count)
+        {
+            Debug.LogWarning(
+                $"[CrewManager] 희생할 선원이 부족합니다. " +
+                $"필요 {count}명 / 현재 {crews.Count}명"
+            );
+
+            return 0;
+        }
+
+        int sacrificedHealth = 0;
+
+        for (int i = 0; i < count; i++)
+        {
+            Crew crew = crews[0];
+
+            if (crew == null)
+            {
+                crews.RemoveAt(0);
+                i--;
+                continue;
+            }
+
+            sacrificedHealth += crew.CurrentHP;
+
+            crews.RemoveAt(0);
+            Destroy(crew.gameObject);
+        }
+
+        RearrangeCrewPositions();
+
+        Debug.Log(
+            $"[CrewManager] 선원 {count}명 희생 / " +
+            $"현재 체력 합계 : {sacrificedHealth}"
+        );
+
+        return sacrificedHealth;
+    }
+
+    /// <summary>
+    /// 현재 소환된 모든 선원을 동시에 희생합니다.
+    /// 희생된 모든 선원의 현재 체력 합계를 반환합니다.
+    /// </summary>
+    public int SacrificeAllCrews()
+    {
+        RemoveNullCrews();
+
+        if (crews.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[CrewManager] 희생할 선원이 없습니다."
+            );
+
+            return 0;
+        }
+
+        int sacrificedHealth = 0;
+        int sacrificedCount = crews.Count;
+
+        foreach (Crew crew in crews)
+        {
+            if (crew == null)
+            {
+                continue;
+            }
+
+            sacrificedHealth += crew.CurrentHP;
+            Destroy(crew.gameObject);
+        }
+
+        crews.Clear();
+
+        Debug.Log(
+            $"[CrewManager] 모든 선원 희생 : {sacrificedCount}명 / " +
+            $"현재 체력 합계 : {sacrificedHealth}"
+        );
+
+        return sacrificedHealth;
+    }
+
+    /// <summary>
     /// 현재 소환된 모든 선원을 제거합니다.
     /// 전투 종료 또는 새 전투 준비 시 호출할 예정입니다.
     /// </summary>

@@ -13,6 +13,12 @@ public class CardEffectExecutor : MonoBehaviour
     private string playerTag = "Player";
 
     /// <summary>
+    /// 현재 실행 중인 카드가 희생한 선원들의 현재 체력 합계입니다.
+    /// 카드 실행이 시작될 때마다 0으로 초기화됩니다.
+    /// </summary>
+    private int sacrificedHealthThisCard;
+
+    /// <summary>
     /// 카드 효과 목록을 실행합니다.
     /// </summary>
     public void ExecuteEffects(CardData cardData, Enemy targetEnemy)
@@ -36,6 +42,8 @@ public class CardEffectExecutor : MonoBehaviour
 
             return;
         }
+
+        sacrificedHealthThisCard = 0;
 
         List<CardEffectData> orderedEffects = cardData.effects
             .OrderBy(effect => effect.order)
@@ -112,17 +120,11 @@ public class CardEffectExecutor : MonoBehaviour
                 break;
 
             case CardEffectType.Sacrifice:
-                Debug.Log(
-                    $"[CardEffectExecutor] 소환수 희생 예정 : " +
-                    $"{effect.value}"
-                );
+                ExecuteSacrifice(effect);
                 break;
 
             case CardEffectType.SacrificeAll:
-                Debug.Log(
-                    $"[CardEffectExecutor] 모든 소환수 희생 예정 : " +
-                    $"{effect.value}"
-                );
+                ExecuteSacrificeAll();
                 break;
 
             case CardEffectType.SetMaxHealth:
@@ -133,9 +135,7 @@ public class CardEffectExecutor : MonoBehaviour
                 break;
 
             case CardEffectType.MightEqualToSacrificedHealth:
-                Debug.Log(
-                    "[CardEffectExecutor] 희생 체력만큼 힘 획득 예정"
-                );
+                ExecuteMightEqualToSacrificedHealth();
                 break;
 
             case CardEffectType.DealDamageEqualToHarpoonerStack:
@@ -168,6 +168,118 @@ public class CardEffectExecutor : MonoBehaviour
         {
             crewManager.SummonCrew();
         }
+    }
+
+    /// <summary>
+    /// 먼저 소환된 선원부터 value 수만큼 희생하고
+    /// 희생된 선원들의 현재 체력을 저장합니다.
+    /// </summary>
+    private void ExecuteSacrifice(CardEffectData effect)
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        int sacrificedHealth =
+            crewManager.SacrificeCrews(effect.value);
+
+        sacrificedHealthThisCard += sacrificedHealth;
+
+        Debug.Log(
+            $"[CardEffectExecutor] 선원 희생 처리 : " +
+            $"{effect.value}명 / 누적 희생 체력 " +
+            $"{sacrificedHealthThisCard}"
+        );
+    }
+
+    /// <summary>
+    /// 현재 소환된 모든 선원을 동시에 희생하고
+    /// 희생된 선원들의 현재 체력 합계를 저장합니다.
+    /// </summary>
+    private void ExecuteSacrificeAll()
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        int sacrificedHealth =
+            crewManager.SacrificeAllCrews();
+
+        sacrificedHealthThisCard += sacrificedHealth;
+
+        Debug.Log(
+            $"[CardEffectExecutor] 모든 선원 희생 처리 / " +
+            $"누적 희생 체력 {sacrificedHealthThisCard}"
+        );
+    }
+
+    /// <summary>
+    /// 현재 카드로 희생한 선원들의 현재 체력 합계만큼
+    /// 플레이어에게 힘을 부여합니다.
+    /// </summary>
+    private void ExecuteMightEqualToSacrificedHealth()
+    {
+        if (sacrificedHealthThisCard <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 저장된 희생 체력이 없어 " +
+                "힘을 획득하지 않습니다."
+            );
+
+            return;
+        }
+
+        PlayerCombat playerCombat = FindPlayerCombat();
+
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] PlayerCombat을 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        StatusEffectHandler statusEffectHandler =
+            playerCombat.GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 플레이어에게 " +
+                "StatusEffectHandler가 없습니다."
+            );
+
+            return;
+        }
+
+        statusEffectHandler.AddStatusEffect(
+            StatusEffectType.Might,
+            sacrificedHealthThisCard,
+            0,
+            true
+        );
+
+        Debug.Log(
+            $"[CardEffectExecutor] 희생 체력만큼 힘 획득 : " +
+            $"{sacrificedHealthThisCard}"
+        );
     }
 
     /// <summary>

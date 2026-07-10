@@ -23,7 +23,7 @@ MonoBehaviour:
   artwork: {fileID: 0}
   effects:
   - order: 1
-    effectType: 13
+    effectType: 14
     statusEffectType: 0
     value: 2
     target: 5

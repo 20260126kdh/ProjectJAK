@@ -373,6 +373,11 @@ public class TurnManager : MonoBehaviour
             return false;
         }
 
+        if (!CanPayCrewSacrifice(cardData))
+        {
+            return false;
+        }
+
         if (cardData.cardType == CardType.Skill)
         {
             return true;
@@ -426,6 +431,67 @@ public class TurnManager : MonoBehaviour
         );
 
         return false;
+    }
+
+    /// <summary>
+    /// 카드에 포함된 선원 희생 비용을 현재 선원 수로
+    /// 지불할 수 있는지 확인합니다.
+    /// </summary>
+    private bool CanPayCrewSacrifice(CardData cardData)
+    {
+        if (cardData.effects == null ||
+            cardData.effects.Count == 0)
+        {
+            return true;
+        }
+
+        int availableCrewCount = 0;
+
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager != null)
+        {
+            availableCrewCount = crewManager.CrewCount;
+        }
+
+        foreach (CardEffectData effect in cardData.effects)
+        {
+            if (effect.effectType == CardEffectType.Sacrifice)
+            {
+                int requiredCount = Mathf.Max(0, effect.value);
+
+                if (availableCrewCount < requiredCount)
+                {
+                    Debug.LogWarning(
+                        $"[TurnManager] 희생할 선원이 부족합니다. " +
+                        $"필요 {requiredCount}명 / " +
+                        $"현재 {availableCrewCount}명"
+                    );
+
+                    return false;
+                }
+
+                availableCrewCount -= requiredCount;
+            }
+
+            if (effect.effectType == CardEffectType.SacrificeAll)
+            {
+                if (availableCrewCount <= 0)
+                {
+                    Debug.LogWarning(
+                        "[TurnManager] 전체 희생에 필요한 " +
+                        "선원이 없습니다."
+                    );
+
+                    return false;
+                }
+
+                availableCrewCount = 0;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>

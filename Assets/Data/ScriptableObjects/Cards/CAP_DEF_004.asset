@@ -23,9 +23,9 @@ MonoBehaviour:
   artwork: {fileID: 0}
   effects:
   - order: 1
-    effectType: 14
+    effectType: 15
     statusEffectType: 0
-    value: 1
+    value: 0
     target: 6
   - order: 2
     effectType: 1
