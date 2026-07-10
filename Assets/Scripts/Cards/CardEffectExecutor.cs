@@ -93,10 +93,7 @@ public class CardEffectExecutor : MonoBehaviour
 
             case CardEffectType.Summon:
             case CardEffectType.SummonCrew:
-                Debug.Log(
-                    $"[CardEffectExecutor] 소환 예정 : " +
-                    $"{effect.value}"
-                );
+                ExecuteSummonCrew(effect);
                 break;
 
             case CardEffectType.GainBlockOnHealthLossThisTurn:
@@ -142,6 +139,30 @@ public class CardEffectExecutor : MonoBehaviour
                     "[CardEffectExecutor] 작살 스택만큼 피해 예정"
                 );
                 break;
+        }
+    }
+
+    /// <summary>
+    /// 선원을 소환합니다.
+    /// value 수만큼 소환을 시도합니다.
+    /// </summary>
+    private void ExecuteSummonCrew(CardEffectData effect)
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        for (int i = 0; i < effect.value; i++)
+        {
+            crewManager.SummonCrew();
         }
     }
 
