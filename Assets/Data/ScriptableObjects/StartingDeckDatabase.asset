@@ -52,6 +52,3 @@ MonoBehaviour:
   - ownerClass: 4
     cardID: CAP_SKL_003
     count: 1
-  - ownerClass: 4
-    cardID: CAP_SKL_005
-    count: 1

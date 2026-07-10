@@ -90,6 +90,7 @@ public class BattleManager : MonoBehaviour
         isBattleStarted = false;
 
         ClearSelectedCard();
+        ClearAllCrews();
 
         if (handManager != null)
         {
@@ -559,6 +560,26 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 현재 전투에 소환된 모든 선원을 제거합니다.
+    /// </summary>
+    private void ClearAllCrews()
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            return;
+        }
+
+        crewManager.ClearAllCrews();
+
+        Debug.Log(
+            "[BattleManager] 전투 종료 선원 초기화"
+        );
+    }
+
+    /// <summary>
     /// 전투 종료 처리를 수행합니다.
     /// </summary>
     private void EndBattle()
@@ -566,6 +587,7 @@ public class BattleManager : MonoBehaviour
         isBattleStarted = false;
 
         ClearSelectedCard();
+        ClearAllCrews();
 
         Debug.Log(
             "[BattleManager] 전투 종료 - 모든 적 처치"

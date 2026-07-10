@@ -26,6 +26,7 @@ public enum CardEffectType
     // 소환 / 캡틴 전용
     Summon,
     SummonCrew,
+    CrewDealDamage,
     Sacrifice,
     SacrificeAll,
     SetMaxHealth,

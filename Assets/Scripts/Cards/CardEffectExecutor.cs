@@ -96,6 +96,10 @@ public class CardEffectExecutor : MonoBehaviour
                 ExecuteSummonCrew(effect);
                 break;
 
+            case CardEffectType.CrewDealDamage:
+                ExecuteCrewDealDamage(effect, targetEnemy);
+                break;
+
             case CardEffectType.GainBlockOnHealthLossThisTurn:
                 ExecuteGainBlockOnHealthLossThisTurn(effect);
                 break;
@@ -164,6 +168,61 @@ public class CardEffectExecutor : MonoBehaviour
         {
             crewManager.SummonCrew();
         }
+    }
+
+    /// <summary>
+    /// 소환된 선원이 적에게 피해를 줍니다.
+    /// 플레이어에게 적용된 힘, 약화, 흡혈은 반영하지 않고
+    /// 적에게 적용된 취약만 반영합니다.
+    /// </summary>
+    private void ExecuteCrewDealDamage(
+        CardEffectData effect,
+        Enemy targetEnemy)
+    {
+        if (targetEnemy == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 선원이 공격할 Enemy가 없습니다."
+            );
+
+            return;
+        }
+
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        if (crewManager.CrewCount <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 소환된 선원이 없어 " +
+                "선원 공격을 실행할 수 없습니다."
+            );
+
+            return;
+        }
+
+        int finalDamage = Mathf.Max(0, effect.value);
+
+        /*
+         * 플레이어의 Might, Weaken, Lifesteal은 확인하지 않습니다.
+         * 적의 Vulnerable은 Enemy.TakeDamage() 내부에서 적용됩니다.
+         */
+        int actualDamage =
+            targetEnemy.TakeDamage(finalDamage);
+
+        Debug.Log(
+            $"[CardEffectExecutor] 선원 공격 : " +
+            $"기본 피해 {finalDamage} / 실제 피해 {actualDamage}"
+        );
     }
 
     /// <summary>
