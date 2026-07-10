@@ -94,7 +94,8 @@ public class CardEffectExecutor : MonoBehaviour
             case CardEffectType.Summon:
             case CardEffectType.SummonCrew:
                 Debug.Log(
-                    $"[CardEffectExecutor] 소환 예정 : {effect.value}"
+                    $"[CardEffectExecutor] 소환 예정 : " +
+                    $"{effect.value}"
                 );
                 break;
 
@@ -212,11 +213,8 @@ public class CardEffectExecutor : MonoBehaviour
             finalDamage = 0;
         }
 
-        /*
-         * Enemy.TakeDamage에서 취약과 남은 체력을 반영한
-         * 실제 피해량을 반환받습니다.
-         */
-        int actualDamage = targetEnemy.TakeDamage(finalDamage);
+        int actualDamage =
+            targetEnemy.TakeDamage(finalDamage);
 
         ProcessLifesteal(
             playerCombat,
@@ -226,7 +224,8 @@ public class CardEffectExecutor : MonoBehaviour
     }
 
     /// <summary>
-    /// 플레이어가 흡혈 상태라면 실제 피해량만큼 체력을 회복합니다.
+    /// 플레이어가 흡혈 상태라면
+    /// 실제 피해량만큼 체력을 회복합니다.
     /// </summary>
     private void ProcessLifesteal(
         PlayerCombat playerCombat,
@@ -379,7 +378,11 @@ public class CardEffectExecutor : MonoBehaviour
             StatusEffectHandler statusEffectHandler =
                 playerCombat.GetComponent<StatusEffectHandler>();
 
-            ApplyStatusToHandler(statusEffectHandler, effect);
+            ApplyStatusToHandler(
+                statusEffectHandler,
+                effect
+            );
+
             return;
         }
 
@@ -398,7 +401,11 @@ public class CardEffectExecutor : MonoBehaviour
             StatusEffectHandler statusEffectHandler =
                 targetEnemy.GetComponent<StatusEffectHandler>();
 
-            ApplyStatusToHandler(statusEffectHandler, effect);
+            ApplyStatusToHandler(
+                statusEffectHandler,
+                effect
+            );
+
             return;
         }
 
@@ -423,7 +430,10 @@ public class CardEffectExecutor : MonoBehaviour
                 StatusEffectHandler statusEffectHandler =
                     enemy.GetComponent<StatusEffectHandler>();
 
-                ApplyStatusToHandler(statusEffectHandler, effect);
+                ApplyStatusToHandler(
+                    statusEffectHandler,
+                    effect
+                );
             }
 
             Debug.Log(
@@ -460,31 +470,39 @@ public class CardEffectExecutor : MonoBehaviour
         bool isPermanent = false;
         int remainingTurn = effect.value;
 
-        /*
-         * 전투 종료까지 유지되는 영구 효과입니다.
-         */
         if (effect.statusEffectType == StatusEffectType.Might ||
-            effect.statusEffectType == StatusEffectType.Guard ||
-            effect.statusEffectType == StatusEffectType.Resist)
+    effect.statusEffectType == StatusEffectType.Guard ||
+    effect.statusEffectType == StatusEffectType.Resist ||
+    effect.statusEffectType == StatusEffectType.Immortal)
         {
             isPermanent = true;
             remainingTurn = 0;
         }
 
         /*
-         * 흡혈은 이번 플레이어 턴에만 유지됩니다.
-         * 플레이어 턴 종료 시 DecreaseTurnDuration에서 제거됩니다.
+         * Lifesteal은 부여된 현재 턴에만 유지됩니다.
          */
-        if (effect.statusEffectType == StatusEffectType.Lifesteal)
+        if (effect.statusEffectType ==
+            StatusEffectType.Lifesteal)
         {
             isPermanent = false;
             remainingTurn = 1;
         }
 
         /*
-         * 중독은 remainingTurn이 아니라 value가 감소합니다.
+         * Echo는 부여된 현재 턴에만 유지됩니다.
+         * 공격 카드 사용 시 BattleManager에서 즉시 제거됩니다.
+         * 공격 카드를 사용하지 않으면 턴 종료 시 제거됩니다.
          */
-        if (effect.statusEffectType == StatusEffectType.Toxic)
+        if (effect.statusEffectType ==
+            StatusEffectType.Echo)
+        {
+            isPermanent = false;
+            remainingTurn = 1;
+        }
+
+        if (effect.statusEffectType ==
+            StatusEffectType.Toxic)
         {
             isPermanent = false;
             remainingTurn = 0;

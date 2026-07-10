@@ -135,9 +135,49 @@ public class PlayerCombat : MonoBehaviour
         if (amount > 0)
         {
             playerData.TakeDamage(amount);
+
+            ProcessImmortal(statusEffectHandler);
         }
 
         Debug.Log($"[PlayerCombat] 피해 : {amount}");
+    }
+
+    /// <summary>
+    /// 플레이어가 치명적인 피해를 받았을 때 불사의 존재를 처리합니다.
+    /// 이번 전투에서 처음 체력이 0이 되면 효과를 소비하고 체력 1로 버팁니다.
+    /// </summary>
+    private void ProcessImmortal(
+        StatusEffectHandler statusEffectHandler)
+    {
+        if (playerData == null)
+        {
+            return;
+        }
+
+        if (playerData.CurrentHP > 0)
+        {
+            return;
+        }
+
+        if (statusEffectHandler == null)
+        {
+            return;
+        }
+
+        if (!statusEffectHandler.HasStatusEffect(
+            StatusEffectType.Immortal
+        ))
+        {
+            return;
+        }
+
+        statusEffectHandler.RemoveStatusEffect(
+            StatusEffectType.Immortal
+        );
+
+        playerData.Heal(1);
+
+        Debug.Log("[PlayerCombat] 불사의 존재 발동 : 치명적인 피해를 버티고 체력 1 유지");
     }
 
     /// <summary>

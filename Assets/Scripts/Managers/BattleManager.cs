@@ -74,10 +74,15 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[BattleManager] StageManager.Instance가 없습니다.");
+            Debug.LogWarning(
+                "[BattleManager] StageManager.Instance가 없습니다."
+            );
         }
     }
 
+    /// <summary>
+    /// 다음 전투를 준비하고 시작합니다.
+    /// </summary>
     public void StartNextBattle()
     {
         Debug.Log("[BattleManager] 다음 전투 준비 시작");
@@ -97,16 +102,20 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[BattleManager] DeckManager가 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "[BattleManager] DeckManager가 연결되지 않았습니다."
+            );
         }
 
-        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
 
         if (playerCombat != null)
         {
             playerCombat.ResetCombat();
 
-            StatusEffectHandler playerStatusEffectHandler = playerCombat.GetComponent<StatusEffectHandler>();
+            StatusEffectHandler playerStatusEffectHandler =
+                playerCombat.GetComponent<StatusEffectHandler>();
 
             if (playerStatusEffectHandler != null)
             {
@@ -120,7 +129,9 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[BattleManager] EnemySpawner가 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "[BattleManager] EnemySpawner가 연결되지 않았습니다."
+            );
         }
 
         StartBattle();
@@ -131,7 +142,9 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[BattleManager] TurnManager가 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "[BattleManager] TurnManager가 연결되지 않았습니다."
+            );
         }
 
         Debug.Log("[BattleManager] 다음 전투 시작 완료");
@@ -147,13 +160,19 @@ public class BattleManager : MonoBehaviour
 
         if (!isBattleStarted)
         {
-            Debug.LogWarning("[BattleManager] 아직 전투가 시작되지 않았습니다.");
+            Debug.LogWarning(
+                "[BattleManager] 아직 전투가 시작되지 않았습니다."
+            );
+
             return;
         }
 
         if (cardUI == null)
         {
-            Debug.LogWarning("[BattleManager] 선택하려는 CardUI가 비어 있습니다.");
+            Debug.LogWarning(
+                "[BattleManager] 선택하려는 CardUI가 비어 있습니다."
+            );
+
             return;
         }
 
@@ -178,36 +197,96 @@ public class BattleManager : MonoBehaviour
 
         selectedCardUI.SetSelected();
 
-        Debug.Log($"[BattleManager] 카드 선택 : {selectedCardData.cardName}");
+        Debug.Log(
+            $"[BattleManager] 카드 선택 : " +
+            $"{selectedCardData.cardName}"
+        );
     }
 
     /// <summary>
     /// 현재 선택된 카드를 지정한 적에게 사용합니다.
+    /// Echo가 있다면 공격 카드 효과를 한 번 더 실행합니다.
     /// </summary>
     public void UseSelectedCardOnEnemy(Enemy targetEnemy)
     {
-        Debug.Log("[BattleManager] UseSelectedCardOnEnemy 호출됨");
+        Debug.Log(
+            "[BattleManager] UseSelectedCardOnEnemy 호출됨"
+        );
 
         if (!CanUseSelectedCard())
+        {
             return;
+        }
 
         if (targetEnemy == null)
         {
-            Debug.LogWarning("[BattleManager] 대상 Enemy가 비어 있습니다.");
+            Debug.LogWarning(
+                "[BattleManager] 대상 Enemy가 비어 있습니다."
+            );
+
             return;
         }
 
         if (cardEffectExecutor == null)
         {
-            Debug.LogError("[BattleManager] CardEffectExecutor가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[BattleManager] CardEffectExecutor가 " +
+                "연결되지 않았습니다."
+            );
+
             return;
         }
 
         CardData usedCardData = selectedCardData;
 
-        Debug.Log($"[BattleManager] 적에게 카드 사용 : {usedCardData.cardName}");
+        bool shouldActivateEcho =
+            TryConsumeEcho(usedCardData);
 
-        cardEffectExecutor.ExecuteEffects(usedCardData, targetEnemy);
+        Debug.Log(
+            $"[BattleManager] 적에게 카드 사용 : " +
+            $"{usedCardData.cardName}"
+        );
+
+        /*
+         * 기본 카드 효과를 한 번 실행합니다.
+         */
+        cardEffectExecutor.ExecuteEffects(
+            usedCardData,
+            targetEnemy
+        );
+
+        /*
+         * Echo가 발동했고 첫 번째 실행 이후에도 적이 살아 있다면
+         * 같은 카드 효과를 한 번 더 실행합니다.
+         *
+         * 카드 제거와 사용 횟수 증가는 아래 FinishCardUse에서
+         * 한 번만 처리됩니다.
+         */
+        if (shouldActivateEcho)
+        {
+            if (targetEnemy != null &&
+                targetEnemy.gameObject.activeSelf &&
+                targetEnemy.CurrentHP > 0)
+            {
+                Debug.Log(
+                    $"[BattleManager] 잔상 발동 : " +
+                    $"{usedCardData.cardName} 효과 재실행"
+                );
+
+                cardEffectExecutor.ExecuteEffects(
+                    usedCardData,
+                    targetEnemy
+                );
+            }
+            else
+            {
+                Debug.Log(
+                    "[BattleManager] 잔상이 발동했지만 " +
+                    "첫 번째 공격으로 대상이 사망하여 " +
+                    "두 번째 실행을 생략합니다."
+                );
+            }
+        }
 
         FinishCardUse(usedCardData);
     }
@@ -216,55 +295,146 @@ public class BattleManager : MonoBehaviour
     /// 현재 선택된 카드를 플레이어 자신에게 사용합니다.
     /// Self 대상 카드 처리를 위해 사용합니다.
     /// </summary>
-    public void UseSelectedCardOnPlayer(PlayerCombat targetPlayer)
+    public void UseSelectedCardOnPlayer(
+        PlayerCombat targetPlayer)
     {
         if (!CanUseSelectedCard())
+        {
             return;
+        }
 
         if (targetPlayer == null)
         {
-            Debug.LogWarning("[BattleManager] 대상 PlayerCombat이 비어 있습니다.");
+            Debug.LogWarning(
+                "[BattleManager] 대상 PlayerCombat이 비어 있습니다."
+            );
+
             return;
         }
 
         if (cardEffectExecutor == null)
         {
-            Debug.LogError("[BattleManager] CardEffectExecutor가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[BattleManager] CardEffectExecutor가 " +
+                "연결되지 않았습니다."
+            );
+
             return;
         }
 
         CardData usedCardData = selectedCardData;
 
-        Debug.Log($"[BattleManager] 플레이어에게 카드 사용 : {usedCardData.cardName}");
+        Debug.Log(
+            $"[BattleManager] 플레이어에게 카드 사용 : " +
+            $"{usedCardData.cardName}"
+        );
 
-        cardEffectExecutor.ExecuteEffects(usedCardData, null);
+        cardEffectExecutor.ExecuteEffects(
+            usedCardData,
+            null
+        );
 
         FinishCardUse(usedCardData);
     }
 
     /// <summary>
+    /// 사용하려는 카드가 공격 카드이고
+    /// 플레이어가 Echo를 보유 중이라면 Echo를 제거하고
+    /// true를 반환합니다.
+    /// </summary>
+    private bool TryConsumeEcho(CardData usedCardData)
+    {
+        if (usedCardData == null)
+        {
+            return false;
+        }
+
+        if (usedCardData.cardType != CardType.Attack)
+        {
+            return false;
+        }
+
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
+
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[BattleManager] Echo 확인을 위한 " +
+                "PlayerCombat을 찾지 못했습니다."
+            );
+
+            return false;
+        }
+
+        StatusEffectHandler statusEffectHandler =
+            playerCombat.GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler == null)
+        {
+            return false;
+        }
+
+        if (!statusEffectHandler.HasStatusEffect(
+            StatusEffectType.Echo
+        ))
+        {
+            return false;
+        }
+
+        /*
+         * 공격 카드 실행 전에 Echo를 제거합니다.
+         * 반복 실행 중 다시 Echo가 적용되더라도
+         * 현재 Echo와 섞이지 않도록 먼저 소비합니다.
+         */
+        statusEffectHandler.RemoveStatusEffect(
+            StatusEffectType.Echo
+        );
+
+        Debug.Log(
+            "[BattleManager] 잔상 소비 : " +
+            "다음 공격 카드를 2회 실행합니다."
+        );
+
+        return true;
+    }
+
+    /// <summary>
     /// 선택된 카드를 사용할 수 있는지 확인합니다.
-    /// 전투 시작 여부, 카드 선택 여부, 턴 상태, 카드 사용 제한을 검사합니다.
+    /// 전투 시작 여부, 카드 선택 여부, 턴 상태,
+    /// 카드 사용 제한을 검사합니다.
     /// </summary>
     private bool CanUseSelectedCard()
     {
-        Debug.Log($"[BattleManager] CanUseSelectedCard 호출 / isBattleStarted : {isBattleStarted}");
+        Debug.Log(
+            $"[BattleManager] CanUseSelectedCard 호출 / " +
+            $"isBattleStarted : {isBattleStarted}"
+        );
 
         if (!isBattleStarted)
         {
-            Debug.LogWarning("[BattleManager] 아직 전투가 시작되지 않았습니다.");
+            Debug.LogWarning(
+                "[BattleManager] 아직 전투가 시작되지 않았습니다."
+            );
+
             return false;
         }
 
         if (selectedCardData == null)
         {
-            Debug.LogWarning("[BattleManager] 사용할 카드가 선택되지 않았습니다.");
+            Debug.LogWarning(
+                "[BattleManager] 사용할 카드가 선택되지 않았습니다."
+            );
+
             return false;
         }
 
         if (turnManager == null)
         {
-            Debug.LogError("[BattleManager] TurnManager가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[BattleManager] TurnManager가 연결되지 않았습니다."
+            );
+
             return false;
         }
 
@@ -273,28 +443,43 @@ public class BattleManager : MonoBehaviour
 
     /// <summary>
     /// 카드 사용 성공 후 공통 처리를 수행합니다.
-    /// 사용 횟수 기록, 손패 제거, 버림 더미 이동, 선택 해제를 처리합니다.
+    /// 사용 횟수 기록, 손패 제거, 버림 더미 이동,
+    /// 선택 해제를 처리합니다.
     /// </summary>
     private void FinishCardUse(CardData usedCardData)
     {
         if (usedCardData == null)
         {
-            Debug.LogWarning("[BattleManager] 사용 완료 처리할 카드 데이터가 없습니다.");
+            Debug.LogWarning(
+                "[BattleManager] 사용 완료 처리할 " +
+                "카드 데이터가 없습니다."
+            );
+
             return;
         }
 
+        /*
+         * Echo로 효과가 두 번 실행되더라도
+         * 카드 사용 횟수는 한 번만 증가합니다.
+         */
         if (turnManager != null)
         {
             turnManager.RecordCardUse(usedCardData);
         }
 
+        /*
+         * Echo로 효과가 두 번 실행되더라도
+         * 손패에서는 카드 한 장만 제거합니다.
+         */
         if (handManager != null)
         {
             handManager.DiscardUsedCard(usedCardData);
         }
         else
         {
-            Debug.LogError("[BattleManager] HandManager가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[BattleManager] HandManager가 연결되지 않았습니다."
+            );
         }
 
         ClearSelectedCard();
@@ -317,11 +502,13 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Enemy 태그를 가진 오브젝트를 찾아 Enemy 컴포넌트를 반환합니다.
+    /// Enemy 태그를 가진 오브젝트를 찾아
+    /// Enemy 컴포넌트를 반환합니다.
     /// </summary>
     private Enemy FindTargetEnemyByTag()
     {
-        GameObject enemyObject = GameObject.FindGameObjectWithTag(enemyTag);
+        GameObject enemyObject =
+            GameObject.FindGameObjectWithTag(enemyTag);
 
         if (enemyObject == null)
         {
@@ -332,7 +519,11 @@ public class BattleManager : MonoBehaviour
 
         if (enemy == null)
         {
-            Debug.LogWarning("[BattleManager] Enemy 태그 오브젝트에 Enemy 컴포넌트가 없습니다.");
+            Debug.LogWarning(
+                "[BattleManager] Enemy 태그 오브젝트에 " +
+                "Enemy 컴포넌트가 없습니다."
+            );
+
             return null;
         }
 
@@ -345,13 +536,21 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void CheckBattleEnd()
     {
-        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Enemy[] enemies = FindObjectsByType<Enemy>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
 
         foreach (Enemy enemy in enemies)
         {
-            if (enemy != null && enemy.gameObject.activeSelf && enemy.CurrentHP > 0)
+            if (enemy != null &&
+                enemy.gameObject.activeSelf &&
+                enemy.CurrentHP > 0)
             {
-                Debug.Log("[BattleManager] 아직 살아있는 적이 있습니다.");
+                Debug.Log(
+                    "[BattleManager] 아직 살아있는 적이 있습니다."
+                );
+
                 return;
             }
         }
@@ -359,13 +558,18 @@ public class BattleManager : MonoBehaviour
         EndBattle();
     }
 
+    /// <summary>
+    /// 전투 종료 처리를 수행합니다.
+    /// </summary>
     private void EndBattle()
     {
         isBattleStarted = false;
 
         ClearSelectedCard();
 
-        Debug.Log("[BattleManager] 전투 종료 - 모든 적 처치");
+        Debug.Log(
+            "[BattleManager] 전투 종료 - 모든 적 처치"
+        );
 
         HealPlayerAfterBattle();
 
@@ -373,7 +577,8 @@ public class BattleManager : MonoBehaviour
 
         if (stageManager == null)
         {
-            stageManager = FindFirstObjectByType<StageManager>();
+            stageManager =
+                FindFirstObjectByType<StageManager>();
         }
 
         if (stageManager != null)
@@ -382,7 +587,10 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[BattleManager] StageManager를 찾지 못했습니다. 전투 카운트는 증가하지 않습니다.");
+            Debug.LogWarning(
+                "[BattleManager] StageManager를 찾지 못했습니다. " +
+                "전투 카운트는 증가하지 않습니다."
+            );
         }
 
         if (rewardPanelUI != null)
@@ -391,7 +599,10 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("[BattleManager] RewardPanelUI가 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "[BattleManager] RewardPanelUI가 " +
+                "연결되지 않았습니다."
+            );
         }
     }
 
@@ -400,18 +611,28 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void HealPlayerAfterBattle()
     {
-        if (GameManager.Instance == null || GameManager.Instance.PlayerData == null)
+        if (GameManager.Instance == null ||
+            GameManager.Instance.PlayerData == null)
         {
-            Debug.LogWarning("[BattleManager] PlayerData를 찾지 못해 전투 후 회복을 처리할 수 없습니다.");
+            Debug.LogWarning(
+                "[BattleManager] PlayerData를 찾지 못해 " +
+                "전투 후 회복을 처리할 수 없습니다."
+            );
+
             return;
         }
 
-        PlayerData playerData = GameManager.Instance.PlayerData;
+        PlayerData playerData =
+            GameManager.Instance.PlayerData;
 
-        int healAmount = Mathf.CeilToInt(playerData.MaxHP * 0.15f);
+        int healAmount =
+            Mathf.CeilToInt(playerData.MaxHP * 0.15f);
 
         playerData.Heal(healAmount);
 
-        Debug.Log($"[BattleManager] 전투 후 회복 : 최대 체력의 15% ({healAmount})");
+        Debug.Log(
+            $"[BattleManager] 전투 후 회복 : " +
+            $"최대 체력의 15% ({healAmount})"
+        );
     }
 }
