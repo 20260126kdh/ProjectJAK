@@ -39,4 +39,5 @@ public class StatusEffectData
         this.remainingTurn = remainingTurn;
         this.isPermanent = isPermanent;
     }
+
 }
