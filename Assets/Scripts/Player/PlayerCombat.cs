@@ -143,6 +143,115 @@ public class PlayerCombat : MonoBehaviour
     }
 
     /// <summary>
+    /// 적의 공격 피해를 처리합니다.
+    /// 방어도, 선원, 플레이어 체력 순서로 피해를 적용합니다.
+    /// </summary>
+    public void ReceiveAttackDamage(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        StatusEffectHandler statusEffectHandler =
+            GetComponent<StatusEffectHandler>();
+
+        /*
+         * 플레이어에게 걸린 취약은 적 공격 피해를 증가시킵니다.
+         */
+        if (statusEffectHandler != null &&
+            statusEffectHandler.HasStatusEffect(
+                StatusEffectType.Vulnerable
+            ))
+        {
+            int increasedDamage =
+                Mathf.FloorToInt(amount * 1.4f);
+
+            Debug.Log(
+                $"[PlayerCombat] 취약 적용 : " +
+                $"{amount} → {increasedDamage}"
+            );
+
+            amount = increasedDamage;
+        }
+
+        /*
+         * 무감각은 이번 턴 받는 피해를 30% 감소시킵니다.
+         */
+        if (statusEffectHandler != null &&
+            statusEffectHandler.HasStatusEffect(
+                StatusEffectType.Resist
+            ))
+        {
+            int reducedDamage =
+                Mathf.FloorToInt(amount * 0.7f);
+
+            Debug.Log(
+                $"[PlayerCombat] 무감각 적용 : " +
+                $"{amount} → {reducedDamage}"
+            );
+
+            amount = reducedDamage;
+        }
+
+        /*
+         * 첫 번째 순서: 플레이어 방어도
+         */
+        if (currentBlock > 0)
+        {
+            int absorbedDamage =
+                Mathf.Min(currentBlock, amount);
+
+            currentBlock -= absorbedDamage;
+            amount -= absorbedDamage;
+
+            Debug.Log(
+                $"[PlayerCombat] 방어도 피해 흡수 : " +
+                $"{absorbedDamage} / 남은 방어도 {currentBlock} / " +
+                $"남은 피해 {amount}"
+            );
+        }
+
+        /*
+         * 두 번째 순서: 소환된 선원
+         */
+        if (amount > 0)
+        {
+            CrewManager crewManager =
+                FindFirstObjectByType<CrewManager>();
+
+            if (crewManager != null)
+            {
+                amount =
+                    crewManager.AbsorbDamageWithCrews(amount);
+            }
+        }
+
+        /*
+         * 세 번째 순서: 플레이어 체력
+         */
+        if (amount > 0)
+        {
+            damagedThisTurn = true;
+
+            playerData.TakeDamage(amount);
+
+            ProcessImmortal(statusEffectHandler);
+
+            Debug.Log(
+                $"[PlayerCombat] 플레이어 체력 피해 : {amount}"
+            );
+        }
+        else
+        {
+            Debug.Log(
+                "[PlayerCombat] 방어도 또는 선원이 " +
+                "모든 공격 피해를 막았습니다."
+            );
+        }
+    }
+
+    /// <summary>
     /// 플레이어가 치명적인 피해를 받았을 때 불사의 존재를 처리합니다.
     /// 이번 전투에서 처음 체력이 0이 되면 효과를 소비하고 체력 1로 버팁니다.
     /// </summary>

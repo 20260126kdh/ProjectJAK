@@ -78,7 +78,7 @@ public class Enemy : MonoBehaviour
             $"[Enemy] 플레이어에게 {finalDamage} 피해"
         );
 
-        playerCombat.LoseHealth(finalDamage);
+        playerCombat.ReceiveAttackDamage(finalDamage);
     }
 
     /// <summary>

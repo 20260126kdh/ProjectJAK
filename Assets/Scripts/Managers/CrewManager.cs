@@ -197,6 +197,47 @@ public class CrewManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 먼저 소환된 선원부터 순서대로 피해를 받습니다.
+    /// 모든 선원이 피해를 받은 뒤 남은 피해량을 반환합니다.
+    /// </summary>
+    public int AbsorbDamageWithCrews(int damage)
+    {
+        RemoveNullCrews();
+
+        if (damage <= 0)
+        {
+            return 0;
+        }
+
+        int remainingDamage = damage;
+
+        /*
+         * Crew.TakeDamage() 도중 사망한 선원이
+         * 목록에서 제거될 수 있으므로 항상 0번 선원부터 처리합니다.
+         */
+        while (remainingDamage > 0 && crews.Count > 0)
+        {
+            Crew firstCrew = crews[0];
+
+            if (firstCrew == null || !firstCrew.IsAlive)
+            {
+                crews.RemoveAt(0);
+                continue;
+            }
+
+            remainingDamage =
+                firstCrew.TakeDamage(remainingDamage);
+        }
+
+        Debug.Log(
+            $"[CrewManager] 선원 피해 처리 완료 / " +
+            $"플레이어에게 전달될 피해 : {remainingDamage}"
+        );
+
+        return remainingDamage;
+    }
+
+    /// <summary>
     /// 현재 소환된 모든 선원을 제거합니다.
     /// 전투 종료 또는 새 전투 준비 시 호출할 예정입니다.
     /// </summary>

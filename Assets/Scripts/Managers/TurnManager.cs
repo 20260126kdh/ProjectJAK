@@ -81,11 +81,15 @@ public class TurnManager : MonoBehaviour
             );
         }
 
+        GrowAllCrews();
+
         DrawCardsForNewTurn();
         UpdateAttackDefenseUseCountUI();
 
         Debug.Log("[TurnManager] 플레이어 턴 시작");
     }
+
+
 
     /// <summary>
     /// 플레이어 턴을 종료하고 적 턴을 시작합니다.
@@ -284,6 +288,32 @@ public class TurnManager : MonoBehaviour
                 $"{enemy.name} / {toxicDamage}"
             );
         }
+    }
+
+    /// <summary>
+    /// 플레이어 턴 시작 시 현재 소환된 모든 선원을 성장시킵니다.
+    /// </summary>
+    private void GrowAllCrews()
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            return;
+        }
+
+        if (crewManager.CrewCount <= 0)
+        {
+            return;
+        }
+
+        crewManager.GrowAllCrews();
+
+        Debug.Log(
+            $"[TurnManager] 플레이어 턴 시작 선원 성장 : " +
+            $"{crewManager.CrewCount}명"
+        );
     }
 
     /// <summary>
