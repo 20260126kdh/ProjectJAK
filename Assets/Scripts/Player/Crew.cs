@@ -70,6 +70,32 @@ public class Crew : MonoBehaviour
     }
 
     /// <summary>
+    /// 선원의 체력을 회복합니다.
+    /// 최대 체력을 초과할 수 없습니다.
+    /// 실제로 회복된 체력량을 반환합니다.
+    /// </summary>
+    public int Heal(int amount)
+    {
+        if (!IsAlive || amount <= 0)
+        {
+            return 0;
+        }
+
+        int previousHP = currentHP;
+
+        currentHP = Mathf.Min(currentHP + amount, maxHP);
+
+        int healedAmount = currentHP - previousHP;
+
+        Debug.Log(
+            $"[Crew] 체력 회복 : {healedAmount} / " +
+            $"현재 체력 {currentHP}/{maxHP}"
+        );
+
+        return healedAmount;
+    }
+
+    /// <summary>
     /// 피해를 받고 체력을 초과한 남은 피해량을 반환합니다.
     ///
     /// 예:

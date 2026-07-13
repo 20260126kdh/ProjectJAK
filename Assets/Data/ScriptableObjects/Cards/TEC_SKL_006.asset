@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: TEC_SKL_006
   cardName: "\uBD88\uC0AC\uC758 \uC874\uC7AC"
-  description: "\uD134 \uC885\uB8CC \uD6C4 \uBAA8\uB4E0 \uCCB4\uB825\uC744 \uC783\uC744
-    \uC2DC \uCCB4\uB825\uC744 1\uB0A8\uAE30\uACE0 \uC8FD\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+  description: "\uC774\uBC88 \uC804\uD22C \uB3D9\uC548 \uBAA8\uB4E0 \uCCB4\uB825\uC744
+    \uC783\uC744 \uC2DC \uCCB4\uB825 1\uC744 \uB0A8\uAE30\uACE0 \uBD80\uD65C\uD569\uB2C8\uB2E4.
+    \uC18C\uBA78."
   ownerClass: 3
   cardType: 2
   cardRarity: 2
@@ -27,8 +28,10 @@ MonoBehaviour:
     statusEffectType: 6
     value: 1
     target: 0
+    repeatCount: 1
   - order: 2
     effectType: 5
     statusEffectType: 22
     value: 1
     target: 0
+    repeatCount: 1

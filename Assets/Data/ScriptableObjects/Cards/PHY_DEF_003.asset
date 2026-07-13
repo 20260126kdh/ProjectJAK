@@ -28,8 +28,10 @@ MonoBehaviour:
     statusEffectType: 0
     value: 8
     target: 0
+    repeatCount: 1
   - order: 2
     effectType: 9
     statusEffectType: 0
     value: 8
     target: 0
+    repeatCount: 1

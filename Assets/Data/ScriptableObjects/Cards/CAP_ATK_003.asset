@@ -27,13 +27,10 @@ MonoBehaviour:
     statusEffectType: 0
     value: 4
     target: 1
+    repeatCount: 2
   - order: 2
-    effectType: 0
-    statusEffectType: 0
-    value: 4
-    target: 1
-  - order: 3
     effectType: 5
     statusEffectType: 14
     value: 1
     target: 1
+    repeatCount: 1

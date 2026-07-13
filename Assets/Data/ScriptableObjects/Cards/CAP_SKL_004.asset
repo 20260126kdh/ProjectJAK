@@ -24,17 +24,20 @@ MonoBehaviour:
   artwork: {fileID: 0}
   effects:
   - order: 1
-    effectType: 14
+    effectType: 17
     statusEffectType: 0
     value: 1
     target: 5
+    repeatCount: 1
   - order: 2
     effectType: 1
     statusEffectType: 0
     value: 7
     target: 0
+    repeatCount: 1
   - order: 3
     effectType: 7
     statusEffectType: 0
     value: 1
     target: 3
+    repeatCount: 1

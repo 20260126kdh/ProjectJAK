@@ -36,4 +36,10 @@ public class CardEffectData
     /// 예: 자신, 적, 모든 적, 소환수
     /// </summary>
     public CardTargetType target;
+
+    /// <summary>
+    /// 효과의 반복 실행 횟수입니다.
+    /// 다단히트 효과에서 사용하며, 기본값은 1입니다.
+    /// </summary>
+    public int repeatCount = 1;
 }

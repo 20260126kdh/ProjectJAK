@@ -26,8 +26,4 @@ MonoBehaviour:
     statusEffectType: 0
     value: 9
     target: 1
-  - order: 2
-    effectType: 0
-    statusEffectType: 0
-    value: 9
-    target: 1
+    repeatCount: 2

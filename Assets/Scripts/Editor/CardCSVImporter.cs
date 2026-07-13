@@ -133,9 +133,42 @@ public static class CardCSVImporter
                 continue;
             }
 
-            if (!Enum.TryParse(values[5], out CardTargetType target))
+            int repeatCount = 1;
+            int targetIndex = 5;
+
+            /*
+             * RepeatCount 열이 존재하는 새 CSV 구조라면
+             * 6번째 값을 반복 횟수로 사용합니다.
+             *
+             * 기존 6열 CSV도 임시로 읽을 수 있도록
+             * 열이 7개 이상일 때만 처리합니다.
+             */
+            if (values.Count >= 7)
             {
-                Debug.LogError($"[CardCSVImporter] Target 파싱 실패 (줄 {i + 1}) : {values[5]}");
+                if (!string.IsNullOrWhiteSpace(values[5]) &&
+                    !int.TryParse(values[5], out repeatCount))
+                {
+                    Debug.LogError(
+                        $"[CardCSVImporter] RepeatCount 파싱 실패 " +
+                        $"(줄 {i + 1}) : {values[5]}"
+                    );
+
+                    continue;
+                }
+
+                repeatCount = Mathf.Max(1, repeatCount);
+                targetIndex = 6;
+            }
+
+            if (!Enum.TryParse(
+                values[targetIndex],
+                out CardTargetType target))
+            {
+                Debug.LogError(
+                    $"[CardCSVImporter] Target 파싱 실패 " +
+                    $"(줄 {i + 1}) : {values[targetIndex]}"
+                );
+
                 continue;
             }
 
@@ -145,6 +178,7 @@ public static class CardCSVImporter
                 effectType = effectType,
                 statusEffectType = statusEffectType,
                 value = value,
+                repeatCount = repeatCount,
                 target = target
             };
 

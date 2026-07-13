@@ -23,27 +23,8 @@ MonoBehaviour:
   artwork: {fileID: 0}
   effects:
   - order: 1
-    effectType: 0
+    effectType: 15
     statusEffectType: 0
     value: 2
     target: 3
-  - order: 2
-    effectType: 0
-    statusEffectType: 0
-    value: 2
-    target: 3
-  - order: 3
-    effectType: 0
-    statusEffectType: 0
-    value: 2
-    target: 3
-  - order: 4
-    effectType: 0
-    statusEffectType: 0
-    value: 2
-    target: 3
-  - order: 5
-    effectType: 0
-    statusEffectType: 0
-    value: 2
-    target: 3
+    repeatCount: 5

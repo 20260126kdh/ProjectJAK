@@ -27,18 +27,4 @@ MonoBehaviour:
     statusEffectType: 0
     value: 4
     target: 4
-  - order: 2
-    effectType: 0
-    statusEffectType: 0
-    value: 4
-    target: 4
-  - order: 3
-    effectType: 0
-    statusEffectType: 0
-    value: 4
-    target: 4
-  - order: 4
-    effectType: 0
-    statusEffectType: 0
-    value: 4
-    target: 4
+    repeatCount: 4

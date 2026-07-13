@@ -23,12 +23,14 @@ MonoBehaviour:
   artwork: {fileID: 0}
   effects:
   - order: 1
-    effectType: 14
+    effectType: 17
     statusEffectType: 0
     value: 2
     target: 5
+    repeatCount: 1
   - order: 2
     effectType: 1
     statusEffectType: 0
     value: 16
     target: 0
+    repeatCount: 1

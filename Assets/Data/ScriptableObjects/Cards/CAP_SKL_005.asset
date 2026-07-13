@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: CAP_SKL_005
   cardName: "\uACE0\uAE09\uAC15\uB839\uC220"
-  description: "\uC120\uC6D0 \uB450 \uBA85\uC744 \uC18C\uD658\uD569\uB2C8\uB2E4."
+  description: "\uC120\uC6D0 \uD55C \uBA85\uC744 \uC18C\uD658\uD569\uB2C8\uB2E4."
   ownerClass: 4
   cardType: 2
   cardRarity: 1
@@ -26,8 +26,10 @@ MonoBehaviour:
     statusEffectType: 0
     value: 2
     target: 5
+    repeatCount: 1
   - order: 2
     effectType: 5
     statusEffectType: 7
     value: 1
     target: 5
+    repeatCount: 1

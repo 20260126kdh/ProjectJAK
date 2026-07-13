@@ -68,6 +68,10 @@ public class CardEffectExecutor : MonoBehaviour
                 ExecuteDealDamage(effect, targetEnemy);
                 break;
 
+            case CardEffectType.HealAllCrews:
+                ExecuteHealAllCrews(effect);
+                break;
+
             case CardEffectType.GainBlock:
                 ExecuteGainBlock(effect);
                 break;
@@ -106,6 +110,14 @@ public class CardEffectExecutor : MonoBehaviour
 
             case CardEffectType.CrewDealDamage:
                 ExecuteCrewDealDamage(effect, targetEnemy);
+                break;
+
+            case CardEffectType.AllCrewsDealDamageRandomEnemy:
+                ExecuteAllCrewsDealDamageRandomEnemy(effect);
+                break;
+
+            case CardEffectType.AllCrewsDealDamageAllEnemies:
+                ExecuteAllCrewsDealDamageAllEnemies(effect);
                 break;
 
             case CardEffectType.GainBlockOnHealthLossThisTurn:
@@ -334,6 +346,273 @@ public class CardEffectExecutor : MonoBehaviour
         Debug.Log(
             $"[CardEffectExecutor] 선원 공격 : " +
             $"기본 피해 {finalDamage} / 실제 피해 {actualDamage}"
+        );
+    }
+
+    /// <summary>
+    /// 현재 살아있는 모든 선원이 각각 무작위 적 한 명에게
+    /// 지정된 피해를 한 번씩 줍니다.
+    /// 플레이어의 힘, 약화, 흡혈은 적용되지 않으며
+    /// 공격 대상에게 적용된 취약은 반영됩니다.
+    /// </summary>
+    private void ExecuteAllCrewsDealDamageRandomEnemy(
+        CardEffectData effect)
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        if (crewManager.CrewCount <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 공격할 선원이 없습니다."
+            );
+
+            return;
+        }
+
+        Enemy[] foundEnemies = FindObjectsByType<Enemy>(
+            FindObjectsSortMode.None
+        );
+
+        List<Enemy> activeEnemies = new List<Enemy>();
+
+        foreach (Enemy enemy in foundEnemies)
+        {
+            if (enemy == null)
+            {
+                continue;
+            }
+
+            if (!enemy.gameObject.activeSelf)
+            {
+                continue;
+            }
+
+            if (enemy.CurrentHP <= 0)
+            {
+                continue;
+            }
+
+            activeEnemies.Add(enemy);
+        }
+
+        if (activeEnemies.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 선원이 공격할 살아있는 적이 없습니다."
+            );
+
+            return;
+        }
+
+        int damagePerCrew = Mathf.Max(0, effect.value);
+        int attackCount = 0;
+
+        /*
+         * 현재 선원 목록을 복사합니다.
+         * 공격 중 적 사망이나 다른 처리로 목록 상태가 바뀌더라도
+         * 안전하게 순회하기 위한 처리입니다.
+         */
+        List<Crew> attackingCrews =
+            crewManager.Crews
+                .Where(crew => crew != null && crew.IsAlive)
+                .ToList();
+
+        foreach (Crew crew in attackingCrews)
+        {
+            /*
+             * 앞선 선원 공격으로 적이 사망할 수 있으므로
+             * 매 공격 전에 살아있는 적 목록을 다시 정리합니다.
+             */
+            activeEnemies.RemoveAll(
+                enemy =>
+                    enemy == null ||
+                    !enemy.gameObject.activeSelf ||
+                    enemy.CurrentHP <= 0
+            );
+
+            if (activeEnemies.Count <= 0)
+            {
+                break;
+            }
+
+            int randomIndex = Random.Range(
+                0,
+                activeEnemies.Count
+            );
+
+            Enemy randomEnemy = activeEnemies[randomIndex];
+
+            int actualDamage =
+                randomEnemy.TakeDamage(damagePerCrew);
+
+            attackCount++;
+
+            Debug.Log(
+                $"[CardEffectExecutor] 전체 선원 무작위 공격 : " +
+                $"{crew.name} → {randomEnemy.name} / " +
+                $"기본 피해 {damagePerCrew} / " +
+                $"실제 피해 {actualDamage}"
+            );
+        }
+
+        Debug.Log(
+            $"[CardEffectExecutor] 전체 선원 공격 종료 : " +
+            $"총 {attackCount}회 공격"
+        );
+    }
+
+    /// <summary>
+    /// 모든 살아있는 선원이 모든 살아있는 적에게
+    /// 지정된 피해를 repeatCount만큼 반복해서 줍니다.
+    /// 플레이어의 힘, 약화, 흡혈은 적용되지 않고
+    /// 적의 취약은 적용됩니다.
+    /// </summary>
+    private void ExecuteAllCrewsDealDamageAllEnemies(
+        CardEffectData effect)
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        List<Crew> attackingCrews =
+            crewManager.Crews
+                .Where(crew => crew != null && crew.IsAlive)
+                .ToList();
+
+        if (attackingCrews.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 공격할 선원이 없습니다."
+            );
+
+            return;
+        }
+
+        int damagePerHit = Mathf.Max(0, effect.value);
+        int repeatCount = Mathf.Max(1, effect.repeatCount);
+        int totalAttackCount = 0;
+
+        for (int repeatIndex = 0;
+             repeatIndex < repeatCount;
+             repeatIndex++)
+        {
+            foreach (Crew crew in attackingCrews)
+            {
+                if (crew == null || !crew.IsAlive)
+                {
+                    continue;
+                }
+
+                Enemy[] enemies = FindObjectsByType<Enemy>(
+                    FindObjectsSortMode.None
+                );
+
+                foreach (Enemy enemy in enemies)
+                {
+                    if (enemy == null)
+                    {
+                        continue;
+                    }
+
+                    if (!enemy.gameObject.activeSelf)
+                    {
+                        continue;
+                    }
+
+                    if (enemy.CurrentHP <= 0)
+                    {
+                        continue;
+                    }
+
+                    int actualDamage =
+                        enemy.TakeDamage(damagePerHit);
+
+                    totalAttackCount++;
+
+                    Debug.Log(
+                        $"[CardEffectExecutor] 전원 던져라 공격 : " +
+                        $"{crew.name} → {enemy.name} / " +
+                        $"{repeatIndex + 1}/{repeatCount}타 / " +
+                        $"기본 피해 {damagePerHit} / " +
+                        $"실제 피해 {actualDamage}"
+                    );
+                }
+            }
+
+            Enemy[] remainingEnemies =
+                FindObjectsByType<Enemy>(
+                    FindObjectsSortMode.None
+                );
+
+            bool hasAliveEnemy = remainingEnemies.Any(
+                enemy =>
+                    enemy != null &&
+                    enemy.gameObject.activeSelf &&
+                    enemy.CurrentHP > 0
+            );
+
+            if (!hasAliveEnemy)
+            {
+                break;
+            }
+        }
+
+        Debug.Log(
+            $"[CardEffectExecutor] 전원 던져라 종료 : " +
+            $"총 공격 횟수 {totalAttackCount}"
+        );
+    }
+
+    /// <summary>
+    /// 현재 소환된 모든 선원의 체력을 회복합니다.
+    /// </summary>
+    private void ExecuteHealAllCrews(CardEffectData effect)
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        if (crewManager.CrewCount <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 회복할 선원이 없습니다."
+            );
+
+            return;
+        }
+
+        int totalHealedAmount =
+            crewManager.HealAllCrews(effect.value);
+
+        Debug.Log(
+            $"[CardEffectExecutor] 모든 선원 체력 회복 / " +
+            $"총 실제 회복량 {totalHealedAmount}"
         );
     }
 

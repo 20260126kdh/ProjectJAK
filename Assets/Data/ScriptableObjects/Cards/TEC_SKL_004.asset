@@ -27,3 +27,4 @@ MonoBehaviour:
     statusEffectType: 1
     value: -4
     target: 3
+    repeatCount: 1

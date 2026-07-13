@@ -197,6 +197,39 @@ public class CrewManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 살아있는 모든 선원의 체력을 지정된 수치만큼 회복합니다.
+    /// 전체 실제 회복량을 반환합니다.
+    /// </summary>
+    public int HealAllCrews(int amount)
+    {
+        RemoveNullCrews();
+
+        if (amount <= 0)
+        {
+            return 0;
+        }
+
+        int totalHealedAmount = 0;
+
+        foreach (Crew crew in crews)
+        {
+            if (crew == null || !crew.IsAlive)
+            {
+                continue;
+            }
+
+            totalHealedAmount += crew.Heal(amount);
+        }
+
+        Debug.Log(
+            $"[CrewManager] 모든 선원 회복 : " +
+            $"선원 {crews.Count}명 / 총 회복량 {totalHealedAmount}"
+        );
+
+        return totalHealedAmount;
+    }
+
+    /// <summary>
     /// 먼저 소환된 선원부터 순서대로 피해를 받습니다.
     /// 모든 선원이 피해를 받은 뒤 남은 피해량을 반환합니다.
     /// </summary>

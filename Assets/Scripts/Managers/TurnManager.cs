@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// 전투 중 턴 상태와 카드 사용 제한을 관리하는 클래스입니다.
 /// 플레이어 턴, 적 턴, 공격/방어 카드 사용 횟수,
-/// 상태 효과 처리와 다음 턴 드로우를 담당합니다.
+/// 상태 효과 처리, 선원 성장과 다음 턴 드로우를 담당합니다.
 /// </summary>
 public class TurnManager : MonoBehaviour
 {
@@ -37,9 +37,20 @@ public class TurnManager : MonoBehaviour
     [SerializeField]
     private float enemyTurnDelay = 0.7f;
 
+    /// <summary>
+    /// 현재 플레이어 턴인지 반환합니다.
+    /// </summary>
     public bool IsPlayerTurn => isPlayerTurn;
+
+    /// <summary>
+    /// 현재 공격/방어 카드 사용 횟수입니다.
+    /// </summary>
     public int CurrentAttackDefenseCardUseCount =>
         currentAttackDefenseCardUseCount;
+
+    /// <summary>
+    /// 공격/방어 카드의 한 턴 최대 사용 횟수입니다.
+    /// </summary>
     public int MaxAttackDefenseCardUseCount =>
         maxAttackDefenseCardUseCount;
 
@@ -50,14 +61,16 @@ public class TurnManager : MonoBehaviour
 
     /// <summary>
     /// 플레이어 턴을 시작합니다.
-    /// 무감각을 제거하고 방어도를 초기화한 뒤 카드를 드로우합니다.
+    /// 무감각을 제거하고 방어도를 초기화한 뒤,
+    /// 선원을 성장시키고 카드를 드로우합니다.
     /// </summary>
     public void StartPlayerTurn()
     {
         isPlayerTurn = true;
         currentAttackDefenseCardUseCount = 0;
 
-        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
 
         if (playerCombat != null)
         {
@@ -82,14 +95,11 @@ public class TurnManager : MonoBehaviour
         }
 
         GrowAllCrews();
-
         DrawCardsForNewTurn();
         UpdateAttackDefenseUseCountUI();
 
         Debug.Log("[TurnManager] 플레이어 턴 시작");
     }
-
-
 
     /// <summary>
     /// 플레이어 턴을 종료하고 적 턴을 시작합니다.
@@ -127,7 +137,8 @@ public class TurnManager : MonoBehaviour
         ProcessPlayerToxic();
         DecreasePlayerStatusDuration();
 
-        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
 
         if (playerCombat != null)
         {
@@ -165,7 +176,8 @@ public class TurnManager : MonoBehaviour
     /// </summary>
     private void ExecuteEnemyTurn()
     {
-        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
 
         if (playerCombat == null)
         {
@@ -207,11 +219,12 @@ public class TurnManager : MonoBehaviour
 
     /// <summary>
     /// 플레이어의 중독을 발동합니다.
-    /// PlayerCombat.LoseHealth를 사용하므로 방어도가 먼저 감소합니다.
+    /// 중독 피해는 선원이 대신 받지 않습니다.
     /// </summary>
     private void ProcessPlayerToxic()
     {
-        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
 
         if (playerCombat == null)
         {
@@ -231,7 +244,8 @@ public class TurnManager : MonoBehaviour
             return;
         }
 
-        int toxicDamage = statusEffectHandler.ProcessToxic();
+        int toxicDamage =
+            statusEffectHandler.ProcessToxic();
 
         if (toxicDamage <= 0)
         {
@@ -241,7 +255,8 @@ public class TurnManager : MonoBehaviour
         playerCombat.LoseHealth(toxicDamage);
 
         Debug.Log(
-            $"[TurnManager] 플레이어 중독 피해 처리 : {toxicDamage}"
+            $"[TurnManager] 플레이어 중독 피해 처리 : " +
+            $"{toxicDamage}"
         );
     }
 
@@ -274,7 +289,8 @@ public class TurnManager : MonoBehaviour
                 continue;
             }
 
-            int toxicDamage = statusEffectHandler.ProcessToxic();
+            int toxicDamage =
+                statusEffectHandler.ProcessToxic();
 
             if (toxicDamage <= 0)
             {
@@ -291,7 +307,7 @@ public class TurnManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 플레이어 턴 시작 시 현재 소환된 모든 선원을 성장시킵니다.
+    /// 플레이어 턴 시작 시 현재 살아있는 모든 선원을 성장시킵니다.
     /// </summary>
     private void GrowAllCrews()
     {
@@ -330,8 +346,11 @@ public class TurnManager : MonoBehaviour
             return;
         }
 
-        int currentHandCount = handManager.HandCards.Count;
-        int drawCount = maxHandCount - currentHandCount;
+        int currentHandCount =
+            handManager.HandCards.Count;
+
+        int drawCount =
+            maxHandCount - currentHandCount;
 
         if (drawCount <= 0)
         {
@@ -351,6 +370,7 @@ public class TurnManager : MonoBehaviour
 
     /// <summary>
     /// 현재 선택한 카드를 사용할 수 있는지 확인합니다.
+    /// 턴 상태, 선원 비용, 선원 필요 효과, 카드 제한을 검사합니다.
     /// </summary>
     public bool CanUseCard(CardData cardData)
     {
@@ -373,7 +393,20 @@ public class TurnManager : MonoBehaviour
             return false;
         }
 
+        /*
+         * 희생 카드가 요구하는 선원 수를
+         * 현재 보유한 선원으로 지불할 수 있는지 확인합니다.
+         */
         if (!CanPayCrewSacrifice(cardData))
+        {
+            return false;
+        }
+
+        /*
+         * 선원 공격이나 선원 회복처럼
+         * 선원이 있어야 실행 가능한 카드인지 확인합니다.
+         */
+        if (!CanUseCrewRequiredEffect(cardData))
         {
             return false;
         }
@@ -416,7 +449,8 @@ public class TurnManager : MonoBehaviour
             {
                 Debug.LogWarning(
                     "[TurnManager] 공격/방어 카드는 한 턴에 " +
-                    "최대 2장까지만 사용할 수 있습니다."
+                    $"최대 {maxAttackDefenseCardUseCount}장까지만 " +
+                    "사용할 수 있습니다."
                 );
 
                 return false;
@@ -445,21 +479,29 @@ public class TurnManager : MonoBehaviour
             return true;
         }
 
-        int availableCrewCount = 0;
-
         CrewManager crewManager =
             FindFirstObjectByType<CrewManager>();
 
+        int availableCrewCount = 0;
+
         if (crewManager != null)
         {
-            availableCrewCount = crewManager.CrewCount;
+            availableCrewCount =
+                crewManager.CrewCount;
         }
 
         foreach (CardEffectData effect in cardData.effects)
         {
-            if (effect.effectType == CardEffectType.Sacrifice)
+            if (effect == null)
             {
-                int requiredCount = Mathf.Max(0, effect.value);
+                continue;
+            }
+
+            if (effect.effectType ==
+                CardEffectType.Sacrifice)
+            {
+                int requiredCount =
+                    Mathf.Max(0, effect.value);
 
                 if (availableCrewCount < requiredCount)
                 {
@@ -475,7 +517,8 @@ public class TurnManager : MonoBehaviour
                 availableCrewCount -= requiredCount;
             }
 
-            if (effect.effectType == CardEffectType.SacrificeAll)
+            if (effect.effectType ==
+                CardEffectType.SacrificeAll)
             {
                 if (availableCrewCount <= 0)
                 {
@@ -489,6 +532,64 @@ public class TurnManager : MonoBehaviour
 
                 availableCrewCount = 0;
             }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 선원이 필요한 카드 효과가 있을 때
+    /// 현재 선원이 한 명 이상 존재하는지 확인합니다.
+    /// </summary>
+    private bool CanUseCrewRequiredEffect(
+        CardData cardData)
+    {
+        if (cardData.effects == null ||
+            cardData.effects.Count == 0)
+        {
+            return true;
+        }
+
+        bool requiresCrew = false;
+
+        foreach (CardEffectData effect in cardData.effects)
+        {
+            if (effect == null)
+            {
+                continue;
+            }
+
+            if (effect.effectType ==
+                    CardEffectType.CrewDealDamage ||
+                effect.effectType ==
+                    CardEffectType.AllCrewsDealDamageRandomEnemy ||
+                effect.effectType ==
+                    CardEffectType.AllCrewsDealDamageAllEnemies ||
+                effect.effectType ==
+                    CardEffectType.HealAllCrews)
+            {
+                requiresCrew = true;
+                break;
+            }
+        }
+
+        if (!requiresCrew)
+        {
+            return true;
+        }
+
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null ||
+            crewManager.CrewCount <= 0)
+        {
+            Debug.LogWarning(
+                "[TurnManager] 선원이 필요한 카드이지만 " +
+                "현재 소환된 선원이 없습니다."
+            );
+
+            return false;
         }
 
         return true;
@@ -524,7 +625,7 @@ public class TurnManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 공격/방어 카드 사용 횟수 UI를 갱신합니다.
+    /// 현재 공격/방어 카드 사용 횟수 UI를 갱신합니다.
     /// </summary>
     private void UpdateAttackDefenseUseCountUI()
     {
@@ -548,7 +649,8 @@ public class TurnManager : MonoBehaviour
     /// </summary>
     private void DecreasePlayerStatusDuration()
     {
-        PlayerCombat playerCombat = FindFirstObjectByType<PlayerCombat>();
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
 
         if (playerCombat == null)
         {
