@@ -1175,18 +1175,11 @@ public class CardEffectExecutor : MonoBehaviour
         /*
          * 전투 종료까지 유지되는 상태 효과입니다.
          */
-        if (effect.statusEffectType ==
-                StatusEffectType.Might ||
-            effect.statusEffectType ==
-                StatusEffectType.Guard ||
-            effect.statusEffectType ==
-                StatusEffectType.Resist ||
-            effect.statusEffectType ==
-                StatusEffectType.Immortal ||
-            effect.statusEffectType ==
-                StatusEffectType.Jinx ||
-            effect.statusEffectType ==
-                StatusEffectType.Undead)
+        if (effect.statusEffectType == StatusEffectType.Might ||
+    effect.statusEffectType == StatusEffectType.Guard ||
+    effect.statusEffectType == StatusEffectType.Resist ||
+    effect.statusEffectType == StatusEffectType.Immortal ||
+    effect.statusEffectType == StatusEffectType.Jinx)
         {
             isPermanent = true;
             remainingTurn = 0;

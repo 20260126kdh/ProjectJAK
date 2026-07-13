@@ -42,8 +42,7 @@ public class PlayerCombat : MonoBehaviour
                 return;
             }
 
-            playerData =
-                GameManager.Instance.PlayerData;
+            playerData = GameManager.Instance.PlayerData;
 
             if (playerData == null)
             {
@@ -138,9 +137,6 @@ public class PlayerCombat : MonoBehaviour
     /// 체력을 잃습니다.
     /// 방어도를 먼저 차감합니다.
     /// Vulnerable(취약), Resist(무감각)을 반영합니다.
-    ///
-    /// LoseHealth는 직접 체력 감소 계열이므로
-    /// Undead의 선원 우선 피격은 적용하지 않습니다.
     /// </summary>
     public void LoseHealth(int amount)
     {
@@ -198,9 +194,7 @@ public class PlayerCombat : MonoBehaviour
         {
             playerData.TakeDamage(amount);
 
-            ProcessImmortal(
-                statusEffectHandler
-            );
+            ProcessImmortal(statusEffectHandler);
         }
 
         Debug.Log(
@@ -210,12 +204,7 @@ public class PlayerCombat : MonoBehaviour
 
     /// <summary>
     /// 적의 공격 피해를 처리합니다.
-    ///
-    /// 기본 피격 순서:
-    /// 방어도 → 선원 → 플레이어 체력
-    ///
-    /// Undead 적용 피격 순서:
-    /// 선원 → 방어도 → 플레이어 체력
+    /// 방어도, 선원, 플레이어 체력 순서로 피해를 적용합니다.
     /// </summary>
     public void ReceiveAttackDamage(int amount)
     {
@@ -229,7 +218,7 @@ public class PlayerCombat : MonoBehaviour
 
         /*
          * 플레이어에게 걸린 취약은
-         * 적 공격 피해를 40% 증가시킵니다.
+         * 적 공격 피해를 증가시킵니다.
          */
         if (statusEffectHandler != null &&
             statusEffectHandler.HasStatusEffect(
@@ -250,7 +239,8 @@ public class PlayerCombat : MonoBehaviour
         }
 
         /*
-         * 무감각은 받는 피해를 30% 감소시킵니다.
+         * 무감각은 이번 턴 받는 피해를
+         * 30% 감소시킵니다.
          */
         if (statusEffectHandler != null &&
             statusEffectHandler.HasStatusEffect(
@@ -270,44 +260,10 @@ public class PlayerCombat : MonoBehaviour
             amount = reducedDamage;
         }
 
-        CrewManager crewManager =
-            FindFirstObjectByType<CrewManager>();
-
-        bool hasUndead =
-            statusEffectHandler != null &&
-            statusEffectHandler.HasStatusEffect(
-                StatusEffectType.Undead
-            );
-
         /*
-         * Undead가 적용되어 있으면
-         * 선원이 방어도보다 먼저 피해를 받습니다.
+         * 첫 번째 순서: 플레이어 방어도
          */
-        if (hasUndead && amount > 0)
-        {
-            if (crewManager != null)
-            {
-                amount =
-                    crewManager.AbsorbDamageWithCrews(
-                        amount
-                    );
-
-                Debug.Log(
-                    $"[PlayerCombat] 이계의 존재 적용 : " +
-                    $"선원 우선 피해 처리 / " +
-                    $"남은 피해 {amount}"
-                );
-            }
-        }
-
-        /*
-         * 플레이어 방어도가 남은 피해를 흡수합니다.
-         *
-         * 기본 상태에서는 첫 번째 처리이며,
-         * Undead 상태에서는 선원 처리 다음에 실행됩니다.
-         */
-        if (amount > 0 &&
-            currentBlock > 0)
+        if (currentBlock > 0)
         {
             int absorbedDamage =
                 Mathf.Min(currentBlock, amount);
@@ -324,11 +280,13 @@ public class PlayerCombat : MonoBehaviour
         }
 
         /*
-         * Undead가 없을 때는 기존 규칙대로
-         * 방어도 다음에 선원이 피해를 받습니다.
+         * 두 번째 순서: 소환된 선원
          */
-        if (!hasUndead && amount > 0)
+        if (amount > 0)
         {
+            CrewManager crewManager =
+                FindFirstObjectByType<CrewManager>();
+
             if (crewManager != null)
             {
                 amount =
@@ -339,8 +297,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         /*
-         * 방어도와 선원 처리 후 남은 피해를
-         * 플레이어 체력에 적용합니다.
+         * 세 번째 순서: 플레이어 체력
          */
         if (amount > 0)
         {
@@ -348,9 +305,7 @@ public class PlayerCombat : MonoBehaviour
 
             playerData.TakeDamage(amount);
 
-            ProcessImmortal(
-                statusEffectHandler
-            );
+            ProcessImmortal(statusEffectHandler);
 
             Debug.Log(
                 $"[PlayerCombat] 플레이어 체력 피해 : " +
@@ -369,9 +324,8 @@ public class PlayerCombat : MonoBehaviour
     /// <summary>
     /// 플레이어가 치명적인 피해를 받았을 때
     /// 불사의 존재를 처리합니다.
-    ///
     /// 이번 전투에서 처음 체력이 0이 되면
-    /// 효과를 소비하고 체력 1로 생존합니다.
+    /// 효과를 소비하고 체력 1로 버팁니다.
     /// </summary>
     private void ProcessImmortal(
         StatusEffectHandler statusEffectHandler)
@@ -444,7 +398,7 @@ public class PlayerCombat : MonoBehaviour
     }
 
     /// <summary>
-    /// 전투 종료 시 전투 수치를 초기화합니다.
+    /// 전투 종료 시 초기화합니다.
     /// </summary>
     public void ResetCombat()
     {
