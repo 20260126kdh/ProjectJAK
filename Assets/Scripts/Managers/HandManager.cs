@@ -31,6 +31,10 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private bool isPreserveMode;
 
+    [Header("이번 턴 Jinx 카드 인덱스")]
+    [SerializeField]
+    private int jinxedHandIndex = -1;
+
     [Header("손패 UI 부모")]
     [SerializeField]
     private Transform handCardParent;
@@ -117,9 +121,89 @@ public class HandManager : MonoBehaviour
             rect.localRotation = Quaternion.Euler(0f, 0f, zRotation);
 
             cardUI.Initialize(handCards[i], this);
+            cardUI.SetJinxed(i == jinxedHandIndex);
         }
 
         Debug.Log("[HandManager] 손패 UI 갱신 완료");
+    }
+
+    /// <summary>
+    /// 플레이어가 Jinx를 보유했다면 다음 턴 손패가 완성된 후
+    /// 보존 카드를 포함한 전체 손패 중 무작위 카드 한 장을
+    /// 이번 턴 사용 불가 상태로 지정합니다.
+    /// </summary>
+    public void ApplyJinxToRandomCard()
+    {
+        ClearJinxedCard();
+
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
+
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[HandManager] Jinx 처리를 위한 PlayerCombat을 " +
+                "찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        StatusEffectHandler statusEffectHandler =
+            playerCombat.GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler == null)
+        {
+            return;
+        }
+
+        if (!statusEffectHandler.HasStatusEffect(
+            StatusEffectType.Jinx
+        ))
+        {
+            return;
+        }
+
+        if (handCards.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[HandManager] Jinx가 발동했지만 손패가 없습니다."
+            );
+
+            return;
+        }
+
+        jinxedHandIndex =
+            Random.Range(0, handCards.Count);
+
+        RefreshHandUI();
+
+        Debug.Log(
+            $"[HandManager] Jinx 발동 : " +
+            $"{jinxedHandIndex + 1}번째 카드 " +
+            $"{handCards[jinxedHandIndex].cardName} 사용 불가"
+        );
+    }
+
+    /// <summary>
+    /// 전달받은 CardUI가 현재 Jinx로 사용 불가인 카드인지 확인합니다.
+    /// </summary>
+    public bool IsCardJinxed(CardUI cardUI)
+    {
+        if (cardUI == null)
+        {
+            return false;
+        }
+
+        return cardUI.IsJinxed;
+    }
+
+    /// <summary>
+    /// 이번 턴의 Jinx 카드 지정을 해제합니다.
+    /// </summary>
+    public void ClearJinxedCard()
+    {
+        jinxedHandIndex = -1;
     }
 
     public void RequestSelectCard(CardUI cardUI)
@@ -235,6 +319,8 @@ public class HandManager : MonoBehaviour
 
         DiscardUnpreservedCards();
 
+        ClearJinxedCard();
+
         if (endTurnButtonObject != null)
         {
             endTurnButtonObject.SetActive(true);
@@ -315,7 +401,30 @@ public class HandManager : MonoBehaviour
             return;
         }
 
-        handCards.Remove(cardData);
+        int removedIndex =
+    handCards.IndexOf(cardData);
+
+        if (removedIndex < 0)
+        {
+            Debug.LogWarning(
+                $"[HandManager] 손패에 해당 카드가 없습니다 : " +
+                $"{cardData.cardName}"
+            );
+
+            return;
+        }
+
+        handCards.RemoveAt(removedIndex);
+
+        /*
+         * Jinx 카드보다 앞쪽 카드가 제거되면
+         * Jinx 대상의 새 손패 인덱스를 한 칸 당깁니다.
+         */
+        if (jinxedHandIndex >= 0 &&
+            removedIndex < jinxedHandIndex)
+        {
+            jinxedHandIndex--;
+        }
 
         if (ShouldExhaustCard(cardData))
         {
@@ -384,6 +493,7 @@ public class HandManager : MonoBehaviour
         preservedCard = null;
         selectedPreserveCardUI = null;
         isPreserveMode = false;
+        jinxedHandIndex = -1;
 
         ClearHandUI();
 

@@ -430,6 +430,17 @@ public class BattleManager : MonoBehaviour
             return false;
         }
 
+        if (handManager != null &&
+        handManager.IsCardJinxed(selectedCardUI))
+        {
+            Debug.LogWarning(
+                $"[BattleManager] Jinx 적용 카드라 사용할 수 없습니다 : " +
+                $"{selectedCardData.cardName}"
+            );
+
+            return false;
+        }
+
         if (turnManager == null)
         {
             Debug.LogError(

@@ -50,6 +50,27 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     private RewardPanelUI rewardPanelUI;
     private bool isRewardCard;
 
+    [Header("Jinx 사용 불가 표시")]
+    [SerializeField]
+    private GameObject jinxBlockMark;
+
+    private bool isJinxed;
+
+    /// <summary>
+    /// 현재 Jinx로 사용 불가 상태인지 반환합니다.
+    /// </summary>
+    public bool IsJinxed => isJinxed;
+
+    private void Awake()
+    {
+        if (jinxBlockMark != null)
+        {
+            jinxBlockMark.SetActive(false);
+        }
+
+        isJinxed = false;
+    }
+
     /// <summary>
     /// 카드 UI를 초기화합니다.
     /// 카드 데이터와 소유 HandManager를 설정합니다.
@@ -66,6 +87,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         defaultScale = rectTransform.localScale;
 
         SetCard(cardData);
+        SetJinxed(false);
     }
 
     /// <summary>
@@ -147,6 +169,20 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
+    /// 카드의 Jinx 사용 불가 상태와 표시를 설정합니다.
+    /// Jinx 상태여도 카드 선택과 보존은 가능합니다.
+    /// </summary>
+    public void SetJinxed(bool value)
+    {
+        isJinxed = value;
+
+        if (jinxBlockMark != null)
+        {
+            jinxBlockMark.SetActive(value);
+        }
+    }
+
+    /// <summary>
     /// 리워드 카드 UI로 초기화합니다.
     /// 클릭 시 RewardPanelUI에 선택을 요청합니다.
     /// </summary>
@@ -164,5 +200,6 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         defaultScale = rectTransform.localScale;
 
         SetCard(cardData);
+        SetJinxed(false);
     }
 }

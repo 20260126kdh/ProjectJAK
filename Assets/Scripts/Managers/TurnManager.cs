@@ -96,6 +96,12 @@ public class TurnManager : MonoBehaviour
 
         GrowAllCrews();
         DrawCardsForNewTurn();
+
+        if (handManager != null)
+        {
+            handManager.ApplyJinxToRandomCard();
+        }
+
         UpdateAttackDefenseUseCountUI();
 
         Debug.Log("[TurnManager] 플레이어 턴 시작");
