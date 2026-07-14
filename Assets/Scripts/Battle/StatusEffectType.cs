@@ -20,6 +20,7 @@ public enum StatusEffectType
     HRevelation,
     UnderGround,
     UnderWater,
+    ProfanedHalo,
 
     // 디버프
     Weaken,

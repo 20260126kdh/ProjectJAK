@@ -20,11 +20,18 @@ public class CardEffectExecutor : MonoBehaviour
     private int sacrificedHealthThisCard;
 
     /// <summary>
+    /// 현재 실행 중인 공격 카드에 적용할 피해 보정값입니다.
+    /// 무너진 의지는 -4를 전달합니다.
+    /// </summary>
+    private int currentCardDamageModifier;
+
+    /// <summary>
     /// 카드 효과 목록을 실행합니다.
     /// </summary>
     public void ExecuteEffects(
-        CardData cardData,
-        Enemy targetEnemy)
+    CardData cardData,
+    Enemy targetEnemy,
+    int damageModifier = 0)
     {
         if (cardData == null)
         {
@@ -48,6 +55,7 @@ public class CardEffectExecutor : MonoBehaviour
         }
 
         sacrificedHealthThisCard = 0;
+        currentCardDamageModifier = damageModifier;
 
         List<CardEffectData> orderedEffects =
             cardData.effects
@@ -376,7 +384,21 @@ public class CardEffectExecutor : MonoBehaviour
         StatusEffectHandler playerStatusEffectHandler =
             null;
 
-        int finalDamage = baseDamage;
+        int modifiedBaseDamage =
+    Mathf.Max(
+        0,
+        baseDamage + currentCardDamageModifier
+    );
+
+        int finalDamage = modifiedBaseDamage;
+
+        if (currentCardDamageModifier != 0)
+        {
+            Debug.Log(
+                $"[CardEffectExecutor] 카드 피해 보정 : " +
+                $"{baseDamage} → {modifiedBaseDamage}"
+            );
+        }
 
         if (playerCombat != null)
         {
@@ -396,7 +418,7 @@ public class CardEffectExecutor : MonoBehaviour
                 {
                     Debug.Log(
                         $"[CardEffectExecutor] 힘 적용 : " +
-                        $"기본 {baseDamage} + 힘 {mightValue} " +
+                        $"기본 {modifiedBaseDamage} + 힘 {mightValue} " +
                         $"= {finalDamage}"
                     );
                 }

@@ -2805,7 +2805,7 @@ MonoBehaviour:
     classImage: {fileID: 0}
   - playerClass: 3
     className: "\uD14C\uD06C\uB2C8\uC158"
-    maxHP: 75
+    maxHP: 80
     passiveDescription: "\uC801\uC5D0\uAC8C \uC791\uC0B4\uC7A1\uC774 \uC2A4\uD0DD\uC744
       5 \uBD80\uC5EC\uD560 \uB54C \uB9C8\uB2E4 \uCD94\uAC00\uB85C \uC791\uC0B4\uC7A1\uC774
       \uC2A4\uD0DD\uC744 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."

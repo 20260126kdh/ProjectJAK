@@ -94,6 +94,9 @@ public class TurnManager : MonoBehaviour
             );
         }
 
+        ProcessHRevelationTurnStartEffects();
+        ProcessUnderGroundTurnStartEffect();
+
         GrowAllCrews();
         DrawCardsForNewTurn();
 
@@ -309,6 +312,56 @@ public class TurnManager : MonoBehaviour
                 $"[TurnManager] 적 중독 피해 처리 : " +
                 $"{enemy.name} / {toxicDamage}"
             );
+        }
+    }
+
+    /// <summary>
+    /// 플레이어 턴 시작 시 현재 전투의
+    /// 타락한 계시 효과를 처리합니다.
+    /// </summary>
+    private void ProcessHRevelationTurnStartEffects()
+    {
+        HRevelationController revelationController =
+            FindFirstObjectByType<HRevelationController>();
+
+        if (revelationController == null)
+        {
+            return;
+        }
+
+        revelationController.ProcessPlayerTurnStartEffects();
+    }
+
+    /// <summary>
+    /// 플레이어 턴 시작 시 현재 활성화된 아스피도켈의
+    /// 침몰 수치를 증가시킵니다.
+    ///
+    /// UnderGround 상태일 때만 증가하며,
+    /// 이미 UnderWater 상태로 전환된 뒤에는 증가하지 않습니다.
+    /// </summary>
+    private void ProcessUnderGroundTurnStartEffect()
+    {
+        UnderGroundController[] underGroundControllers =
+            FindObjectsByType<UnderGroundController>(
+                FindObjectsSortMode.None
+            );
+
+        foreach (
+            UnderGroundController underGroundController
+            in underGroundControllers
+        )
+        {
+            if (underGroundController == null)
+            {
+                continue;
+            }
+
+            if (!underGroundController.gameObject.activeSelf)
+            {
+                continue;
+            }
+
+            underGroundController.IncreaseSink();
         }
     }
 

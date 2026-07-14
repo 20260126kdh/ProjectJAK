@@ -14,9 +14,8 @@ GameObject:
   - component: {fileID: 2395329796861106145}
   - component: {fileID: 5262638531733677898}
   - component: {fileID: 4714577768804223752}
-  - component: {fileID: 6501495488102969302}
   m_Layer: 0
-  m_Name: Enemy_HRevelation_Test
+  m_Name: Ariel
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.93333334, g: 0.11982302, b: 0.09411764, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -140,10 +139,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9409aa59e5e81d4cafa4c00e7c67da5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 30
+  maxHP: 10
   currentHP: 0
   basicAttackDamage: 5
-  currentBlock: 0
+  currentBlock: 5
   isStunnedNextTurn: 0
   applyParalyzeNext: 1
   applyNoBlockNext: 1
@@ -174,19 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statusEffects:
-  - statusEffectType: 11
+  - statusEffectType: 14
     value: 1
     remainingTurn: 0
     isPermanent: 1
---- !u!114 &6501495488102969302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4558508858516679380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4af256933b588634e84ff545ce75ecb4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

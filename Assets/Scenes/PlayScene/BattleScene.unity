@@ -2856,7 +2856,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoint: {fileID: 767563362}
-  enemyPrefab: {fileID: 4558508858516679380, guid: af75b849f29156f46857886c1578d81b, type: 3}
+  enemyPrefab: {fileID: 4558508858516679380, guid: 91a12fd1d4522c94694c0e8eee7deff6, type: 3}
 --- !u!1 &847118635
 GameObject:
   m_ObjectHideFlags: 0
@@ -3449,7 +3449,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1003856566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5328,6 +5328,7 @@ MonoBehaviour:
   selectedCardData: {fileID: 0}
   deckManager: {fileID: 690890766}
   enemySpawner: {fileID: 843205407}
+  hRevelationPanelUI: {fileID: 1003856566}
 --- !u!1 &1761994570
 GameObject:
   m_ObjectHideFlags: 0
@@ -5779,6 +5780,7 @@ RectTransform:
   - {fileID: 1304619912}
   - {fileID: 692912762}
   - {fileID: 1070643220}
+  - {fileID: 904196805}
   - {fileID: 1781969312}
   - {fileID: 667865856}
   - {fileID: 69276179}
@@ -5786,7 +5788,6 @@ RectTransform:
   - {fileID: 1413700227}
   - {fileID: 1221530027}
   - {fileID: 1003856567}
-  - {fileID: 904196805}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

@@ -42,6 +42,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private EnemySpawner enemySpawner;
 
+    [Header("HRevelation Panel UI")]
+    [SerializeField]
+    private HRevelationPanelUI hRevelationPanelUI;
+
     private CardUI selectedCardUI;
 
     public CardData SelectedCardData => selectedCardData;
@@ -78,6 +82,8 @@ public class BattleManager : MonoBehaviour
                 "[BattleManager] StageManager.Instance가 없습니다."
             );
         }
+
+        TryOpenHRevelationPanel();
     }
 
     /// <summary>
@@ -149,6 +155,40 @@ public class BattleManager : MonoBehaviour
         }
 
         Debug.Log("[BattleManager] 다음 전투 시작 완료");
+    }
+
+    /// <summary>
+    /// 현재 생성된 적에게 HRevelationController가 있다면
+    /// 전투 시작 시 계시 선택 패널을 표시합니다.
+    /// </summary>
+    private void TryOpenHRevelationPanel()
+    {
+        if (hRevelationPanelUI == null)
+        {
+            Debug.LogWarning(
+                "[BattleManager] HRevelationPanelUI가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        HRevelationController controller =
+            FindFirstObjectByType<HRevelationController>();
+
+        if (controller == null)
+        {
+            Debug.Log(
+                "[BattleManager] HRevelationController가 있는 적이 없습니다."
+            );
+
+            return;
+        }
+
+        hRevelationPanelUI.ShowPanel(controller);
+
+        Debug.Log(
+            "[BattleManager] 타락한 계시 선택 패널 열기 요청"
+        );
     }
 
     /// <summary>
@@ -240,6 +280,11 @@ public class BattleManager : MonoBehaviour
 
         CardData usedCardData = selectedCardData;
 
+        int damageModifier =
+            GetBrokenWillDamageModifier(
+                usedCardData
+            );
+
         bool shouldActivateEcho =
             TryConsumeEcho(usedCardData);
 
@@ -251,9 +296,11 @@ public class BattleManager : MonoBehaviour
         /*
          * 기본 카드 효과를 한 번 실행합니다.
          */
-        cardEffectExecutor.ExecuteEffects(
-            usedCardData,
-            targetEnemy
+        cardEffectExecutor.ExecuteEffects
+        (
+        usedCardData,
+        targetEnemy,
+        damageModifier
         );
 
         /*
@@ -274,9 +321,11 @@ public class BattleManager : MonoBehaviour
                     $"{usedCardData.cardName} 효과 재실행"
                 );
 
-                cardEffectExecutor.ExecuteEffects(
-                    usedCardData,
-                    targetEnemy
+                cardEffectExecutor.ExecuteEffects
+                (
+                usedCardData,
+                targetEnemy,
+                damageModifier
                 );
             }
             else
@@ -343,6 +392,40 @@ public class BattleManager : MonoBehaviour
     /// 플레이어가 Echo를 보유 중이라면 Echo를 제거하고
     /// true를 반환합니다.
     /// </summary>
+
+    /// <summary>
+    /// 공격 카드 사용 시 무너진 의지를 확인하고
+    /// 이번 카드에 적용할 피해 보정값을 반환합니다.
+    /// </summary>
+    private int GetBrokenWillDamageModifier(
+        CardData usedCardData)
+    {
+        if (usedCardData == null)
+        {
+            return 0;
+        }
+
+        if (usedCardData.cardType != CardType.Attack)
+        {
+            return 0;
+        }
+
+        HRevelationController revelationController =
+            FindFirstObjectByType<HRevelationController>();
+
+        if (revelationController == null)
+        {
+            return 0;
+        }
+
+        if (!revelationController.TryConsumeBrokenWill())
+        {
+            return 0;
+        }
+
+        return -4;
+    }
+
     private bool TryConsumeEcho(CardData usedCardData)
     {
         if (usedCardData == null)
