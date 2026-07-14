@@ -419,35 +419,90 @@ public class TurnManager : MonoBehaviour
 
         if (cardData.cardType == CardType.Skill)
         {
+            PlayerCombat playerCombat =
+                FindFirstObjectByType<PlayerCombat>();
+
+            StatusEffectHandler statusEffectHandler = null;
+
+            if (playerCombat != null)
+            {
+                statusEffectHandler =
+                    playerCombat.GetComponent<StatusEffectHandler>();
+            }
+
+            /*
+             * 미끄러짐 상태에서는
+             * GainBlock 효과가 포함된 스킬 카드도 사용할 수 없습니다.
+             */
+            if (statusEffectHandler != null &&
+                statusEffectHandler.HasStatusEffect(
+                    StatusEffectType.NoBlock
+                ) &&
+                CardHasGainBlockEffect(cardData))
+            {
+                Debug.LogWarning(
+                    "[TurnManager] 미끄러짐 적용 : " +
+                    "방어도를 얻는 스킬 카드를 사용할 수 없습니다."
+                );
+
+                return false;
+            }
+
             return true;
         }
 
         if (cardData.cardType == CardType.Attack ||
-            cardData.cardType == CardType.Defense)
+    cardData.cardType == CardType.Defense)
         {
-            if (cardData.cardType == CardType.Attack)
+            PlayerCombat playerCombat =
+                FindFirstObjectByType<PlayerCombat>();
+
+            StatusEffectHandler statusEffectHandler = null;
+
+            if (playerCombat != null)
             {
-                PlayerCombat playerCombat =
-                    FindFirstObjectByType<PlayerCombat>();
+                statusEffectHandler =
+                    playerCombat.GetComponent<StatusEffectHandler>();
+            }
 
-                if (playerCombat != null)
-                {
-                    StatusEffectHandler statusEffectHandler =
-                        playerCombat.GetComponent<StatusEffectHandler>();
+            /*
+             * 부러짐 상태에서는 공격 카드를 사용할 수 없습니다.
+             */
+            if (cardData.cardType == CardType.Attack &&
+                statusEffectHandler != null &&
+                statusEffectHandler.HasStatusEffect(
+                    StatusEffectType.Broken
+                ))
+            {
+                Debug.LogWarning(
+                    "[TurnManager] 부러짐 적용 : " +
+                    "공격 카드를 사용할 수 없습니다."
+                );
 
-                    if (statusEffectHandler != null &&
-                        statusEffectHandler.HasStatusEffect(
-                            StatusEffectType.Broken
-                        ))
-                    {
-                        Debug.LogWarning(
-                            "[TurnManager] 부러짐 적용 : " +
-                            "공격 카드를 사용할 수 없습니다."
-                        );
+                return false;
+            }
 
-                        return false;
-                    }
-                }
+            /*
+             * 미끄러짐 상태에서는 방어 카드를 사용할 수 없습니다.
+             *
+             * 사용 전에 false를 반환하므로:
+             * - 카드 효과 실행 안 됨
+             * - 손패에서 제거 안 됨
+             * - 버림 더미 이동 안 됨
+             * - 공격/방어 카드 사용 횟수 증가 안 함
+             */
+            if (cardData.cardType == CardType.Defense &&
+                statusEffectHandler != null &&
+                statusEffectHandler.HasStatusEffect(
+                    StatusEffectType.NoBlock
+                ))
+            {
+                Debug.LogWarning(
+                    "[TurnManager] 미끄러짐 적용 : " +
+                    "방어 카드를 사용할 수 없습니다."
+                );
+
+                return false;
             }
 
             if (currentAttackDefenseCardUseCount >=
@@ -469,6 +524,37 @@ public class TurnManager : MonoBehaviour
             $"[TurnManager] 알 수 없는 카드 타입입니다 : " +
             $"{cardData.cardType}"
         );
+
+        return false;
+    }
+
+    /// <summary>
+    /// 카드에 방어도 획득 효과가 포함되어 있는지 확인합니다.
+    /// </summary>
+    private bool CardHasGainBlockEffect(
+        CardData cardData)
+    {
+        if (cardData == null ||
+            cardData.effects == null)
+        {
+            return false;
+        }
+
+        foreach (CardEffectData effect in cardData.effects)
+        {
+            if (effect == null)
+            {
+                continue;
+            }
+
+            if (effect.effectType ==
+                    CardEffectType.GainBlock ||
+                effect.effectType ==
+                    CardEffectType.GainBlockOnHealthLossThisTurn)
+            {
+                return true;
+            }
+        }
 
         return false;
     }
