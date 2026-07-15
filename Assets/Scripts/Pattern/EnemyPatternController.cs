@@ -34,6 +34,10 @@ public class EnemyPatternController : MonoBehaviour
     [SerializeField]
     private EnemyPatternConditionChecker conditionChecker;
 
+    [Header("패턴 실행기")]
+    [SerializeField]
+    private EnemyPatternExecutor patternExecutor;
+
     [Header("초기화 상태")]
     [SerializeField]
     private bool isInitialized;
@@ -86,6 +90,7 @@ public class EnemyPatternController : MonoBehaviour
 
         TryFindCSVLoader();
         TryFindConditionChecker();
+        TryFindPatternExecutor();
 
         if (csvLoader == null)
         {
@@ -103,6 +108,17 @@ public class EnemyPatternController : MonoBehaviour
             Debug.LogError(
                 "[EnemyPatternController] " +
                 "EnemyPatternConditionChecker를 찾지 못했습니다.",
+                this
+            );
+
+            return;
+        }
+
+        if (patternExecutor == null)
+        {
+            Debug.LogError(
+                "[EnemyPatternController] " +
+                "EnemyPatternExecutor를 찾지 못했습니다.",
                 this
             );
 
@@ -176,11 +192,10 @@ public class EnemyPatternController : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 패턴 턴의 행동 목록을 가져오고,
-    /// 조건을 통과한 행동만 처리합니다.
+    /// 현재 패턴 턴의 행동을 가져와 조건을 검사한 뒤
+    /// 통과한 행동을 실제로 실행합니다.
     ///
-    /// 이번 단계에서는 실행 가능한 행동을 Console에 출력한 후
-    /// 다음 패턴 턴으로 이동합니다.
+    /// 행동 처리가 끝나면 다음 패턴 턴으로 이동합니다.
     /// </summary>
     public void ProcessCurrentPattern()
     {
@@ -194,12 +209,12 @@ public class EnemyPatternController : MonoBehaviour
 
         Debug.Log(
             $"[EnemyPatternController] " +
-            $"{enemyId} 패턴 {currentPatternTurn}턴 처리 시작 / " +
+            $"{enemyId} 패턴 {currentPatternTurn}턴 실행 시작 / " +
             $"등록 행동 수: {actions.Count}",
             this
         );
 
-        int executableActionCount = 0;
+        int executedActionCount = 0;
 
         for (int i = 0;
              i < actions.Count;
@@ -208,41 +223,39 @@ public class EnemyPatternController : MonoBehaviour
             EnemyPatternData action =
                 actions[i];
 
-            bool conditionMet =
-                conditionChecker.IsConditionMet(action);
-
-            if (!conditionMet)
+            if (!conditionChecker.IsConditionMet(action))
             {
                 Debug.Log(
-                    $"[EnemyPatternController] 행동 조건 불충족 / " +
-                    $"행동: {action.actionType} / " +
-                    $"조건: {action.conditionType}",
+                    $"[EnemyPatternController] 조건 불충족 / " +
+                    $"행동 {action.actionType} / " +
+                    $"조건 {action.conditionType}",
                     this
                 );
 
                 continue;
             }
 
-            executableActionCount++;
+            bool executed =
+                patternExecutor.ExecuteAction(action);
 
-            Debug.Log(
-                $"[EnemyPatternController] 실행 가능 행동 / " +
-                $"적: {action.enemyId} / " +
-                $"턴: {action.patternTurn} / " +
-                $"순서: {action.executionOrder} / " +
-                $"행동: {action.actionType} / " +
-                $"수치: {action.value} / " +
-                $"반복: {action.repeatCount} / " +
-                $"대상: {action.targetType} / " +
-                $"조건: {action.conditionType}",
-                this
-            );
+            if (executed)
+            {
+                executedActionCount++;
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"[EnemyPatternController] 행동 실행 실패 / " +
+                    $"{action.actionType}",
+                    this
+                );
+            }
         }
 
         Debug.Log(
             $"[EnemyPatternController] " +
-            $"{enemyId} {currentPatternTurn}턴 조건 검사 완료 / " +
-            $"실행 가능 행동 수: {executableActionCount}",
+            $"{enemyId} {currentPatternTurn}턴 실행 완료 / " +
+            $"성공 행동 수: {executedActionCount}",
             this
         );
 
@@ -390,6 +403,29 @@ public class EnemyPatternController : MonoBehaviour
             Debug.Log(
                 "[EnemyPatternController] " +
                 "EnemyPatternConditionChecker 자동 탐색 완료",
+                this
+            );
+        }
+    }
+
+    /// <summary>
+    /// 같은 적 오브젝트에서 EnemyPatternExecutor를 찾습니다.
+    /// </summary>
+    private void TryFindPatternExecutor()
+    {
+        if (patternExecutor != null)
+        {
+            return;
+        }
+
+        patternExecutor =
+            GetComponent<EnemyPatternExecutor>();
+
+        if (patternExecutor != null)
+        {
+            Debug.Log(
+                "[EnemyPatternController] " +
+                "EnemyPatternExecutor 자동 탐색 완료",
                 this
             );
         }

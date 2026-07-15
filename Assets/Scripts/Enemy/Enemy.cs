@@ -83,12 +83,12 @@ public class Enemy : MonoBehaviour
     /// 적의 턴 행동을 실행합니다.
     ///
     /// 처리 순서:
-    /// 1. 안식 예약 회복
-    /// 2. 침몰 폭발
+    /// 1. 모르바엘 안식 예약 회복
+    /// 2. 아스피도켈 침몰 폭발
     /// 3. 행동 가능 여부 확인
     /// 4. 기절 처리
-    /// 5. 적 전용 패턴 실행
-    /// 6. 패턴이 없다면 기본 공격 실행
+    /// 5. CSV 패턴 실행
+    /// 6. 패턴이 없는 적은 기존 기본 공격 실행
     /// </summary>
     public void TakeTurn(PlayerCombat playerCombat)
     {
@@ -103,14 +103,14 @@ public class Enemy : MonoBehaviour
         }
 
         /*
-         * 모르바엘이 안식 효과로 사망을 방지했다면
+         * 모르바엘이 안식으로 사망을 방지한 경우
          * 다음 적 턴 시작 시 예약된 체력 회복을 먼저 처리합니다.
          */
         ProcessRIPPendingHeal();
 
         /*
-         * 침몰 상태라면 다른 행동보다 먼저
-         * 침몰 피해를 처리한 뒤 사망합니다.
+         * 아스피도켈이 UnderWater 상태라면
+         * 일반 행동보다 먼저 침몰 폭발을 실행합니다.
          */
         if (TryExecuteUnderWaterTurn(playerCombat))
         {
@@ -118,8 +118,7 @@ public class Enemy : MonoBehaviour
         }
 
         /*
-         * 행동 가능한 체력이 아니라면
-         * 패턴과 기본 공격을 실행하지 않습니다.
+         * 체력이 0 이하인 적은 행동하지 않습니다.
          */
         if (currentHP <= 0)
         {
@@ -127,10 +126,10 @@ public class Enemy : MonoBehaviour
         }
 
         /*
-         * 기절은 패턴 또는 기본 공격보다 먼저 처리합니다.
+         * 기절한 적은 이번 행동을 건너뜁니다.
          *
-         * 기절한 턴에는 패턴 컨트롤러를 호출하지 않으므로
-         * 현재 패턴 순서도 넘어가지 않습니다.
+         * 패턴 컨트롤러를 호출하지 않기 때문에
+         * 현재 패턴 턴도 다음으로 넘어가지 않습니다.
          */
         if (isStunnedNextTurn)
         {
@@ -146,23 +145,79 @@ public class Enemy : MonoBehaviour
         }
 
         /*
-         * 전용 패턴 컨트롤러가 있다면
-         * 해당 적의 현재 패턴 행동을 실행합니다.
-         
+         * CSV 패턴 컨트롤러가 붙은 적은
+         * 현재 패턴 행동을 실행합니다.
+         */
         EnemyPatternController patternController =
             GetComponent<EnemyPatternController>();
 
         if (patternController != null)
         {
-            patternController.ExecuteTurn(playerCombat);
+            Debug.Log(
+                $"[Enemy] CSV 패턴 실행 : {name} / " +
+                $"현재 패턴 {patternController.CurrentPatternTurn}",
+                this
+            );
+
+            patternController.ProcessCurrentPattern();
+
             return;
         }
 
         /*
-         * 패턴 컨트롤러가 없는 적은
-         * 기존 기본 공격을 실행합니다.
+         * CSV 패턴 컨트롤러가 없는 적은
+         * 기존 기본 공격 행동을 실행합니다.
          */
-        ExecuteBasicAttack(playerCombat);
+        ExecuteBasicTurn(playerCombat);
+    }
+
+    /// <summary>
+    /// CSV 패턴 컨트롤러가 없는 적의
+    /// 기존 기본 공격 행동을 실행합니다.
+    ///
+    /// 적의 약화 효과를 반영하며,
+    /// 공격 후 전용 공격 패시브를 처리합니다.
+    /// </summary>
+    private void ExecuteBasicTurn(
+        PlayerCombat playerCombat)
+    {
+        int finalDamage =
+            basicAttackDamage;
+
+        StatusEffectHandler statusEffectHandler =
+            GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler != null &&
+            statusEffectHandler.HasStatusEffect(
+                StatusEffectType.Weaken
+            ))
+        {
+            int reducedDamage =
+                Mathf.FloorToInt(
+                    finalDamage * 0.6f
+                );
+
+            Debug.Log(
+                $"[Enemy] 약화 적용 : " +
+                $"{finalDamage} → {reducedDamage}",
+                this
+            );
+
+            finalDamage = reducedDamage;
+        }
+
+        Debug.Log(
+            $"[Enemy] 기본 공격 : " +
+            $"플레이어에게 {finalDamage} 피해",
+            this
+        );
+
+        playerCombat.ReceiveAttackDamage(
+            finalDamage
+        );
+
+        ProcessDToxinSwitch(playerCombat);
+        ProcessFFesteredSkin(playerCombat);
     }
 
     /// <summary>
