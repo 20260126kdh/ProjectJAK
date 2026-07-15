@@ -1,8 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// 전투 중 적의 체력을 관리하는 임시 Enemy 클래스입니다.
-/// 데미지 받기, 사망 처리, 적 턴 행동을 담당합니다.
+/// 전투 중 적의 체력과 공통 전투 기능을 관리합니다.
+///
+/// 데미지, 방어도, 회복, 사망 처리와 함께
+/// 적 턴에서 패턴 컨트롤러를 실행합니다.
 /// </summary>
 public class Enemy : MonoBehaviour
 {
@@ -14,7 +16,7 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private int currentHP;
 
-    [Header("적 기본 공격력")]
+    [Header("패턴이 없는 적의 기본 공격력")]
     [SerializeField]
     private int basicAttackDamage = 5;
 
@@ -38,15 +40,31 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private BattleManager battleManager;
 
+    /// <summary>
+    /// 현재 체력입니다.
+    /// </summary>
     public int CurrentHP => currentHP;
+
+    /// <summary>
+    /// 최대 체력입니다.
+    /// </summary>
     public int MaxHP => maxHP;
 
+    /// <summary>
+    /// 현재 방어도입니다.
+    /// </summary>
     public int CurrentBlock => currentBlock;
+
+    /// <summary>
+    /// 다음 적 턴 기절 여부입니다.
+    /// </summary>
     public bool IsStunnedNextTurn => isStunnedNextTurn;
 
     private void Awake()
     {
         currentHP = maxHP;
+        currentBlock = 0;
+
         applyParalyzeNext = true;
         applyNoBlockNext = true;
         isStunnedNextTurn = false;
@@ -63,14 +81,22 @@ public class Enemy : MonoBehaviour
 
     /// <summary>
     /// 적의 턴 행동을 실행합니다.
-    /// 약화 효과를 반영한 후 플레이어에게 피해를 줍니다.
+    ///
+    /// 처리 순서:
+    /// 1. 안식 예약 회복
+    /// 2. 침몰 폭발
+    /// 3. 행동 가능 여부 확인
+    /// 4. 기절 처리
+    /// 5. 적 전용 패턴 실행
+    /// 6. 패턴이 없다면 기본 공격 실행
     /// </summary>
     public void TakeTurn(PlayerCombat playerCombat)
     {
         if (playerCombat == null)
         {
             Debug.LogWarning(
-                "[Enemy] PlayerCombat이 없습니다."
+                "[Enemy] PlayerCombat이 없습니다.",
+                this
             );
 
             return;
@@ -83,7 +109,7 @@ public class Enemy : MonoBehaviour
         ProcessRIPPendingHeal();
 
         /*
-         * 침몰 상태라면 일반 행동보다 먼저
+         * 침몰 상태라면 다른 행동보다 먼저
          * 침몰 피해를 처리한 뒤 사망합니다.
          */
         if (TryExecuteUnderWaterTurn(playerCombat))
@@ -91,20 +117,96 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        if (currentHP <= 0)
-        {
-            return;
-        }
-
         /*
-         * 체력이 0인 일반 적은 행동하지 않습니다.
+         * 행동 가능한 체력이 아니라면
+         * 패턴과 기본 공격을 실행하지 않습니다.
          */
         if (currentHP <= 0)
         {
             return;
         }
 
-        int finalDamage = basicAttackDamage;
+        /*
+         * 기절은 패턴 또는 기본 공격보다 먼저 처리합니다.
+         *
+         * 기절한 턴에는 패턴 컨트롤러를 호출하지 않으므로
+         * 현재 패턴 순서도 넘어가지 않습니다.
+         */
+        if (isStunnedNextTurn)
+        {
+            isStunnedNextTurn = false;
+
+            Debug.Log(
+                $"[Enemy] {name} 기절 발동 : " +
+                "이번 적 턴 행동을 건너뜁니다.",
+                this
+            );
+
+            return;
+        }
+
+        /*
+         * 전용 패턴 컨트롤러가 있다면
+         * 해당 적의 현재 패턴 행동을 실행합니다.
+         
+        EnemyPatternController patternController =
+            GetComponent<EnemyPatternController>();
+
+        if (patternController != null)
+        {
+            patternController.ExecuteTurn(playerCombat);
+            return;
+        }
+
+        /*
+         * 패턴 컨트롤러가 없는 적은
+         * 기존 기본 공격을 실행합니다.
+         */
+        ExecuteBasicAttack(playerCombat);
+    }
+
+    /// <summary>
+    /// 패턴 컨트롤러가 없는 적의 기본 공격을 실행합니다.
+    /// 약화 효과를 반영하여 플레이어에게 피해를 줍니다.
+    /// </summary>
+    private void ExecuteBasicAttack(
+        PlayerCombat playerCombat)
+    {
+        int finalDamage =
+            CalculateOutgoingDamage(
+                basicAttackDamage
+            );
+
+        Debug.Log(
+            $"[Enemy] 기본 공격 : " +
+            $"플레이어에게 {finalDamage} 피해",
+            this
+        );
+
+        playerCombat.ReceiveAttackDamage(finalDamage);
+
+        /*
+         * 정상적으로 공격한 후
+         * 공격 연동 패시브를 처리합니다.
+         */
+        ProcessDToxinSwitch(playerCombat);
+        ProcessFFesteredSkin(playerCombat);
+    }
+
+    /// <summary>
+    /// 적이 플레이어에게 주는 피해에
+    /// 약화 효과를 반영하여 최종 피해를 반환합니다.
+    ///
+    /// 적 전용 패턴에서도 이 메서드를 사용할 수 있습니다.
+    /// </summary>
+    public int CalculateOutgoingDamage(int baseDamage)
+    {
+        if (baseDamage < 0)
+        {
+            baseDamage = 0;
+        }
+
+        int finalDamage = baseDamage;
 
         StatusEffectHandler statusEffectHandler =
             GetComponent<StatusEffectHandler>();
@@ -121,32 +223,81 @@ public class Enemy : MonoBehaviour
 
             Debug.Log(
                 $"[Enemy] 약화 적용 : " +
-                $"{finalDamage} → {reducedDamage}"
+                $"{finalDamage} → {reducedDamage}",
+                this
             );
 
             finalDamage = reducedDamage;
         }
 
-        if (isStunnedNextTurn)
-        {
-            isStunnedNextTurn = false;
+        return finalDamage;
+    }
 
-            Debug.Log(
-                $"[Enemy] {name} 기절 발동 : " +
-                "이번 적 턴 행동을 건너뜁니다."
+    /// <summary>
+    /// 적의 공격 피해를 플레이어에게 적용합니다.
+    ///
+    /// 적의 약화 효과가 자동으로 반영됩니다.
+    /// 전용 패턴 컨트롤러에서 사용할 수 있습니다.
+    /// </summary>
+    public void DealDamageToPlayer(
+        PlayerCombat playerCombat,
+        int baseDamage)
+    {
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[Enemy] PlayerCombat이 없어 피해를 적용할 수 없습니다.",
+                this
             );
 
             return;
         }
 
+        int finalDamage =
+            CalculateOutgoingDamage(baseDamage);
+
         Debug.Log(
-            $"[Enemy] 플레이어에게 {finalDamage} 피해"
+            $"[Enemy] 플레이어 공격 : " +
+            $"{finalDamage} 피해",
+            this
         );
 
         playerCombat.ReceiveAttackDamage(finalDamage);
+    }
 
-        ProcessDToxinSwitch(playerCombat);
-        ProcessFFesteredSkin(playerCombat);
+    /// <summary>
+    /// 적의 공격 피해를 플레이어에게 여러 번 적용합니다.
+    ///
+    /// 각 공격은 개별 피해로 처리되므로
+    /// 플레이어 방어도와 선원 피해 분배도 매 타격마다 적용됩니다.
+    /// </summary>
+    public void DealRepeatedDamageToPlayer(
+        PlayerCombat playerCombat,
+        int baseDamage,
+        int repeatCount)
+    {
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[Enemy] PlayerCombat이 없어 다단 피해를 적용할 수 없습니다.",
+                this
+            );
+
+            return;
+        }
+
+        if (repeatCount <= 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < repeatCount; i++)
+        {
+            DealDamageToPlayer(
+                playerCombat,
+                baseDamage
+            );
+        }
     }
 
     /// <summary>
@@ -169,7 +320,8 @@ public class Enemy : MonoBehaviour
             return false;
         }
 
-        if (!underGroundController.CanExecuteUnderWaterExplosion())
+        if (!underGroundController
+                .CanExecuteUnderWaterExplosion())
         {
             return false;
         }
@@ -179,15 +331,10 @@ public class Enemy : MonoBehaviour
 
         Debug.Log(
             $"[Enemy] {name} 침몰 발동 : " +
-            $"피해 {sinkDamage}"
+            $"피해 {sinkDamage}",
+            this
         );
 
-        /*
-         * 기존 적 공격 피해 처리 방식을 사용합니다.
-         *
-         * 적용 순서:
-         * 플레이어 방어도 → 선원 → 플레이어 체력
-         */
         if (sinkDamage > 0)
         {
             playerCombat.ReceiveAttackDamage(
@@ -196,15 +343,16 @@ public class Enemy : MonoBehaviour
         }
 
         /*
-         * 중복 발동을 막기 위해 침몰 효과 완료를 기록한 뒤
-         * 해당 적을 사망 처리합니다.
+         * 중복 발동을 방지한 뒤
+         * 보스를 사망 처리합니다.
          */
         underGroundController
             .CompleteUnderWaterExplosion();
 
         Debug.Log(
             $"[Enemy] {name} 침몰 피해 처리 완료 : " +
-            "보스를 사망 처리합니다."
+            "보스를 사망 처리합니다.",
+            this
         );
 
         Die();
@@ -215,6 +363,7 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// 적이 DToxinSwitch 패시브를 보유하고 있다면
     /// 공격 후 플레이어에게 Paralyze와 Toxic을 번갈아 부여합니다.
+    ///
     /// 패시브의 value를 부여 수치로 사용합니다.
     /// </summary>
     private void ProcessDToxinSwitch(
@@ -234,8 +383,8 @@ public class Enemy : MonoBehaviour
         }
 
         if (!enemyStatusEffectHandler.HasStatusEffect(
-            StatusEffectType.DToxinSwitch
-        ))
+                StatusEffectType.DToxinSwitch
+            ))
         {
             return;
         }
@@ -247,7 +396,8 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogWarning(
                 "[Enemy] 플레이어에게 StatusEffectHandler가 없어 " +
-                "독오름 효과를 부여할 수 없습니다."
+                "독오름 효과를 부여할 수 없습니다.",
+                this
             );
 
             return;
@@ -272,7 +422,8 @@ public class Enemy : MonoBehaviour
 
             Debug.Log(
                 $"[Enemy] 독오름 발동 : " +
-                $"플레이어에게 마비 {applyValue} 부여"
+                $"플레이어에게 마비 {applyValue} 부여",
+                this
             );
         }
         else
@@ -286,7 +437,8 @@ public class Enemy : MonoBehaviour
 
             Debug.Log(
                 $"[Enemy] 독오름 발동 : " +
-                $"플레이어에게 중독 {applyValue} 부여"
+                $"플레이어에게 중독 {applyValue} 부여",
+                this
             );
         }
 
@@ -297,6 +449,7 @@ public class Enemy : MonoBehaviour
     /// 적이 FFesteredSkin 패시브를 보유하고 있다면
     /// 정상 공격 후 플레이어에게 NoBlock과 Broken을
     /// 번갈아 부여합니다.
+    ///
     /// 패시브의 value를 부여 수치로 사용합니다.
     /// </summary>
     private void ProcessFFesteredSkin(
@@ -316,8 +469,8 @@ public class Enemy : MonoBehaviour
         }
 
         if (!enemyStatusEffectHandler.HasStatusEffect(
-            StatusEffectType.FFesteredSkin
-        ))
+                StatusEffectType.FFesteredSkin
+            ))
         {
             return;
         }
@@ -329,7 +482,8 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogWarning(
                 "[Enemy] 플레이어에게 StatusEffectHandler가 없어 " +
-                "불어터진 피부 효과를 부여할 수 없습니다."
+                "불어터진 피부 효과를 부여할 수 없습니다.",
+                this
             );
 
             return;
@@ -354,7 +508,8 @@ public class Enemy : MonoBehaviour
 
             Debug.Log(
                 $"[Enemy] 불어터진 피부 발동 : " +
-                $"플레이어에게 미끄러짐 {applyValue} 부여"
+                $"플레이어에게 미끄러짐 {applyValue} 부여",
+                this
             );
         }
         else
@@ -368,7 +523,8 @@ public class Enemy : MonoBehaviour
 
             Debug.Log(
                 $"[Enemy] 불어터진 피부 발동 : " +
-                $"플레이어에게 부러짐 {applyValue} 부여"
+                $"플레이어에게 부러짐 {applyValue} 부여",
+                this
             );
         }
 
@@ -376,8 +532,56 @@ public class Enemy : MonoBehaviour
     }
 
     /// <summary>
-    /// 적에게 피해를 적용하고 실제로 감소한 체력량을 반환합니다.
-    /// 취약 효과와 적의 남은 체력을 반영합니다.
+    /// 모르바엘에게 장송의 원혼이 존재한다면
+    /// 받는 피해를 25% 감소시킵니다.
+    ///
+    /// RIPController가 없는 일반 적과 원혼에는 적용되지 않습니다.
+    /// 모든 퍼센트 계산의 소수점은 버립니다.
+    /// </summary>
+    private int ApplyFuneralProtection(
+        int damage)
+    {
+        if (damage <= 0)
+        {
+            return 0;
+        }
+
+        RIPController ripController =
+            GetComponent<RIPController>();
+
+        /*
+         * RIPController는 모르바엘에게만 붙기 때문에
+         * 일반 적과 원혼에는 장송의 가호가 적용되지 않습니다.
+         */
+        if (ripController == null)
+        {
+            return damage;
+        }
+
+        if (!ripController.HasActiveFuneralSpirit)
+        {
+            return damage;
+        }
+
+        int reducedDamage =
+            Mathf.FloorToInt(
+                damage * 0.75f
+            );
+
+        Debug.Log(
+            $"[Enemy] 장송의 가호 적용 : " +
+            $"{damage} → {reducedDamage}",
+            this
+        );
+
+        return reducedDamage;
+    }
+
+    /// <summary>
+    /// 적에게 피해를 적용하고
+    /// 실제로 감소한 체력량을 반환합니다.
+    ///
+    /// 취약, 방어도, 현재 체력을 모두 반영합니다.
     /// </summary>
     public int TakeDamage(int damage)
     {
@@ -399,9 +603,9 @@ public class Enemy : MonoBehaviour
             GetComponent<StatusEffectHandler>();
 
         if (statusEffectHandler != null &&
-            statusEffectHandler.HasStatusEffect(
-                StatusEffectType.Vulnerable
-            ))
+    statusEffectHandler.HasStatusEffect(
+        StatusEffectType.Vulnerable
+    ))
         {
             int increasedDamage =
                 Mathf.FloorToInt(
@@ -410,19 +614,27 @@ public class Enemy : MonoBehaviour
 
             Debug.Log(
                 $"[Enemy] 취약 적용 : " +
-                $"{damage} → {increasedDamage}"
+                $"{damage} → {increasedDamage}",
+                this
             );
 
             damage = increasedDamage;
         }
 
+        /*
+         * 모르바엘에게 장송의 원혼이 존재한다면
+         * 피해를 25% 감소시킵니다.
+         */
+        damage =
+            ApplyFuneralProtection(damage);
+
         int remainingDamage = damage;
-        int actualBlockDamage = 0;
 
         /*
-         * 피해를 받기 전 방어도가 있었는지 저장합니다.
-         * KShellguard는 이번 피해로 방어도가 전부 소진된 경우에만
-         * 발동해야 합니다.
+         * 피해를 받기 전에 방어도가 있었는지 저장합니다.
+         *
+         * KShellguard와 ProfanedHalo는
+         * 이번 피해로 방어도가 전부 소진될 때 발동합니다.
          */
         bool hadBlockBeforeDamage =
             currentBlock > 0;
@@ -433,7 +645,7 @@ public class Enemy : MonoBehaviour
         if (remainingDamage > 0 &&
             currentBlock > 0)
         {
-            actualBlockDamage =
+            int actualBlockDamage =
                 Mathf.Min(
                     currentBlock,
                     remainingDamage
@@ -446,17 +658,18 @@ public class Enemy : MonoBehaviour
                 $"[Enemy] 방어도 피해 흡수 : " +
                 $"{actualBlockDamage} / " +
                 $"남은 방어도 {currentBlock} / " +
-                $"남은 피해 {remainingDamage}"
+                $"남은 피해 {remainingDamage}",
+                this
             );
         }
 
         /*
-         * 피해 전에는 방어도가 있었고,
-         * 이번 피해로 방어도가 정확히 0이 되었다면
-         * KShellguard를 발동합니다.
+         * 피해 전에는 방어도가 있었고
+         * 이번 피해로 방어도가 0이 되었다면
+         * 관련 패시브를 발동합니다.
          */
         if (hadBlockBeforeDamage &&
-    currentBlock <= 0)
+            currentBlock <= 0)
         {
             TryActivateKShellguard();
             TryActivateProfanedHalo();
@@ -480,43 +693,48 @@ public class Enemy : MonoBehaviour
 
         Debug.Log(
             $"[Enemy] 체력 피해 : {actualHealthDamage} / " +
-            $"현재 체력 : {currentHP}"
+            $"현재 체력 : {currentHP}",
+            this
         );
 
         /*
-         * 흡혈 등에서는 방어도 피해가 아닌
-         * 실제 체력 감소량만 피해량으로 취급합니다.
+         * 흡혈 등에서 사용하는 실제 피해량은
+         * 방어도 피해가 아닌 체력 감소량입니다.
          */
         int actualDamage = actualHealthDamage;
-
-        Debug.Log(
-            $"[Enemy] 데미지 받음 : {actualDamage} / " +
-            $"현재 체력 : {currentHP}"
-        );
 
         if (currentHP <= 0)
         {
             Debug.Log(
-                $"[Enemy] 체력 0 도달 : {name}"
+                $"[Enemy] 체력 0 도달 : {name}",
+                this
             );
 
             /*
-             * UnderGroundController가 붙은 보스라면
-             * 즉시 사망하지 않고 UnderWater 상태로 전환합니다.
+             * 아스피도켈의 UnderGround 사망 방지를 먼저 검사합니다.
              */
             bool preventedDeath =
-    TryPreventDeathWithUnderGround();
+                TryPreventDeathWithUnderGround();
 
+            /*
+             * UnderGround가 발동하지 않았다면
+             * 모르바엘의 RIP 사망 방지를 검사합니다.
+             */
             if (!preventedDeath)
             {
                 preventedDeath =
                     TryPreventDeathWithRIP();
             }
 
+            /*
+             * 어떤 사망 방지 효과도 발동하지 않았다면
+             * 일반 사망 처리합니다.
+             */
             if (!preventedDeath)
             {
                 Debug.Log(
-                    $"[Enemy] 일반 사망 처리 실행 : {name}"
+                    $"[Enemy] 일반 사망 처리 실행 : {name}",
+                    this
                 );
 
                 Die();
@@ -527,55 +745,43 @@ public class Enemy : MonoBehaviour
     }
 
     /// <summary>
-    /// UnderGroundController가 붙어 있는 적이 체력 0이 되었을 때
-    /// 즉시 사망하지 않고 UnderWater 상태로 전환을 시도합니다.
+    /// UnderGroundController가 붙어 있는 적이
+    /// 체력 0이 되었을 때 UnderWater 상태 전환을 시도합니다.
     ///
     /// 전환에 성공하면 true를 반환하여 일반 사망을 막습니다.
-    /// 컨트롤러가 없거나 전환에 실패하면 false를 반환합니다.
     /// </summary>
     private bool TryPreventDeathWithUnderGround()
     {
-        Debug.Log(
-            $"[Enemy] UnderGround 사망 방지 검사 시작 : {name}"
-        );
-
         UnderGroundController underGroundController =
             GetComponent<UnderGroundController>();
 
         if (underGroundController == null)
         {
-            Debug.LogWarning(
-                $"[Enemy] UnderGroundController 없음 : {name}"
-            );
-
             return false;
         }
 
         Debug.Log(
-            $"[Enemy] UnderGroundController 발견 : {name} / " +
+            $"[Enemy] UnderGround 사망 방지 검사 : {name} / " +
             $"UnderGround = {underGroundController.IsUnderGround} / " +
             $"UnderWater = {underGroundController.IsUnderWater} / " +
-            $"침몰 수치 = {underGroundController.CurrentSinkValue}"
+            $"침몰 수치 = {underGroundController.CurrentSinkValue}",
+            this
         );
 
         if (!underGroundController.TryEnterUnderWater())
         {
-            Debug.LogWarning(
-                $"[Enemy] UnderWater 상태 전환 실패 : {name}"
-            );
-
             return false;
         }
 
         /*
          * 체력은 0으로 유지하지만 오브젝트는 비활성화하지 않습니다.
-         * 이후 적 턴에서 침몰 피해를 발동할 예정입니다.
+         * 이후 적 턴에 침몰 폭발을 실행합니다.
          */
         Debug.Log(
-            $"[Enemy] {name} 사망 방지 성공 : " +
-            $"UnderWater 상태 전환 / " +
+            $"[Enemy] {name} UnderWater 상태 전환 성공 / " +
             $"예정 침몰 피해 " +
-            $"{underGroundController.CurrentSinkValue}"
+            $"{underGroundController.CurrentSinkValue}",
+            this
         );
 
         return true;
@@ -585,8 +791,8 @@ public class Enemy : MonoBehaviour
     /// RIPController가 붙은 적의 체력이 0이 되었을 때
     /// 안식이 최대치 미만이라면 체력 1로 생존시킵니다.
     ///
-    /// 사망 방지에 성공하면 다음 적 턴 체력 회복이 예약되며
-    /// true를 반환합니다.
+    /// 사망 방지에 성공하면
+    /// 다음 적 턴 회복이 예약됩니다.
     /// </summary>
     private bool TryPreventDeathWithRIP()
     {
@@ -601,7 +807,8 @@ public class Enemy : MonoBehaviour
         Debug.Log(
             $"[Enemy] 안식 사망 방지 검사 : {name} / " +
             $"안식 {ripController.CurrentRIPValue}/" +
-            $"{ripController.MaxRIPValue}"
+            $"{ripController.MaxRIPValue}",
+            this
         );
 
         if (!ripController.TryPreventDeath())
@@ -610,13 +817,15 @@ public class Enemy : MonoBehaviour
         }
 
         /*
-         * 안식 3 미만일 때 체력 1로 버팁니다.
+         * 안식이 최대치 미만이면
+         * 체력 1로 버팁니다.
          */
         currentHP = 1;
 
         Debug.Log(
             $"[Enemy] 안식 발동으로 사망 방지 : {name} / " +
-            $"현재 체력 {currentHP}"
+            $"현재 체력 {currentHP}",
+            this
         );
 
         return true;
@@ -625,9 +834,6 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// 안식 효과로 예약된 체력 회복을
     /// 적 턴 시작 시 처리합니다.
-    ///
-    /// 최대 체력을 초과하여 회복하지 않으며,
-    /// 회복 완료 후 대기 상태를 해제합니다.
     /// </summary>
     private void ProcessRIPPendingHeal()
     {
@@ -654,7 +860,8 @@ public class Enemy : MonoBehaviour
         Debug.Log(
             $"[Enemy] 안식 회복 발동 : {name} / " +
             $"{healAmount} 회복 / " +
-            $"현재 체력 {currentHP}/{maxHP}"
+            $"현재 체력 {currentHP}/{maxHP}",
+            this
         );
     }
 
@@ -673,8 +880,8 @@ public class Enemy : MonoBehaviour
         }
 
         if (!statusEffectHandler.HasStatusEffect(
-            StatusEffectType.KShellguard
-        ))
+                StatusEffectType.KShellguard
+            ))
         {
             return;
         }
@@ -683,7 +890,8 @@ public class Enemy : MonoBehaviour
 
         Debug.Log(
             $"[Enemy] 등껍질 방패 발동 : " +
-            $"{name}은 다음 적 턴에 행동하지 않습니다."
+            $"{name}은 다음 적 턴에 행동하지 않습니다.",
+            this
         );
     }
 
@@ -703,8 +911,8 @@ public class Enemy : MonoBehaviour
         }
 
         if (!statusEffectHandler.HasStatusEffect(
-            StatusEffectType.ProfanedHalo
-        ))
+                StatusEffectType.ProfanedHalo
+            ))
         {
             return;
         }
@@ -718,7 +926,37 @@ public class Enemy : MonoBehaviour
 
         Debug.Log(
             $"[Enemy] 모독받은 후광 발동 : " +
-            $"{name}에게 취약 2 부여"
+            $"{name}에게 취약 2 부여",
+            this
+        );
+    }
+
+    /// <summary>
+    /// 적의 최대 체력과 현재 체력을 설정합니다.
+    ///
+    /// 소환되는 원혼처럼 생성 시점에
+    /// 체력이 결정되는 적에게 사용합니다.
+    /// </summary>
+    public void InitializeHealth(int health)
+    {
+        if (health <= 0)
+        {
+            Debug.LogWarning(
+                $"[Enemy] 잘못된 초기 체력입니다 : {health}",
+                this
+            );
+
+            return;
+        }
+
+        maxHP = health;
+        currentHP = health;
+        currentBlock = 0;
+
+        Debug.Log(
+            $"[Enemy] 체력 초기화 : " +
+            $"{currentHP}/{maxHP}",
+            this
         );
     }
 
@@ -737,14 +975,14 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogWarning(
                 $"[Enemy] 체력이 0인 적은 직접 회복할 수 없습니다 : " +
-                $"{name}"
+                $"{name}",
+                this
             );
 
             return 0;
         }
 
-        int previousHP =
-            currentHP;
+        int previousHP = currentHP;
 
         currentHP =
             Mathf.Min(
@@ -758,7 +996,8 @@ public class Enemy : MonoBehaviour
         Debug.Log(
             $"[Enemy] 체력 회복 : {name} / " +
             $"+{actualHealAmount} / " +
-            $"{currentHP}/{maxHP}"
+            $"{currentHP}/{maxHP}",
+            this
         );
 
         return actualHealAmount;
@@ -778,19 +1017,51 @@ public class Enemy : MonoBehaviour
 
         Debug.Log(
             $"[Enemy] 방어도 획득 : " +
-            $"+{amount} / 현재 방어도 {currentBlock}"
+            $"+{amount} / 현재 방어도 {currentBlock}",
+            this
         );
     }
 
     /// <summary>
     /// 적의 사망 처리를 실행합니다.
+    ///
+    /// 장송의 원혼은 메인 적이 아니므로
+    /// BattleManager의 전투 종료 검사를 실행하지 않습니다.
     /// </summary>
     private void Die()
     {
         Debug.Log(
-            $"[Enemy] 적 사망 : {name}"
+            $"[Enemy] 적 사망 : {name}",
+            this
         );
 
+        FuneralSpirit funeralSpirit =
+            GetComponent<FuneralSpirit>();
+
+        /*
+         * 장송의 원혼 사망 처리
+         *
+         * 원혼은 메인 적이 아니므로
+         * 원혼 하나가 죽었다고 전투 종료를 검사하지 않습니다.
+         */
+        if (funeralSpirit != null)
+        {
+            funeralSpirit.NotifyDeath();
+
+            gameObject.SetActive(false);
+
+            Debug.Log(
+                $"[Enemy] 장송의 원혼 사망 처리 완료 : {name}",
+                this
+            );
+
+            return;
+        }
+
+        /*
+         * 일반 적 또는 보스가 사망한 경우에만
+         * 기존 전투 종료 검사를 실행합니다.
+         */
         if (battleManager != null)
         {
             battleManager.CheckBattleEnd();
