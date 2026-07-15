@@ -106,12 +106,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 30
   currentHP: 0
-  basicAttackDamage: 5
+  basicAttackDamage: 0
   currentBlock: 0
   isStunnedNextTurn: 0
   applyParalyzeNext: 1
   applyNoBlockNext: 1
   battleManager: {fileID: 0}
+  ownerSpawner: {fileID: 0}
+  isDeathProcessed: 0
 --- !u!114 &5262638531733677898
 MonoBehaviour:
   m_ObjectHideFlags: 0

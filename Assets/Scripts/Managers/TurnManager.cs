@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -37,6 +38,10 @@ public class TurnManager : MonoBehaviour
     [SerializeField]
     private float enemyTurnDelay = 0.7f;
 
+    [Header("Enemy Spawner")]
+    [SerializeField]
+    private EnemySpawner enemySpawner;
+
     /// <summary>
     /// 현재 플레이어 턴인지 반환합니다.
     /// </summary>
@@ -56,6 +61,7 @@ public class TurnManager : MonoBehaviour
 
     private void Start()
     {
+        TryFindEnemySpawner();
         StartPlayerTurn();
     }
 
@@ -181,7 +187,11 @@ public class TurnManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 모든 활성화된 적의 행동을 실행합니다.
+    /// EnemySpawner가 관리하는 모든 살아 있는 메인 적의 행동을
+    /// 생성된 순서대로 실행합니다.
+    ///
+    /// 장송의 원혼 같은 전투 중 소환 개체는
+    /// EnemySpawner의 메인 적 목록에 포함되지 않으므로 행동하지 않습니다.
     /// </summary>
     private void ExecuteEnemyTurn()
     {
@@ -191,38 +201,101 @@ public class TurnManager : MonoBehaviour
         if (playerCombat == null)
         {
             Debug.LogError(
-                "[TurnManager] 씬에서 PlayerCombat을 찾지 못했습니다."
+                "[TurnManager] 씬에서 PlayerCombat을 찾지 못했습니다.",
+                this
             );
 
             return;
         }
 
-        Enemy[] enemies = FindObjectsByType<Enemy>(
-            FindObjectsSortMode.None
-        );
+        TryFindEnemySpawner();
 
-        if (enemies.Length == 0)
+        if (enemySpawner == null)
+        {
+            Debug.LogError(
+                "[TurnManager] EnemySpawner를 찾지 못해 " +
+                "적 턴을 실행할 수 없습니다.",
+                this
+            );
+
+            return;
+        }
+
+        /*
+         * 원본 목록을 직접 순회하면 적 행동 도중 사망이나 제거로
+         * 목록이 변경될 수 있으므로 복사본을 받아 사용합니다.
+         */
+        List<Enemy> activeEnemies =
+            enemySpawner.GetActiveEnemies();
+
+        if (activeEnemies.Count == 0)
         {
             Debug.LogWarning(
-                "[TurnManager] 행동할 Enemy가 없습니다."
+                "[TurnManager] 행동할 메인 적이 없습니다.",
+                this
             );
 
             return;
         }
 
-        foreach (Enemy enemy in enemies)
+        Debug.Log(
+            $"[TurnManager] 메인 적 행동 시작 / " +
+            $"적 수: {activeEnemies.Count}",
+            this
+        );
+
+        for (int i = 0;
+             i < activeEnemies.Count;
+             i++)
         {
+            Enemy enemy =
+                activeEnemies[i];
+
             if (enemy == null)
             {
                 continue;
             }
 
-            if (!enemy.gameObject.activeSelf)
+            if (!enemy.gameObject.activeInHierarchy)
             {
                 continue;
             }
 
+            if (enemy.CurrentHP <= 0)
+            {
+                continue;
+            }
+
+            Debug.Log(
+                $"[TurnManager] 적 행동 : " +
+                $"{i + 1}/{activeEnemies.Count} / " +
+                $"{enemy.name}",
+                enemy
+            );
+
             enemy.TakeTurn(playerCombat);
+        }
+    }
+
+    /// <summary>
+    /// 현재 씬에서 EnemySpawner를 찾습니다.
+    /// </summary>
+    private void TryFindEnemySpawner()
+    {
+        if (enemySpawner != null)
+        {
+            return;
+        }
+
+        enemySpawner =
+            FindFirstObjectByType<EnemySpawner>();
+
+        if (enemySpawner != null)
+        {
+            Debug.Log(
+                "[TurnManager] EnemySpawner 자동 탐색 완료",
+                this
+            );
         }
     }
 

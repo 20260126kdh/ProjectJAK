@@ -2538,6 +2538,7 @@ MonoBehaviour:
   currentAttackDefenseCardUseCount: 0
   attackDefenseUseCountText: {fileID: 781886128}
   enemyTurnDelay: 0.7
+  enemySpawner: {fileID: 843205407}
 --- !u!4 &729106091
 Transform:
   m_ObjectHideFlags: 0
