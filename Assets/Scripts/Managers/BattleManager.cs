@@ -42,6 +42,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private EnemySpawner enemySpawner;
 
+    [Header("Battle Database")]
+    [SerializeField]
+    private BattleDatabase battleDatabase;
+
     [Header("HRevelation Panel UI")]
     [SerializeField]
     private HRevelationPanelUI hRevelationPanelUI;
@@ -53,7 +57,158 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
+        StartInitialBattle();
+    }
+
+    /// <summary>
+    /// 게임 시작 후 첫 전투의 적을 생성하고
+    /// 전투를 시작합니다.
+    /// </summary>
+    private void StartInitialBattle()
+    {
+        if (enemySpawner == null)
+        {
+            Debug.LogError(
+                "[BattleManager] EnemySpawner가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        if (battleDatabase == null)
+        {
+            Debug.LogError(
+                "[BattleManager] BattleDatabase가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        /*
+         * 현재 단계에서는 첫 전투를
+         * Stage 1 / Battle 1로 고정해서 불러옵니다.
+         *
+         * 다음 단계에서 StageManager의 실제 진행도와 연결합니다.
+         */
+        EnemyBattleData battleData =
+        GetCurrentEnemyBattleData();
+
+        if (battleData == null)
+        {
+            Debug.LogError(
+                "[BattleManager] 첫 전투 데이터를 가져오지 못했습니다."
+            );
+
+            return;
+        }
+
+        enemySpawner.SetBattleData(
+            battleData
+        );
+
+        bool spawnSucceeded =
+            enemySpawner.SpawnCurrentBattle();
+
+        if (!spawnSucceeded)
+        {
+            Debug.LogError(
+                "[BattleManager] 첫 전투 적 생성에 실패했습니다."
+            );
+
+            return;
+        }
+
         StartBattle();
+
+        if (turnManager != null)
+        {
+            turnManager.StartPlayerTurn();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[BattleManager] TurnManager가 연결되지 않았습니다."
+            );
+        }
+
+        Debug.Log(
+            "[BattleManager] 첫 전투 시작 완료"
+        );
+    }
+
+    /// <summary>
+    /// StageManager의 현재 진행도에 맞는
+    /// 전투 데이터를 BattleDatabase에서 가져옵니다.
+    /// </summary>
+    private EnemyBattleData GetCurrentEnemyBattleData()
+    {
+        StageManager stageManager =
+            StageManager.Instance;
+
+        if (stageManager == null)
+        {
+            stageManager =
+                FindFirstObjectByType<StageManager>();
+        }
+
+        if (stageManager == null)
+        {
+            Debug.LogError(
+                "[BattleManager] StageManager를 찾지 못했습니다."
+            );
+
+            return null;
+        }
+
+        switch (stageManager.CurrentPhase)
+        {
+            case StagePhase.NormalBattle:
+                {
+                    /*
+                     * StageManager의 CurrentBattleCount는 0부터 시작하고,
+                     * BattleDatabase의 Battle Count는 1부터 등록합니다.
+                     *
+                     * CurrentBattleCount 0 → Battle 1
+                     * CurrentBattleCount 1 → Battle 2
+                     * CurrentBattleCount 2 → Battle 3
+                     */
+                    int databaseBattleCount =
+                        stageManager.CurrentBattleCount + 1;
+
+                    Debug.Log(
+                        $"[BattleManager] 일반 전투 데이터 요청 / " +
+                        $"Stage: {stageManager.CurrentStage} / " +
+                        $"StageManager Count: {stageManager.CurrentBattleCount} / " +
+                        $"Database Battle: {databaseBattleCount}"
+                    );
+
+                    return battleDatabase.GetNormalBattleData(
+                        stageManager.CurrentStage,
+                        databaseBattleCount
+                    );
+                }
+
+            case StagePhase.BossBattle:
+                return battleDatabase.GetBossBattleData(
+                    stageManager.CurrentStage
+                );
+
+            case StagePhase.Rest:
+                Debug.LogWarning(
+                    "[BattleManager] 현재 휴식 단계이므로 " +
+                    "적 전투 데이터를 불러오지 않습니다."
+                );
+
+                return null;
+
+            default:
+                Debug.LogError(
+                    $"[BattleManager] 지원하지 않는 전투 단계입니다: " +
+                    $"{stageManager.CurrentPhase}"
+                );
+
+                return null;
+        }
     }
 
     /// <summary>
@@ -130,15 +285,55 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        if (enemySpawner != null)
-        {
-            enemySpawner.SpawnEnemy();
-        }
-        else
+        if (enemySpawner == null)
         {
             Debug.LogWarning(
                 "[BattleManager] EnemySpawner가 연결되지 않았습니다."
             );
+
+            return;
+        }
+
+        if (battleDatabase == null)
+        {
+            Debug.LogError(
+                "[BattleManager] BattleDatabase가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        /*
+         * 현재는 StageManager 자동 연결 전 테스트 단계이므로
+         * Stage 1 / Battle 1 데이터를 임시로 사용합니다.
+         */
+        EnemyBattleData battleData =
+        GetCurrentEnemyBattleData();
+
+        if (battleData == null)
+        {
+            Debug.LogError(
+                "[BattleManager] 현재 진행도에 해당하는 " +
+                "전투 데이터를 가져오지 못했습니다."
+            );
+
+            return;
+        }
+
+        enemySpawner.SetBattleData(
+            battleData
+        );
+
+        bool spawnSucceeded =
+            enemySpawner.SpawnCurrentBattle();
+
+        if (!spawnSucceeded)
+        {
+            Debug.LogError(
+                "[BattleManager] 현재 전투의 적 생성에 실패했습니다."
+            );
+
+            return;
         }
 
         StartBattle();
