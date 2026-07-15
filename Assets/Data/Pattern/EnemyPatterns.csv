@@ -1,0 +1,8 @@
+﻿EnemyId,PatternTurn,ExecutionOrder,ActionType,Value,RepeatCount,TargetType,StatusType,Duration,IsPermanent,ConditionType,ConditionValue
+Morbael,1,1,DealDamage,17,1,Player,None,0,FALSE,None,0
+Morbael,2,1,ApplyStatus,2,1,Player,Weaken,2,FALSE,None,0
+Morbael,2,2,GainBlock,24,1,Self,None,0,FALSE,None,0
+Morbael,3,1,SummonFuneralSpirit,1,1,Self,None,0,FALSE,FuneralSpiritCountBelow,3
+Morbael,3,2,GainBlock,12,1,Self,None,0,FALSE,None,0
+Morbael,4,1,DealDamage,9,3,Player,None,0,FALSE,NoActiveFuneralSpirit,0
+Morbael,4,1,DealDamage,9,4,Player,None,0,FALSE,HasActiveFuneralSpirit,0
