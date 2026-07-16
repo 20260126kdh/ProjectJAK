@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 136957952223875366}
   - component: {fileID: 7683033862059579128}
   - component: {fileID: -4903704106713150879}
+  - component: {fileID: 4902468545225415637}
   m_Layer: 0
   m_Name: Morbael
   m_TagString: Enemy
@@ -229,3 +230,17 @@ MonoBehaviour:
   ownerEnemy: {fileID: 2395329796861106145}
   playerCombat: {fileID: 0}
   funeralSpiritSpawner: {fileID: 0}
+--- !u!114 &4902468545225415637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4558508858516679380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b300414a25b92a4e9bb238a07218f09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHarpoonStack: 999
+  currentHarpoonStack: 0

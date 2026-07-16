@@ -112,9 +112,9 @@ public class CardEffectExecutor : MonoBehaviour
 
             case CardEffectType.HarpoonerStack:
             case CardEffectType.ApplyHarpoon:
-                Debug.Log(
-                    $"[CardEffectExecutor] " +
-                    $"작살 스택 부여 예정 : {effect.value}"
+                ExecuteApplyHarpoon(
+                    effect,
+                    targetEnemy
                 );
                 break;
 
@@ -187,6 +187,168 @@ public class CardEffectExecutor : MonoBehaviour
                     "작살 스택만큼 피해 예정"
                 );
                 break;
+        }
+    }
+
+    /// <summary>
+    /// 지정된 대상에게 작살 스택을 부여합니다.
+    /// 단일 적, 무작위 적, 모든 적 대상을 지원합니다.
+    /// </summary>
+    private void ExecuteApplyHarpoon(
+        CardEffectData effect,
+        Enemy targetEnemy)
+    {
+        int stackAmount =
+            Mathf.Max(
+                0,
+                effect.value
+            );
+
+        if (stackAmount <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] " +
+                "부여할 작살 스택이 0 이하입니다."
+            );
+
+            return;
+        }
+
+        switch (effect.target)
+        {
+            case CardTargetType.Enemy:
+                ApplyHarpoonToEnemy(
+                    targetEnemy,
+                    stackAmount
+                );
+                break;
+
+            case CardTargetType.RandomEnemy:
+                ApplyHarpoonToRandomEnemy(
+                    stackAmount
+                );
+                break;
+
+            case CardTargetType.AllEnemies:
+                ApplyHarpoonToAllEnemies(
+                    stackAmount
+                );
+                break;
+
+            default:
+                Debug.LogWarning(
+                    $"[CardEffectExecutor] " +
+                    $"지원하지 않는 작살 대상입니다: " +
+                    $"{effect.target}"
+                );
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 지정된 적 한 명에게 작살 스택을 부여합니다.
+    /// </summary>
+    private void ApplyHarpoonToEnemy(
+        Enemy targetEnemy,
+        int stackAmount)
+    {
+        if (!IsEnemyAlive(targetEnemy))
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] " +
+                "작살을 부여할 적이 없습니다."
+            );
+
+            return;
+        }
+
+        HarpoonStackController harpoonController =
+            targetEnemy.GetComponent<HarpoonStackController>();
+
+        if (harpoonController == null)
+        {
+            Debug.LogWarning(
+                $"[CardEffectExecutor] " +
+                $"{targetEnemy.name}에 " +
+                "HarpoonStackController가 없습니다.",
+                targetEnemy
+            );
+
+            return;
+        }
+
+        int actualAddedAmount =
+            harpoonController.AddHarpoonStack(
+                stackAmount
+            );
+
+        Debug.Log(
+            $"[CardEffectExecutor] 작살 스택 부여 : " +
+            $"{targetEnemy.name} / " +
+            $"+{actualAddedAmount} / " +
+            $"현재 {harpoonController.CurrentHarpoonStack}",
+            targetEnemy
+        );
+    }
+
+    /// <summary>
+    /// 살아 있는 적 중 한 명을 무작위로 선택하여
+    /// 작살 스택을 부여합니다.
+    /// </summary>
+    private void ApplyHarpoonToRandomEnemy(
+        int stackAmount)
+    {
+        List<Enemy> activeEnemies =
+            FindActiveEnemies();
+
+        if (activeEnemies.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] " +
+                "작살을 부여할 살아 있는 적이 없습니다."
+            );
+
+            return;
+        }
+
+        int randomIndex =
+            Random.Range(
+                0,
+                activeEnemies.Count
+            );
+
+        ApplyHarpoonToEnemy(
+            activeEnemies[randomIndex],
+            stackAmount
+        );
+    }
+
+    /// <summary>
+    /// 현재 살아 있는 모든 적에게
+    /// 작살 스택을 부여합니다.
+    /// </summary>
+    private void ApplyHarpoonToAllEnemies(
+        int stackAmount)
+    {
+        List<Enemy> activeEnemies =
+            FindActiveEnemies();
+
+        if (activeEnemies.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] " +
+                "작살을 부여할 살아 있는 적이 없습니다."
+            );
+
+            return;
+        }
+
+        foreach (Enemy enemy in activeEnemies)
+        {
+            ApplyHarpoonToEnemy(
+                enemy,
+                stackAmount
+            );
         }
     }
 
@@ -443,13 +605,49 @@ public class CardEffectExecutor : MonoBehaviour
         }
 
         finalDamage =
-            Mathf.Max(0, finalDamage);
+    Mathf.Max(
+        0,
+        finalDamage
+    );
+
+        int harpoonBonusDamage = 0;
+
+        HarpoonStackController harpoonController =
+            targetEnemy.GetComponent<HarpoonStackController>();
+
+        if (harpoonController != null &&
+            harpoonController.HasHarpoonStack)
+        {
+            /*
+             * 작살 추가 피해는 피해를 적용하기 전에
+             * 현재 스택을 기준으로 계산합니다.
+             *
+             * 계산과 동시에 스택 1을 소비합니다.
+             */
+            harpoonBonusDamage =
+                harpoonController
+                    .CalculateBonusDamageAndConsume();
+
+            Debug.Log(
+                $"[CardEffectExecutor] 작살 추가 피해 적용 : " +
+                $"기본 공격 피해 {finalDamage} + " +
+                $"작살 추가 피해 {harpoonBonusDamage} = " +
+                $"{finalDamage + harpoonBonusDamage}",
+                targetEnemy
+            );
+        }
+
+        int totalDamage =
+            finalDamage + harpoonBonusDamage;
 
         /*
-         * 적의 취약은 Enemy.TakeDamage() 내부에서 적용됩니다.
+         * 적의 취약과 장송의 가호는
+         * Enemy.TakeDamage() 내부에서 적용됩니다.
          */
         int actualDamage =
-            targetEnemy.TakeDamage(finalDamage);
+            targetEnemy.TakeDamage(
+                totalDamage
+            );
 
         ProcessLifesteal(
             playerCombat,
