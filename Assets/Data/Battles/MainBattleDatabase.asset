@@ -15,13 +15,59 @@ MonoBehaviour:
   normalBattleEntries:
   - stage: 1
     battleCount: 1
-    battleData: {fileID: 11400000, guid: 9a44eb4cf6a0af24d94aefaa3281d751, type: 2}
+    battleData: {fileID: 11400000, guid: abb45737964366646951ca2246f2037e, type: 2}
   - stage: 1
     battleCount: 2
-    battleData: {fileID: 11400000, guid: b14115435b8f2e5438f9a5639be30bf1, type: 2}
+    battleData: {fileID: 11400000, guid: a540044eea97e8a44a84e462e9b2418f, type: 2}
   - stage: 1
     battleCount: 3
-    battleData: {fileID: 11400000, guid: 122a52d766d5f1640a65fe61944127b5, type: 2}
+    battleData: {fileID: 11400000, guid: dfa39f9980c78c84492f84c6387c368b, type: 2}
+  - stage: 1
+    battleCount: 4
+    battleData: {fileID: 11400000, guid: 00f094f226146654ab252537c167b7cf, type: 2}
+  - stage: 1
+    battleCount: 5
+    battleData: {fileID: 0}
+  - stage: 2
+    battleCount: 1
+    battleData: {fileID: 11400000, guid: 40340ee47138cee40917597399b3b84f, type: 2}
+  - stage: 2
+    battleCount: 2
+    battleData: {fileID: 11400000, guid: 5445e5ba7c78834448d502c9f81d98d1, type: 2}
+  - stage: 2
+    battleCount: 3
+    battleData: {fileID: 0}
+  - stage: 2
+    battleCount: 4
+    battleData: {fileID: 11400000, guid: 320b585c39df6064aa5c3d94169596c7, type: 2}
+  - stage: 2
+    battleCount: 5
+    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+  - stage: 3
+    battleCount: 1
+    battleData: {fileID: 11400000, guid: 8539a63f36e9c814696f77c096f5676f, type: 2}
+  - stage: 3
+    battleCount: 2
+    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+  - stage: 3
+    battleCount: 3
+    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+  - stage: 3
+    battleCount: 4
+    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+  - stage: 3
+    battleCount: 5
+    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
   bossBattleEntries:
   - stage: 1
     battleData: {fileID: 11400000, guid: 8849d7626b5123542801e44ae3eef519, type: 2}
+  - stage: 1
+    battleData: {fileID: 11400000, guid: 8774c87772eca2444838753942ad254c, type: 2}
+  - stage: 2
+    battleData: {fileID: 11400000, guid: e2479ff7e2628fc4782a72efb6302851, type: 2}
+  - stage: 2
+    battleData: {fileID: 11400000, guid: 7dfb33ff6ae059647b3344cf9b09bc3c, type: 2}
+  - stage: 3
+    battleData: {fileID: 11400000, guid: dc17a06131181344a8a3ff3e044bc1ad, type: 2}
+  - stage: 3
+    battleData: {fileID: 11400000, guid: d281815a9c9759a4eb0e05f1bf007200, type: 2}

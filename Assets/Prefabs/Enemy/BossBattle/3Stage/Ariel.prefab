@@ -10,14 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 6333371417062441453}
   - component: {fileID: 3451839181105817424}
+  - component: {fileID: 7487632797748664024}
   - component: {fileID: 2395329796861106145}
   - component: {fileID: 5262638531733677898}
-  - component: {fileID: 7487632797748664024}
   - component: {fileID: 4714577768804223752}
-  - component: {fileID: 4563483236464802939}
-  - component: {fileID: 7019716964852693619}
+  - component: {fileID: -446298983776449550}
+  - component: {fileID: 4196642061735527115}
   m_Layer: 0
-  m_Name: EnemyDummy
+  m_Name: Ariel
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.93333334, g: 0.11982302, b: 0.09411764, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -93,41 +93,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2395329796861106145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4558508858516679380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9409aa59e5e81d4cafa4c00e7c67da5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHP: 30
-  currentHP: 0
-  basicAttackDamage: 5
-  currentBlock: 0
-  isStunnedNextTurn: 0
-  applyParalyzeNext: 1
-  applyNoBlockNext: 1
-  battleManager: {fileID: 0}
-  ownerSpawner: {fileID: 0}
-  isDeathProcessed: 0
---- !u!114 &5262638531733677898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4558508858516679380}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d351b0af9a168b94590e4e72ee7f9658, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemy: {fileID: 2395329796861106145}
 --- !u!58 &7487632797748664024
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -164,6 +129,41 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.50000006
+--- !u!114 &2395329796861106145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4558508858516679380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9409aa59e5e81d4cafa4c00e7c67da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 777
+  currentHP: 0
+  basicAttackDamage: 5
+  currentBlock: 5
+  isStunnedNextTurn: 0
+  applyParalyzeNext: 1
+  applyNoBlockNext: 1
+  battleManager: {fileID: 0}
+  ownerSpawner: {fileID: 0}
+  isDeathProcessed: 0
+--- !u!114 &5262638531733677898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4558508858516679380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d351b0af9a168b94590e4e72ee7f9658, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 2395329796861106145}
 --- !u!114 &4714577768804223752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,8 +176,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ace8601f2db7441b2a92c232553a54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statusEffects: []
---- !u!114 &4563483236464802939
+  statusEffects:
+  - statusEffectType: 14
+    value: 1
+    remainingTurn: 0
+    isPermanent: 1
+--- !u!114 &-446298983776449550
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,14 +193,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c705a73697fc06458eb6b73831c3bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyId: EnemyDummy
+  enemyId: Ariel
   currentPatternTurn: 1
   patternLength: 0
   csvLoader: {fileID: 0}
   conditionChecker: {fileID: 0}
   patternExecutor: {fileID: 0}
   isInitialized: 0
---- !u!114 &7019716964852693619
+--- !u!114 &4196642061735527115
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

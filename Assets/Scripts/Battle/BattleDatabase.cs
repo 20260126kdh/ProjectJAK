@@ -69,8 +69,15 @@ public class BattleDatabase : ScriptableObject
     /// <summary>
     /// 지정한 스테이지의 보스 전투 데이터를 반환합니다.
     /// </summary>
+    /// <summary>
+    /// 지정한 스테이지에 등록된 보스 전투 데이터 중
+    /// 하나를 무작위로 선택하여 반환합니다.
+    /// </summary>
     public EnemyBattleData GetBossBattleData(int stage)
     {
+        List<EnemyBattleData> matchingBossBattleData =
+            new List<EnemyBattleData>();
+
         for (int i = 0;
              i < bossBattleEntries.Count;
              i++)
@@ -88,16 +95,52 @@ public class BattleDatabase : ScriptableObject
                 continue;
             }
 
-            return entry.BattleData;
+            if (entry.BattleData == null)
+            {
+                Debug.LogWarning(
+                    $"[BattleDatabase] Stage {stage}의 " +
+                    $"보스 전투 데이터가 비어 있습니다. " +
+                    $"Element Index: {i}",
+                    this
+                );
+
+                continue;
+            }
+
+            matchingBossBattleData.Add(
+                entry.BattleData
+            );
         }
 
-        Debug.LogWarning(
-            $"[BattleDatabase] 보스 전투 데이터를 찾지 못했습니다. " +
-            $"Stage: {stage}",
-            this
+        if (matchingBossBattleData.Count == 0)
+        {
+            Debug.LogWarning(
+                $"[BattleDatabase] 보스 전투 데이터를 찾지 못했습니다. " +
+                $"Stage: {stage}",
+                this
+            );
+
+            return null;
+        }
+
+        int randomIndex =
+            UnityEngine.Random.Range(
+                0,
+                matchingBossBattleData.Count
+            );
+
+        EnemyBattleData selectedBattleData =
+            matchingBossBattleData[randomIndex];
+
+        Debug.Log(
+            $"[BattleDatabase] 보스 무작위 선택 완료 / " +
+            $"Stage: {stage} / " +
+            $"후보 수: {matchingBossBattleData.Count} / " +
+            $"선택: {selectedBattleData.name}",
+            selectedBattleData
         );
 
-        return null;
+        return selectedBattleData;
     }
 
 #if UNITY_EDITOR

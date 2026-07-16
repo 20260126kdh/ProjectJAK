@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4563483236464802939}
   - component: {fileID: 7019716964852693619}
   m_Layer: 0
-  m_Name: EnemyDummy
+  m_Name: Mimic1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9409aa59e5e81d4cafa4c00e7c67da5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 30
+  maxHP: 45
   currentHP: 0
   basicAttackDamage: 5
   currentBlock: 0
@@ -189,7 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c705a73697fc06458eb6b73831c3bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyId: EnemyDummy
+  enemyId: Mimic1
   currentPatternTurn: 1
   patternLength: 0
   csvLoader: {fileID: 0}
