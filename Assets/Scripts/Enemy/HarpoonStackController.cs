@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -36,6 +37,12 @@ public class HarpoonStackController : MonoBehaviour
         maxHarpoonStack;
 
     /// <summary>
+    /// 현재 작살 스택이 변경됐을 때 호출됩니다.
+    /// 변경된 현재 스택을 전달합니다.
+    /// </summary>
+    public event Action<int> HarpoonStackChanged;
+
+    /// <summary>
     /// 현재 작살 스택이 한 개 이상 있는지 반환합니다.
     /// </summary>
     public bool HasHarpoonStack =>
@@ -68,6 +75,8 @@ public class HarpoonStackController : MonoBehaviour
 
         int actualAddedAmount =
             currentHarpoonStack - previousStack;
+
+        NotifyHarpoonStackChanged();
 
         Debug.Log(
             $"[HarpoonStackController] 작살 스택 추가 : " +
@@ -129,6 +138,8 @@ public class HarpoonStackController : MonoBehaviour
                 currentHarpoonStack - 1
             );
 
+        NotifyHarpoonStackChanged();
+
         Debug.Log(
             $"[HarpoonStackController] 작살 발동 : " +
             $"스택 {stackBeforeConsume} / " +
@@ -164,6 +175,8 @@ public class HarpoonStackController : MonoBehaviour
         int removedAmount =
             previousStack - currentHarpoonStack;
 
+        NotifyHarpoonStackChanged();
+
         Debug.Log(
             $"[HarpoonStackController] 작살 스택 제거 : " +
             $"{previousStack} → {currentHarpoonStack}",
@@ -180,9 +193,21 @@ public class HarpoonStackController : MonoBehaviour
     {
         currentHarpoonStack = 0;
 
+        NotifyHarpoonStackChanged();
+
         Debug.Log(
             "[HarpoonStackController] 작살 스택 초기화",
             this
+        );
+    }
+
+    /// <summary>
+    /// 현재 작살 스택을 UI 등 외부 시스템에 알립니다.
+    /// </summary>
+    private void NotifyHarpoonStackChanged()
+    {
+        HarpoonStackChanged?.Invoke(
+            currentHarpoonStack
         );
     }
 

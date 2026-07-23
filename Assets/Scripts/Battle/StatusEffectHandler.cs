@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,11 @@ public class StatusEffectHandler : MonoBehaviour
     [Header("현재 적용된 상태 효과 목록")]
     [SerializeField]
     private List<StatusEffectData> statusEffects = new List<StatusEffectData>();
+
+    /// <summary>
+    /// 상태 효과 목록이나 상태 효과 수치가 변경되었을 때 호출됩니다.
+    /// </summary>
+    public event Action StatusEffectsChanged;
 
     /// <summary>
     /// 현재 적용된 상태 효과 목록을 반환합니다.
@@ -40,6 +46,8 @@ public class StatusEffectHandler : MonoBehaviour
                     Mathf.Max(existingEffect.remainingTurn, remainingTurn);
             }
 
+            NotifyStatusEffectsChanged();
+
             Debug.Log(
                 $"[StatusEffectHandler] 상태 효과 중첩 : " +
                 $"{statusEffectType} / 현재 수치 : {existingEffect.value}"
@@ -56,6 +64,8 @@ public class StatusEffectHandler : MonoBehaviour
         );
 
         statusEffects.Add(newEffect);
+
+        NotifyStatusEffectsChanged();
 
         Debug.Log(
             $"[StatusEffectHandler] 상태 효과 추가 : " +
@@ -107,6 +117,8 @@ public class StatusEffectHandler : MonoBehaviour
 
         statusEffects.Remove(effect);
 
+        NotifyStatusEffectsChanged();
+
         Debug.Log(
             $"[StatusEffectHandler] 상태 효과 직접 제거 : {statusEffectType}"
         );
@@ -131,12 +143,17 @@ public class StatusEffectHandler : MonoBehaviour
         if (toxicEffect.value <= 0)
         {
             statusEffects.Remove(toxicEffect);
+
+            NotifyStatusEffectsChanged();
+
             return 0;
         }
 
         int toxicDamage = toxicEffect.value;
 
         toxicEffect.value--;
+
+        NotifyStatusEffectsChanged();
 
         Debug.Log(
             $"[StatusEffectHandler] 중독 발동 : " +
@@ -146,6 +163,8 @@ public class StatusEffectHandler : MonoBehaviour
         if (toxicEffect.value <= 0)
         {
             statusEffects.Remove(toxicEffect);
+
+            NotifyStatusEffectsChanged();
 
             Debug.Log("[StatusEffectHandler] 중독 제거");
         }
@@ -186,6 +205,8 @@ public class StatusEffectHandler : MonoBehaviour
                 statusEffects.RemoveAt(i);
             }
         }
+
+        NotifyStatusEffectsChanged();
     }
 
     /// <summary>
@@ -196,6 +217,16 @@ public class StatusEffectHandler : MonoBehaviour
     {
         statusEffects.Clear();
 
+        NotifyStatusEffectsChanged();
+
         Debug.Log("[StatusEffectHandler] 모든 상태 효과 초기화");
+    }
+
+    /// <summary>
+    /// 상태 효과 변경 사실을 UI 등 외부 시스템에 알립니다.
+    /// </summary>
+    private void NotifyStatusEffectsChanged()
+    {
+        StatusEffectsChanged?.Invoke();
     }
 }

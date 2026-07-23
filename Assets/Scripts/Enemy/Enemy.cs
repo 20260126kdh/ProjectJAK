@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -62,9 +63,21 @@ public class Enemy : MonoBehaviour
     public int MaxHP => maxHP;
 
     /// <summary>
+    /// 적의 현재 체력 또는 최대 체력이 변경됐을 때 호출됩니다.
+    /// 현재 체력과 최대 체력을 전달합니다.
+    /// </summary>
+    public event Action<int, int> HealthChanged;
+
+    /// <summary>
     /// 현재 방어도입니다.
     /// </summary>
     public int CurrentBlock => currentBlock;
+
+    /// <summary>
+    /// 적의 현재 방어도가 변경됐을 때 호출됩니다.
+    /// 현재 방어도 값을 전달합니다.
+    /// </summary>
+    public event Action<int> BlockChanged;
 
     /// <summary>
     /// 다음 적 턴 기절 여부입니다.
@@ -645,6 +658,8 @@ public class Enemy : MonoBehaviour
             currentBlock -= actualBlockDamage;
             remainingDamage -= actualBlockDamage;
 
+            NotifyBlockChanged();
+
             Debug.Log(
                 $"[Enemy] 방어도 피해 흡수 : " +
                 $"{actualBlockDamage} / " +
@@ -674,6 +689,10 @@ public class Enemy : MonoBehaviour
                 0,
                 currentHP
             );
+
+        NotifyHealthChanged();
+
+
 
         Debug.Log(
             $"[Enemy] 체력 피해 : {actualHealthDamage} / " +
@@ -764,6 +783,8 @@ public class Enemy : MonoBehaviour
         }
 
         currentHP = 1;
+
+        NotifyHealthChanged();
 
         Debug.Log(
             $"[Enemy] 안식 발동으로 사망 방지 : {name} / " +
@@ -891,6 +912,9 @@ public class Enemy : MonoBehaviour
         currentBlock = 0;
         isDeathProcessed = false;
 
+        NotifyHealthChanged();
+        NotifyBlockChanged();
+
         Debug.Log(
             $"[Enemy] 체력 초기화 : " +
             $"{currentHP}/{maxHP}",
@@ -933,6 +957,8 @@ public class Enemy : MonoBehaviour
         int actualHealAmount =
             currentHP - previousHP;
 
+        NotifyHealthChanged();
+
         Debug.Log(
             $"[Enemy] 체력 회복 : {name} / " +
             $"+{actualHealAmount} / " +
@@ -957,10 +983,33 @@ public class Enemy : MonoBehaviour
 
         currentBlock += amount;
 
+        NotifyBlockChanged();
+
         Debug.Log(
             $"[Enemy] 방어도 획득 : " +
             $"+{amount} / 현재 방어도 {currentBlock}",
             this
+        );
+    }
+
+    /// <summary>
+    /// 현재 체력 정보를 UI 등 외부 시스템에 알립니다.
+    /// </summary>
+    private void NotifyHealthChanged()
+    {
+        HealthChanged?.Invoke(
+            currentHP,
+            maxHP
+        );
+    }
+
+    /// <summary>
+    /// 현재 방어도 정보를 UI 등 외부 시스템에 알립니다.
+    /// </summary>
+    private void NotifyBlockChanged()
+    {
+        BlockChanged?.Invoke(
+            currentBlock
         );
     }
 
