@@ -67,6 +67,12 @@ public class EnemyPatternExecutor : MonoBehaviour
             case EnemyPatternActionType.SummonFuneralSpirit:
                 return ExecuteSummonFuneralSpirit(patternData);
 
+            case EnemyPatternActionType.NoAction:
+                return ExecuteNoAction();
+
+            case EnemyPatternActionType.ReadyToStrongAttack:
+                return ExecuteReadyToStrongAttack();
+
             case EnemyPatternActionType.None:
                 Debug.LogWarning(
                     "[EnemyPatternExecutor] ActionType이 None입니다.",
@@ -329,6 +335,38 @@ public class EnemyPatternExecutor : MonoBehaviour
         );
 
         return spawned;
+    }
+
+    /// <summary>
+    /// 이번 패턴 턴에 아무 행동도 하지 않습니다.
+    /// 패턴 행동 자체는 정상적으로 실행된 것으로 처리합니다.
+    /// </summary>
+    private bool ExecuteNoAction()
+    {
+        Debug.Log(
+            "[EnemyPatternExecutor] " +
+            "적이 이번 턴에 아무 행동도 하지 않습니다.",
+            this
+        );
+
+        return true;
+    }
+
+    /// <summary>
+    /// 다음 턴의 강력한 공격을 준비합니다.
+    ///
+    /// 이번 턴에는 실제 피해나 상태 변화가 없으며,
+    /// Intent UI에 강공격 준비 행동을 표시하기 위한 데이터입니다.
+    /// </summary>
+    private bool ExecuteReadyToStrongAttack()
+    {
+        Debug.Log(
+            "[EnemyPatternExecutor] " +
+            "적이 다음 턴의 강력한 공격을 준비합니다.",
+            this
+        );
+
+        return true;
     }
 
     /// <summary>

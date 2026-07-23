@@ -28,7 +28,19 @@ public enum EnemyPatternActionType
     /// <summary>
     /// 장송의 원혼 소환을 요청합니다.
     /// </summary>
-    SummonFuneralSpirit
+    SummonFuneralSpirit,
+
+    /// <summary>
+    /// 이번 턴에 아무 행동도 하지 않습니다.
+    /// </summary>
+    NoAction,
+
+    /// <summary>
+    /// 이번 턴에는 행동하지 않고
+    /// 다음 턴의 강력한 공격을 준비합니다.
+    /// Intent UI에서 경고 행동으로 표시합니다.
+    /// </summary>
+    ReadyToStrongAttack
 }
 
 /// <summary>
@@ -46,7 +58,12 @@ public enum EnemyPatternTargetType
     /// <summary>
     /// 플레이어입니다.
     /// </summary>
-    Player
+    Player,
+
+    /// <summary>
+    /// 플레이어와 현재 살아 있는 모든 선원입니다.
+    /// </summary>
+    AllCrew
 }
 
 /// <summary>
