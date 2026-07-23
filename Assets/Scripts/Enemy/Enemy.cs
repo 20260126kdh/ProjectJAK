@@ -229,44 +229,86 @@ public class Enemy : MonoBehaviour
     }
 
     /// <summary>
-    /// 적에게 적용된 약화를 반영하여
+    /// 적에게 적용된 힘과 약화를 반영하여
     /// 플레이어에게 줄 최종 피해를 계산합니다.
+    ///
+    /// 계산 순서:
+    /// 1. 기본 피해
+    /// 2. 힘 수치 추가
+    /// 3. 약화가 있다면 40% 감소
     /// </summary>
     public int CalculateOutgoingDamage(
         int baseDamage)
     {
-        baseDamage =
+        int finalDamage =
             Mathf.Max(
                 0,
                 baseDamage
             );
 
-        int finalDamage =
-            baseDamage;
-
         StatusEffectHandler statusEffectHandler =
             GetComponent<StatusEffectHandler>();
 
-        if (statusEffectHandler != null &&
-            statusEffectHandler.HasStatusEffect(
+        if (statusEffectHandler == null)
+        {
+            return finalDamage;
+        }
+
+        /*
+         * 힘은 각각의 공격 피해에 더해집니다.
+         *
+         * 예:
+         * 기본 피해 7 + 힘 1 = 8
+         * 기본 피해 9 × 3 + 힘 1 =
+         * 각 타격이 10이 되어 10 × 3
+         */
+        int mightValue =
+            statusEffectHandler.GetStatusValue(
+                StatusEffectType.Might
+            );
+
+        if (mightValue > 0)
+        {
+            int damageBeforeMight =
+                finalDamage;
+
+            finalDamage += mightValue;
+
+            Debug.Log(
+                $"[Enemy] 힘 적용 : " +
+                $"{damageBeforeMight} + {mightValue} " +
+                $"= {finalDamage}",
+                this
+            );
+        }
+
+        /*
+         * 약화는 힘까지 포함된 공격 피해를
+         * 최종적으로 40% 감소시킵니다.
+         */
+        if (statusEffectHandler.HasStatusEffect(
                 StatusEffectType.Weaken
             ))
         {
-            int reducedDamage =
+            int damageBeforeWeaken =
+                finalDamage;
+
+            finalDamage =
                 Mathf.FloorToInt(
                     finalDamage * 0.6f
                 );
 
             Debug.Log(
                 $"[Enemy] 약화 적용 : " +
-                $"{finalDamage} → {reducedDamage}",
+                $"{damageBeforeWeaken} → {finalDamage}",
                 this
             );
-
-            finalDamage = reducedDamage;
         }
 
-        return finalDamage;
+        return Mathf.Max(
+            0,
+            finalDamage
+        );
     }
 
     /// <summary>

@@ -116,6 +116,17 @@ public class EnemyPatternExecutor : MonoBehaviour
             return false;
         }
 
+        if (ownerEnemy == null)
+        {
+            Debug.LogWarning(
+                "[EnemyPatternExecutor] " +
+                "Owner Enemy가 없어 공격 피해를 계산할 수 없습니다.",
+                this
+            );
+
+            return false;
+        }
+
         int baseDamage =
             Mathf.Max(
                 0,
@@ -145,7 +156,7 @@ public class EnemyPatternExecutor : MonoBehaviour
              * 개별 타격 처리라는 의미를 명확하게 유지합니다.
              */
             int finalDamage =
-                CalculateOutgoingDamage(
+                ownerEnemy.CalculateOutgoingDamage(
                     baseDamage
                 );
 
@@ -367,53 +378,6 @@ public class EnemyPatternExecutor : MonoBehaviour
         );
 
         return true;
-    }
-
-    /// <summary>
-    /// 행동 주체에게 적용된 약화를 반영하여
-    /// 최종 공격 피해를 계산합니다.
-    /// </summary>
-    private int CalculateOutgoingDamage(
-        int baseDamage)
-    {
-        int finalDamage =
-            Mathf.Max(
-                0,
-                baseDamage
-            );
-
-        if (ownerEnemy == null)
-        {
-            return finalDamage;
-        }
-
-        StatusEffectHandler statusEffectHandler =
-            ownerEnemy.GetComponent<StatusEffectHandler>();
-
-        if (statusEffectHandler == null)
-        {
-            return finalDamage;
-        }
-
-        if (!statusEffectHandler.HasStatusEffect(
-                StatusEffectType.Weaken
-            ))
-        {
-            return finalDamage;
-        }
-
-        int reducedDamage =
-            Mathf.FloorToInt(
-                finalDamage * 0.6f
-            );
-
-        Debug.Log(
-            $"[EnemyPatternExecutor] 약화 적용 : " +
-            $"{finalDamage} → {reducedDamage}",
-            this
-        );
-
-        return reducedDamage;
     }
 
     /// <summary>

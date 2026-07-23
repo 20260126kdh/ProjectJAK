@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -52,6 +53,11 @@ public class EnemyPatternController : MonoBehaviour
     /// </summary>
     public int CurrentPatternTurn =>
         currentPatternTurn;
+
+    /// <summary>
+    /// 현재 표시해야 할 Intent가 변경되었을 때 호출됩니다.
+    /// </summary>
+    public event Action IntentChanged;
 
     /// <summary>
     /// CSV에 등록된 전체 패턴 길이입니다.
@@ -152,6 +158,8 @@ public class EnemyPatternController : MonoBehaviour
         currentPatternTurn = 1;
         isInitialized = true;
 
+        NotifyIntentChanged();
+
         Debug.Log(
             $"[EnemyPatternController] 초기화 완료 / " +
             $"Enemy ID: {enemyId} / " +
@@ -189,6 +197,49 @@ public class EnemyPatternController : MonoBehaviour
         }
 
         return actions;
+    }
+
+    /// <summary>
+    /// 현재 패턴 턴의 행동 중에서
+    /// 실행 조건을 만족하는 행동만 반환합니다.
+    ///
+    /// 실제 행동은 실행하지 않으며,
+    /// Intent UI 표시를 위해 사용합니다.
+    /// </summary>
+    public List<EnemyPatternData> GetCurrentIntentActions()
+    {
+        List<EnemyPatternData> patternActions =
+            GetCurrentPatternActions();
+
+        List<EnemyPatternData> intentActions =
+            new List<EnemyPatternData>();
+
+        if (conditionChecker == null)
+        {
+            return intentActions;
+        }
+
+        for (int i = 0;
+             i < patternActions.Count;
+             i++)
+        {
+            EnemyPatternData action =
+                patternActions[i];
+
+            if (action == null)
+            {
+                continue;
+            }
+
+            if (!conditionChecker.IsConditionMet(action))
+            {
+                continue;
+            }
+
+            intentActions.Add(action);
+        }
+
+        return intentActions;
     }
 
     /// <summary>
@@ -281,6 +332,8 @@ public class EnemyPatternController : MonoBehaviour
             currentPatternTurn = 1;
         }
 
+        NotifyIntentChanged();
+
         Debug.Log(
             $"[EnemyPatternController] " +
             $"{enemyId} 다음 패턴 턴: " +
@@ -295,6 +348,8 @@ public class EnemyPatternController : MonoBehaviour
     public void ResetPattern()
     {
         currentPatternTurn = 1;
+
+        NotifyIntentChanged();
 
         Debug.Log(
             $"[EnemyPatternController] " +
@@ -473,5 +528,14 @@ public class EnemyPatternController : MonoBehaviour
     private void TestResetPattern()
     {
         ResetPattern();
+    }
+
+    /// <summary>
+    /// 현재 Intent가 변경되었다는 사실을
+    /// UI 등 외부 시스템에 알립니다.
+    /// </summary>
+    public void NotifyIntentChanged()
+    {
+        IntentChanged?.Invoke();
     }
 }
