@@ -37,10 +37,33 @@ public class PlayerAnimationController : MonoBehaviour
 
     private Coroutine attackCoroutine;
 
+    [Header("Hit Visual")]
+    [SerializeField]
+    private GameObject hitVisual;
+
+    [Header("Hit Impact")]
+    [SerializeField]
+    private GameObject hitImpactObject;
+
+    [SerializeField]
+    private Animator hitImpactAnimator;
+
+    [SerializeField]
+    private string hitImpactStateName = "PlayerHitImpact";
+
+    [Header("Hit Settings")]
+    [Tooltip("피격 이미지를 유지하는 임시 시간입니다.")]
+    [SerializeField]
+    private float hitDuration = 1f;
+
+    private Coroutine hitCoroutine;
+
     /// <summary>
     /// 현재 공격 애니메이션이 재생 중인지 여부입니다.
     /// </summary>
     public bool IsPlayingAttack => attackCoroutine != null;
+
+    public bool IsPlayingHit => hitCoroutine != null;
 
     private void Awake()
     {
@@ -53,6 +76,11 @@ public class PlayerAnimationController : MonoBehaviour
     /// </summary>
     public void PlayAttack()
     {
+        if (hitCoroutine != null)
+        {
+            return;
+        }
+
         if (attackCoroutine != null)
         {
             StopCoroutine(attackCoroutine);
@@ -119,9 +147,25 @@ public class PlayerAnimationController : MonoBehaviour
             attackCoroutine = null;
         }
 
+        if (hitCoroutine != null)
+        {
+            StopCoroutine(hitCoroutine);
+            hitCoroutine = null;
+        }
+
         if (attackVisual != null)
         {
             attackVisual.SetActive(false);
+        }
+
+        if (hitVisual != null)
+        {
+            hitVisual.SetActive(false);
+        }
+
+        if (hitImpactObject != null)
+        {
+            hitImpactObject.SetActive(false);
         }
 
         if (idleVisual != null)
@@ -142,5 +186,90 @@ public class PlayerAnimationController : MonoBehaviour
                 );
             }
         }
+    }
+
+    /// <summary>
+    /// 피격 PNG와 피격 임팩트를 동시에 표시하고,
+    /// 지정된 시간 후 Idle 상태로 돌아갑니다.
+    /// 피격 연출은 공격 연출보다 우선합니다.
+    /// </summary>
+    public void PlayHit()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
+
+        if (hitCoroutine != null)
+        {
+            StopCoroutine(hitCoroutine);
+        }
+
+        hitCoroutine =
+            StartCoroutine(
+                PlayHitCoroutine()
+            );
+    }
+
+    /// <summary>
+    /// 피격 이미지를 표시하고 피격 임팩트를 재생합니다.
+    /// </summary>
+    private IEnumerator PlayHitCoroutine()
+    {
+        if (idleVisual != null)
+        {
+            idleVisual.SetActive(false);
+        }
+
+        if (attackVisual != null)
+        {
+            attackVisual.SetActive(false);
+        }
+
+        if (hitVisual != null)
+        {
+            hitVisual.SetActive(true);
+        }
+
+        if (hitImpactObject != null)
+        {
+            hitImpactObject.SetActive(true);
+        }
+
+        if (hitImpactAnimator != null)
+        {
+            hitImpactAnimator.Play(
+                hitImpactStateName,
+                0,
+                0f
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[PlayerAnimationController] " +
+                "피격 임팩트 Animator가 연결되지 않았습니다.",
+                this
+            );
+        }
+
+        yield return new WaitForSeconds(
+            hitDuration
+        );
+
+        if (hitVisual != null)
+        {
+            hitVisual.SetActive(false);
+        }
+
+        if (hitImpactObject != null)
+        {
+            hitImpactObject.SetActive(false);
+        }
+
+        hitCoroutine = null;
+
+        ShowIdleImmediately();
     }
 }

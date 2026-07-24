@@ -1,0 +1,1027 @@
+fileFormatVersion: 2
+guid: ed4c801c5aac52440ad20e57dc24da9b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7320699785095832571
+    second: TEC_AttackMo_0
+  - first:
+      213: 36209285540626760
+    second: TEC_AttackMo_1
+  - first:
+      213: -1042392694344680567
+    second: TEC_AttackMo_2
+  - first:
+      213: 4519788427889107442
+    second: TEC_AttackMo_3
+  - first:
+      213: -2310979666637556515
+    second: TEC_AttackMo_4
+  - first:
+      213: -9160202566668169628
+    second: TEC_AttackMo_5
+  - first:
+      213: 1852552151978354733
+    second: TEC_AttackMo_6
+  - first:
+      213: -8885866654008092760
+    second: TEC_AttackMo_7
+  - first:
+      213: 5677222012287575591
+    second: TEC_AttackMo_8
+  - first:
+      213: -5432322875879636586
+    second: TEC_AttackMo_9
+  - first:
+      213: -5262594252882001152
+    second: TEC_AttackMo_10
+  - first:
+      213: 3044260047118172595
+    second: TEC_AttackMo_11
+  - first:
+      213: -4503803546466503519
+    second: TEC_AttackMo_12
+  - first:
+      213: 367467054580068615
+    second: TEC_AttackMo_13
+  - first:
+      213: 8297216207928645445
+    second: TEC_AttackMo_14
+  - first:
+      213: -1262334354014086401
+    second: TEC_AttackMo_15
+  - first:
+      213: 1168544154561575420
+    second: TEC_AttackMo_16
+  - first:
+      213: -2732132892998846979
+    second: TEC_AttackMo_17
+  - first:
+      213: -6790005889459834805
+    second: TEC_AttackMo_18
+  - first:
+      213: -6370807793907755505
+    second: TEC_AttackMo_19
+  - first:
+      213: 4278099853017802633
+    second: TEC_AttackMo_20
+  - first:
+      213: -850619473059352132
+    second: TEC_AttackMo_21
+  - first:
+      213: -21381353922062922
+    second: TEC_AttackMo_22
+  - first:
+      213: 1684404140098505672
+    second: TEC_AttackMo_23
+  - first:
+      213: -4940278074336657552
+    second: TEC_AttackMo_24
+  - first:
+      213: -3677834096837997112
+    second: TEC_AttackMo_25
+  - first:
+      213: 6457201939206963000
+    second: TEC_AttackMo_26
+  - first:
+      213: -4329726214222317405
+    second: TEC_AttackMo_27
+  - first:
+      213: 3503527326925942562
+    second: TEC_AttackMo_28
+  - first:
+      213: -4930953778212172307
+    second: TEC_AttackMo_29
+  - first:
+      213: 8980364572732764389
+    second: TEC_AttackMo_30
+  - first:
+      213: -3216677851516059002
+    second: TEC_AttackMo_31
+  - first:
+      213: 6020322292162811662
+    second: TEC_AttackMo_32
+  - first:
+      213: -2703217142366106506
+    second: TEC_AttackMo_33
+  - first:
+      213: 5221237449472514914
+    second: TEC_AttackMo_34
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TEC_AttackMo_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1800
+        width: 1246
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf36ae5faa9589560800000000000000
+      internalID: 7320699785095832571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_1
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 1994
+        width: 71
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84148324724a08000800000000000000
+      internalID: 36209285540626760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_2
+      rect:
+        serializedVersion: 2
+        x: 1251
+        y: 1735
+        width: 138
+        height: 311
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98b7f190e5da881f0800000000000000
+      internalID: -1042392694344680567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_3
+      rect:
+        serializedVersion: 2
+        x: 1396
+        y: 1948
+        width: 150
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f16048d0a389be30800000000000000
+      internalID: 4519788427889107442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_4
+      rect:
+        serializedVersion: 2
+        x: 1551
+        y: 1956
+        width: 145
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd4faeebc30cdefd0800000000000000
+      internalID: -2310979666637556515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_5
+      rect:
+        serializedVersion: 2
+        x: 1703
+        y: 1951
+        width: 298
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46e4f176c4c60e080800000000000000
+      internalID: -9160202566668169628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_6
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 1733
+        width: 64
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d282e82fd5695b910800000000000000
+      internalID: 1852552151978354733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_7
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 1736
+        width: 344
+        height: 209
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a7db568b5f0fa480800000000000000
+      internalID: -8885866654008092760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_8
+      rect:
+        serializedVersion: 2
+        x: 1758
+        y: 1733
+        width: 121
+        height: 213
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 726ed69475b89ce40800000000000000
+      internalID: 5677222012287575591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_9
+      rect:
+        serializedVersion: 2
+        x: 1886
+        y: 1461
+        width: 144
+        height: 304
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69147f540238c94b0800000000000000
+      internalID: -5432322875879636586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_10
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 1471
+        width: 1693
+        height: 260
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 003c4ffc86287f6b0800000000000000
+      internalID: -5262594252882001152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_11
+      rect:
+        serializedVersion: 2
+        x: 1729
+        y: 1662
+        width: 70
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b1846832626f3a20800000000000000
+      internalID: 3044260047118172595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_12
+      rect:
+        serializedVersion: 2
+        x: 830
+        y: 1454
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a438b269864f71c0800000000000000
+      internalID: -4503803546466503519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_13
+      rect:
+        serializedVersion: 2
+        x: 1362
+        y: 1349
+        width: 70
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70177e6d651891500800000000000000
+      internalID: 367467054580068615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_14
+      rect:
+        serializedVersion: 2
+        x: 1727
+        y: 1350
+        width: 100
+        height: 309
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 547533a3e22a52370800000000000000
+      internalID: 8297216207928645445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_15
+      rect:
+        serializedVersion: 2
+        x: 1437
+        y: 1352
+        width: 73
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffad739d7994b7ee0800000000000000
+      internalID: -1262334354014086401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_16
+      rect:
+        serializedVersion: 2
+        x: 1515
+        y: 1354
+        width: 96
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf97005a7b0873010800000000000000
+      internalID: 1168544154561575420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_17
+      rect:
+        serializedVersion: 2
+        x: 1837
+        y: 1233
+        width: 191
+        height: 215
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df5b4a9fb93851ad0800000000000000
+      internalID: -2732132892998846979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_18
+      rect:
+        serializedVersion: 2
+        x: 1363
+        y: 885
+        width: 427
+        height: 462
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b40bfe75e9d05c1a0800000000000000
+      internalID: -6790005889459834805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_19
+      rect:
+        serializedVersion: 2
+        x: 1801
+        y: 1068
+        width: 115
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0696dfb0185697a0800000000000000
+      internalID: -6370807793907755505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_20
+      rect:
+        serializedVersion: 2
+        x: 1923
+        y: 1064
+        width: 91
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 987e6c4662dde5b30800000000000000
+      internalID: 4278099853017802633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_21
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 723
+        width: 1359
+        height: 326
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb17445981ef134f0800000000000000
+      internalID: -850619473059352132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_22
+      rect:
+        serializedVersion: 2
+        x: 1434
+        y: 15
+        width: 336
+        height: 855
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b598aa95c904bff0800000000000000
+      internalID: -21381353922062922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_23
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 826
+        width: 150
+        height: 236
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cbc4cc14a4306710800000000000000
+      internalID: 1684404140098505672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_24
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 732
+        width: 84
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07f338f144b907bb0800000000000000
+      internalID: -4940278074336657552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_25
+      rect:
+        serializedVersion: 2
+        x: 1363
+        y: 736
+        width: 25
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cdc62bff55b5fcc0800000000000000
+      internalID: -3677834096837997112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_26
+      rect:
+        serializedVersion: 2
+        x: 1780
+        y: 1
+        width: 50
+        height: 818
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83ff465b3f69c9950800000000000000
+      internalID: 6457201939206963000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_27
+      rect:
+        serializedVersion: 2
+        x: 1835
+        y: 654
+        width: 21
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a8f492b2f8b9e3c0800000000000000
+      internalID: -4329726214222317405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_28
+      rect:
+        serializedVersion: 2
+        x: 1854
+        y: 648
+        width: 53
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22f6b469a870f9030800000000000000
+      internalID: 3503527326925942562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_29
+      rect:
+        serializedVersion: 2
+        x: 1921
+        y: 553
+        width: 88
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ded0bcdf9abb19bb0800000000000000
+      internalID: -4930953778212172307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_30
+      rect:
+        serializedVersion: 2
+        x: 1830
+        y: 545
+        width: 85
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e03d37bff9a0ac70800000000000000
+      internalID: 8980364572732764389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_31
+      rect:
+        serializedVersion: 2
+        x: 1832
+        y: 8
+        width: 131
+        height: 537
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 682c48769801c53d0800000000000000
+      internalID: -3216677851516059002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_32
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 73
+        width: 1394
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e07dab94a3b7c8350800000000000000
+      internalID: 6020322292162811662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_33
+      rect:
+        serializedVersion: 2
+        x: 1974
+        y: 7
+        width: 71
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67c858ec45e3c7ad0800000000000000
+      internalID: -2703217142366106506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TEC_AttackMo_34
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 1
+        width: 86
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26b96c70ccf857840800000000000000
+      internalID: 5221237449472514914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TEC_AttackMo_0: 7320699785095832571
+      TEC_AttackMo_1: 36209285540626760
+      TEC_AttackMo_10: -5262594252882001152
+      TEC_AttackMo_11: 3044260047118172595
+      TEC_AttackMo_12: -4503803546466503519
+      TEC_AttackMo_13: 367467054580068615
+      TEC_AttackMo_14: 8297216207928645445
+      TEC_AttackMo_15: -1262334354014086401
+      TEC_AttackMo_16: 1168544154561575420
+      TEC_AttackMo_17: -2732132892998846979
+      TEC_AttackMo_18: -6790005889459834805
+      TEC_AttackMo_19: -6370807793907755505
+      TEC_AttackMo_2: -1042392694344680567
+      TEC_AttackMo_20: 4278099853017802633
+      TEC_AttackMo_21: -850619473059352132
+      TEC_AttackMo_22: -21381353922062922
+      TEC_AttackMo_23: 1684404140098505672
+      TEC_AttackMo_24: -4940278074336657552
+      TEC_AttackMo_25: -3677834096837997112
+      TEC_AttackMo_26: 6457201939206963000
+      TEC_AttackMo_27: -4329726214222317405
+      TEC_AttackMo_28: 3503527326925942562
+      TEC_AttackMo_29: -4930953778212172307
+      TEC_AttackMo_3: 4519788427889107442
+      TEC_AttackMo_30: 8980364572732764389
+      TEC_AttackMo_31: -3216677851516059002
+      TEC_AttackMo_32: 6020322292162811662
+      TEC_AttackMo_33: -2703217142366106506
+      TEC_AttackMo_34: 5221237449472514914
+      TEC_AttackMo_4: -2310979666637556515
+      TEC_AttackMo_5: -9160202566668169628
+      TEC_AttackMo_6: 1852552151978354733
+      TEC_AttackMo_7: -8885866654008092760
+      TEC_AttackMo_8: 5677222012287575591
+      TEC_AttackMo_9: -5432322875879636586
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

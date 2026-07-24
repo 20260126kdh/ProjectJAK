@@ -29,23 +29,6 @@ public class CardEffectExecutor : MonoBehaviour
     /// </summary>
     private int currentCardDamageModifier;
 
-    private void Start()
-    {
-        if (playerAnimationController == null)
-        {
-            playerAnimationController =
-                FindFirstObjectByType<PlayerAnimationController>();
-        }
-
-        if (playerAnimationController == null)
-        {
-            Debug.LogWarning(
-                "[CardEffectExecutor] " +
-                "PlayerAnimationController를 찾지 못했습니다."
-            );
-        }
-    }
-
     /// <summary>
     /// 카드 효과 목록을 실행합니다.
     /// </summary>
@@ -561,21 +544,15 @@ public class CardEffectExecutor : MonoBehaviour
             return 0;
         }
 
-        if (playerAnimationController != null)
+        if (playerAnimationController == null)
         {
-            playerAnimationController.PlayAttack();
+            playerAnimationController =
+                FindPlayerAnimationController();
         }
 
         if (playerAnimationController != null)
         {
             playerAnimationController.PlayAttack();
-        }
-        else
-        {
-            Debug.LogWarning(
-                "[CardEffectExecutor] " +
-                "PlayerAnimationController가 연결되지 않았습니다."
-            );
         }
 
         PlayerCombat playerCombat =
@@ -1488,6 +1465,48 @@ public class CardEffectExecutor : MonoBehaviour
             $"지속 턴 : {remainingTurn} / " +
             $"영구 여부 : {isPermanent}"
         );
+    }
+
+    /// <summary>
+    /// 현재 전투에 생성된 플레이어의
+    /// PlayerAnimationController를 찾아 반환합니다.
+    /// </summary>
+    private PlayerAnimationController FindPlayerAnimationController()
+    {
+        PlayerCombat playerCombat =
+            FindPlayerCombat();
+
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] " +
+                "PlayerCombat을 찾지 못해 " +
+                "공격 애니메이션을 실행할 수 없습니다."
+            );
+
+            return null;
+        }
+
+        PlayerAnimationController animationController =
+            playerCombat.GetComponent<PlayerAnimationController>();
+
+        if (animationController == null)
+        {
+            animationController =
+                playerCombat.GetComponentInChildren<PlayerAnimationController>();
+        }
+
+        if (animationController == null)
+        {
+            Debug.LogWarning(
+                $"[CardEffectExecutor] " +
+                $"{playerCombat.name}에 " +
+                "PlayerAnimationController가 없습니다.",
+                playerCombat
+            );
+        }
+
+        return animationController;
     }
 
     /// <summary>

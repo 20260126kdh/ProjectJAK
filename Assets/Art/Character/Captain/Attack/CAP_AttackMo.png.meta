@@ -1,0 +1,1027 @@
+fileFormatVersion: 2
+guid: c60536a9843241344a87ed2e9b0dfd1c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9693040875008983
+    second: CAP_AttackMo_0
+  - first:
+      213: 8481402750412780689
+    second: CAP_AttackMo_1
+  - first:
+      213: 582437656889707240
+    second: CAP_AttackMo_2
+  - first:
+      213: 752828301689499575
+    second: CAP_AttackMo_3
+  - first:
+      213: -196731553087491060
+    second: CAP_AttackMo_4
+  - first:
+      213: 3668538666115391329
+    second: CAP_AttackMo_5
+  - first:
+      213: -8203214835378208727
+    second: CAP_AttackMo_6
+  - first:
+      213: -8377277722253104326
+    second: CAP_AttackMo_7
+  - first:
+      213: -439283529521828800
+    second: CAP_AttackMo_8
+  - first:
+      213: 5688160152729815225
+    second: CAP_AttackMo_9
+  - first:
+      213: -302097590184385604
+    second: CAP_AttackMo_10
+  - first:
+      213: 5838011147745035804
+    second: CAP_AttackMo_11
+  - first:
+      213: -6823501549927318402
+    second: CAP_AttackMo_12
+  - first:
+      213: -1645920799877842076
+    second: CAP_AttackMo_13
+  - first:
+      213: -6723483281813305278
+    second: CAP_AttackMo_14
+  - first:
+      213: 3889063814222553185
+    second: CAP_AttackMo_15
+  - first:
+      213: -1175368719962970706
+    second: CAP_AttackMo_16
+  - first:
+      213: -8859083964607812554
+    second: CAP_AttackMo_17
+  - first:
+      213: -1811600910347208174
+    second: CAP_AttackMo_18
+  - first:
+      213: -114185059868509074
+    second: CAP_AttackMo_19
+  - first:
+      213: -5958754739721200627
+    second: CAP_AttackMo_20
+  - first:
+      213: 4580892515605420894
+    second: CAP_AttackMo_21
+  - first:
+      213: 3508085352689897981
+    second: CAP_AttackMo_22
+  - first:
+      213: 8826605182366434479
+    second: CAP_AttackMo_23
+  - first:
+      213: -8372709208096419057
+    second: CAP_AttackMo_24
+  - first:
+      213: 6925723122068539572
+    second: CAP_AttackMo_25
+  - first:
+      213: 943450742225048144
+    second: CAP_AttackMo_26
+  - first:
+      213: -5094278724725628288
+    second: CAP_AttackMo_27
+  - first:
+      213: 2305402848003509681
+    second: CAP_AttackMo_28
+  - first:
+      213: -24978716285226200
+    second: CAP_AttackMo_29
+  - first:
+      213: -3155247962015126755
+    second: CAP_AttackMo_30
+  - first:
+      213: -3886300027363600018
+    second: CAP_AttackMo_31
+  - first:
+      213: 5255581226811320229
+    second: CAP_AttackMo_32
+  - first:
+      213: -9088248715909276172
+    second: CAP_AttackMo_33
+  - first:
+      213: 7952976148718426307
+    second: CAP_AttackMo_34
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: CAP_AttackMo_0
+      rect:
+        serializedVersion: 2
+        x: 830
+        y: 1969
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92c0add0b309ddff0800000000000000
+      internalID: -9693040875008983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_1
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 1972
+        width: 91
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 194ff577ddef3b570800000000000000
+      internalID: 8481402750412780689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_2
+      rect:
+        serializedVersion: 2
+        x: 1455
+        y: 1974
+        width: 70
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8eac8ba86fb351800800000000000000
+      internalID: 582437656889707240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_3
+      rect:
+        serializedVersion: 2
+        x: 1832
+        y: 1956
+        width: 105
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bf201b0a55927a00800000000000000
+      internalID: 752828301689499575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_4
+      rect:
+        serializedVersion: 2
+        x: 1997
+        y: 1933
+        width: 42
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c04fb1ed1b1154df0800000000000000
+      internalID: -196731553087491060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_5
+      rect:
+        serializedVersion: 2
+        x: 1366
+        y: 1635
+        width: 464
+        height: 333
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16fd796ea7449e230800000000000000
+      internalID: 3668538666115391329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_6
+      rect:
+        serializedVersion: 2
+        x: 1838
+        y: 1832
+        width: 150
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9204119d193582e80800000000000000
+      internalID: -8203214835378208727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_7
+      rect:
+        serializedVersion: 2
+        x: 2000
+        y: 1914
+        width: 33
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3b6f4cdb4eedbb80800000000000000
+      internalID: -8377277722253104326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_8
+      rect:
+        serializedVersion: 2
+        x: 1996
+        y: 1833
+        width: 43
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04ceb2315f957e9f0800000000000000
+      internalID: -439283529521828800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_9
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1320
+        width: 1359
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b80ef0958760fe40800000000000000
+      internalID: 5688160152729815225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_10
+      rect:
+        serializedVersion: 2
+        x: 1363
+        y: 1258
+        width: 209
+        height: 344
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb3ee81a7dbbecbf0800000000000000
+      internalID: -302097590184385604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_11
+      rect:
+        serializedVersion: 2
+        x: 1691
+        y: 1
+        width: 157
+        height: 1615
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c160d103538c40150800000000000000
+      internalID: 5838011147745035804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_12
+      rect:
+        serializedVersion: 2
+        x: 1850
+        y: 1524
+        width: 144
+        height: 304
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7c31482e7d0e41a0800000000000000
+      internalID: -6823501549927318402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_13
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1422
+        width: 85
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46bbad2c0c38829e0800000000000000
+      internalID: -1645920799877842076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_14
+      rect:
+        serializedVersion: 2
+        x: 1937
+        y: 1432
+        width: 91
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2488d36e39361b2a0800000000000000
+      internalID: -6723483281813305278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_15
+      rect:
+        serializedVersion: 2
+        x: 1852
+        y: 1322
+        width: 76
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 160af831feab8f530800000000000000
+      internalID: 3889063814222553185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_16
+      rect:
+        serializedVersion: 2
+        x: 1946
+        y: 1274
+        width: 88
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea56086606040bfe0800000000000000
+      internalID: -1175368719962970706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_17
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 1247
+        width: 84
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63c213652163e0580800000000000000
+      internalID: -8859083964607812554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_18
+      rect:
+        serializedVersion: 2
+        x: 1404
+        y: 1
+        width: 219
+        height: 1246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21afafff196ebd6e0800000000000000
+      internalID: -1811600910347208174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_19
+      rect:
+        serializedVersion: 2
+        x: 1851
+        y: 1170
+        width: 88
+        height: 145
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6c71e30b455a6ef0800000000000000
+      internalID: -114185059868509074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_20
+      rect:
+        serializedVersion: 2
+        x: 1953
+        y: 1130
+        width: 88
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0c1e3392204e4da0800000000000000
+      internalID: -5958754739721200627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_21
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 745
+        width: 689
+        height: 479
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5b18eae879929f30800000000000000
+      internalID: 4580892515605420894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_22
+      rect:
+        serializedVersion: 2
+        x: 707
+        y: 723
+        width: 427
+        height: 471
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df115d8aa093fa030800000000000000
+      internalID: 3508085352689897981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_23
+      rect:
+        serializedVersion: 2
+        x: 1150
+        y: 1035
+        width: 215
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa4c293e5a66e7a70800000000000000
+      internalID: 8826605182366434479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_24
+      rect:
+        serializedVersion: 2
+        x: 1849
+        y: 859
+        width: 96
+        height: 307
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0355c3f5592ecb80800000000000000
+      internalID: -8372709208096419057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_25
+      rect:
+        serializedVersion: 2
+        x: 1952
+        y: 822
+        width: 76
+        height: 298
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b8ca974c7c1d1060800000000000000
+      internalID: 6925723122068539572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_26
+      rect:
+        serializedVersion: 2
+        x: 1149
+        y: 740
+        width: 216
+        height: 263
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0521761937fc71d00800000000000000
+      internalID: 943450742225048144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_27
+      rect:
+        serializedVersion: 2
+        x: 1849
+        y: 547
+        width: 100
+        height: 309
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08226e19d7c7d49b0800000000000000
+      internalID: -5094278724725628288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_28
+      rect:
+        serializedVersion: 2
+        x: 1987
+        y: 1
+        width: 50
+        height: 818
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bd4c6bfcaf6eff10800000000000000
+      internalID: 2305402848003509681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_29
+      rect:
+        serializedVersion: 2
+        x: 1955
+        y: 549
+        width: 25
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 823bfd86df147aff0800000000000000
+      internalID: -24978716285226200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_30
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 73
+        width: 1394
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1b20dd12be4634d0800000000000000
+      internalID: -3155247962015126755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_31
+      rect:
+        serializedVersion: 2
+        x: 1395
+        y: 307
+        width: 34
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e69d66237b6111ac0800000000000000
+      internalID: -3886300027363600018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_32
+      rect:
+        serializedVersion: 2
+        x: 1645
+        y: 315
+        width: 45
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a7ec40d7439fe840800000000000000
+      internalID: 5255581226811320229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_33
+      rect:
+        serializedVersion: 2
+        x: 1850
+        y: 8
+        width: 131
+        height: 537
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fdd3d9c1fd00e180800000000000000
+      internalID: -9088248715909276172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_AttackMo_34
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 1
+        width: 86
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c8148baba5ae5e60800000000000000
+      internalID: 7952976148718426307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      CAP_AttackMo_0: -9693040875008983
+      CAP_AttackMo_1: 8481402750412780689
+      CAP_AttackMo_10: -302097590184385604
+      CAP_AttackMo_11: 5838011147745035804
+      CAP_AttackMo_12: -6823501549927318402
+      CAP_AttackMo_13: -1645920799877842076
+      CAP_AttackMo_14: -6723483281813305278
+      CAP_AttackMo_15: 3889063814222553185
+      CAP_AttackMo_16: -1175368719962970706
+      CAP_AttackMo_17: -8859083964607812554
+      CAP_AttackMo_18: -1811600910347208174
+      CAP_AttackMo_19: -114185059868509074
+      CAP_AttackMo_2: 582437656889707240
+      CAP_AttackMo_20: -5958754739721200627
+      CAP_AttackMo_21: 4580892515605420894
+      CAP_AttackMo_22: 3508085352689897981
+      CAP_AttackMo_23: 8826605182366434479
+      CAP_AttackMo_24: -8372709208096419057
+      CAP_AttackMo_25: 6925723122068539572
+      CAP_AttackMo_26: 943450742225048144
+      CAP_AttackMo_27: -5094278724725628288
+      CAP_AttackMo_28: 2305402848003509681
+      CAP_AttackMo_29: -24978716285226200
+      CAP_AttackMo_3: 752828301689499575
+      CAP_AttackMo_30: -3155247962015126755
+      CAP_AttackMo_31: -3886300027363600018
+      CAP_AttackMo_32: 5255581226811320229
+      CAP_AttackMo_33: -9088248715909276172
+      CAP_AttackMo_34: 7952976148718426307
+      CAP_AttackMo_4: -196731553087491060
+      CAP_AttackMo_5: 3668538666115391329
+      CAP_AttackMo_6: -8203214835378208727
+      CAP_AttackMo_7: -8377277722253104326
+      CAP_AttackMo_8: -439283529521828800
+      CAP_AttackMo_9: 5688160152729815225
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
