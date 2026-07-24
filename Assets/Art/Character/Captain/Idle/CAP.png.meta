@@ -1,0 +1,507 @@
+fileFormatVersion: 2
+guid: 7f42438d41799db4c9fe4024859ab439
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 596880181410758436
+    second: CAP_0
+  - first:
+      213: -2624171219689508006
+    second: CAP_1
+  - first:
+      213: -5027460677796195246
+    second: CAP_2
+  - first:
+      213: -2595815132625125784
+    second: CAP_3
+  - first:
+      213: -4312684331759293351
+    second: CAP_4
+  - first:
+      213: -9184756982822545540
+    second: CAP_5
+  - first:
+      213: -5144078710570571736
+    second: CAP_6
+  - first:
+      213: -2984492384604151203
+    second: CAP_7
+  - first:
+      213: -1100351708106333262
+    second: CAP_8
+  - first:
+      213: -59637752114309728
+    second: CAP_9
+  - first:
+      213: -8051338763696359931
+    second: CAP_10
+  - first:
+      213: -6971325673685432597
+    second: CAP_11
+  - first:
+      213: 1438306817030729783
+    second: CAP_12
+  - first:
+      213: -8638111138344738447
+    second: CAP_13
+  - first:
+      213: -1874485364826878881
+    second: CAP_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: CAP_0
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 1128
+        width: 288
+        height: 245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42f7572dc5b884800800000000000000
+      internalID: 596880181410758436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_1
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 1307
+        width: 277
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a537a9cdd22159bd0800000000000000
+      internalID: -2624171219689508006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_2
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 1308
+        width: 75
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25496b1762fda3ab0800000000000000
+      internalID: -5027460677796195246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_3
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 1313
+        width: 37
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86ebb4dd3efc9fbd0800000000000000
+      internalID: -2595815132625125784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_4
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 1293
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95c281923744624c0800000000000000
+      internalID: -4312684331759293351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_5
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 1126
+        width: 487
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c77d292ef20398080800000000000000
+      internalID: -9184756982822545540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_6
+      rect:
+        serializedVersion: 2
+        x: 812
+        y: 1041
+        width: 371
+        height: 270
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 828aacfcaaf8c98b0800000000000000
+      internalID: -5144078710570571736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_7
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 645
+        width: 790
+        height: 474
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d52afcc1df3f496d0800000000000000
+      internalID: -2984492384604151203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_8
+      rect:
+        serializedVersion: 2
+        x: 1192
+        y: 1045
+        width: 155
+        height: 157
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b3e35e83f3cab0f0800000000000000
+      internalID: -1100351708106333262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_9
+      rect:
+        serializedVersion: 2
+        x: 1406
+        y: 847
+        width: 567
+        height: 442
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a5160ac7cf1c2ff0800000000000000
+      internalID: -59637752114309728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_10
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 641
+        width: 577
+        height: 398
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 506bb8f5d06e34090800000000000000
+      internalID: -8051338763696359931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_11
+      rect:
+        serializedVersion: 2
+        x: 1407
+        y: 644
+        width: 193
+        height: 148
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be64b664c30e04f90800000000000000
+      internalID: -6971325673685432597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_12
+      rect:
+        serializedVersion: 2
+        x: 1629
+        y: 500
+        width: 328
+        height: 330
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 730b32bfd64e5f310800000000000000
+      internalID: 1438306817030729783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_13
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 4
+        width: 1610
+        height: 634
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 171ed94bfa34f1880800000000000000
+      internalID: -8638111138344738447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CAP_14
+      rect:
+        serializedVersion: 2
+        x: 1624
+        y: 6
+        width: 329
+        height: 481
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5c43dcfd7d7cf5e0800000000000000
+      internalID: -1874485364826878881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      CAP_0: 596880181410758436
+      CAP_1: -2624171219689508006
+      CAP_10: -8051338763696359931
+      CAP_11: -6971325673685432597
+      CAP_12: 1438306817030729783
+      CAP_13: -8638111138344738447
+      CAP_14: -1874485364826878881
+      CAP_2: -5027460677796195246
+      CAP_3: -2595815132625125784
+      CAP_4: -4312684331759293351
+      CAP_5: -9184756982822545540
+      CAP_6: -5144078710570571736
+      CAP_7: -2984492384604151203
+      CAP_8: -1100351708106333262
+      CAP_9: -59637752114309728
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

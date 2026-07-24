@@ -193,6 +193,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 41639594}
+  - component: {fileID: 41639595}
   m_Layer: 0
   m_Name: BackGrounds
   m_TagString: Untagged
@@ -217,6 +218,30 @@ Transform:
   - {fileID: 1357844906}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &41639595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41639593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a5d2d6a3be436a4fa5281c1fda5db60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backRenderer: {fileID: 2105473555}
+  floorRenderer: {fileID: 1357844907}
+  stageBackgrounds:
+  - stage: 1
+    backSprite: {fileID: 21300000, guid: f6d1ef3caced8fa4d861f82147cd5cd1, type: 3}
+    floorSprite: {fileID: -395293295715681555, guid: b42d68c71cff38141a358b53030a8f87, type: 3}
+  - stage: 2
+    backSprite: {fileID: 21300000, guid: 276024aa1a775c44ba2eda133d37cebe, type: 3}
+    floorSprite: {fileID: 21300000, guid: f36d6b4241f33a04f9aa5fc07438984e, type: 3}
+  - stage: 3
+    backSprite: {fileID: 21300000, guid: d2b19db0bf996a043b5447056b23b780, type: 3}
+    floorSprite: {fileID: 21300000, guid: 92e9ea8da8cf7244187c60bf15877de9, type: 3}
 --- !u!1 &43579665
 GameObject:
   m_ObjectHideFlags: 0
