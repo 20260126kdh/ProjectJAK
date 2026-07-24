@@ -19,6 +19,10 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField]
     private bool damagedThisTurn;
 
+    [Header("플레이어 애니메이션")]
+    [SerializeField]
+    private PlayerAnimationController playerAnimationController;
+
     /// <summary>
     /// 현재 방어도
     /// </summary>
@@ -51,6 +55,27 @@ public class PlayerCombat : MonoBehaviour
                     "PlayerData를 찾지 못했습니다."
                 );
             }
+        }
+
+        if (playerAnimationController == null)
+        {
+            playerAnimationController =
+                GetComponent<PlayerAnimationController>();
+        }
+
+        if (playerAnimationController == null)
+        {
+            playerAnimationController =
+                GetComponentInChildren<PlayerAnimationController>();
+        }
+
+        if (playerAnimationController == null)
+        {
+            Debug.LogWarning(
+                "[PlayerCombat] " +
+                "PlayerAnimationController를 찾지 못했습니다.",
+                this
+            );
         }
     }
 
@@ -303,20 +328,26 @@ public class PlayerCombat : MonoBehaviour
         {
             damagedThisTurn = true;
 
+            int previousHP =
+                playerData.CurrentHP;
+
             playerData.TakeDamage(amount);
+
+            int actualHealthDamage =
+                previousHP - playerData.CurrentHP;
 
             ProcessImmortal(statusEffectHandler);
 
+            if (actualHealthDamage > 0 &&
+                playerAnimationController != null)
+            {
+                playerAnimationController.PlayHit();
+            }
+
             Debug.Log(
                 $"[PlayerCombat] 플레이어 체력 피해 : " +
-                $"{amount}"
-            );
-        }
-        else
-        {
-            Debug.Log(
-                "[PlayerCombat] 방어도 또는 선원이 " +
-                "모든 공격 피해를 막았습니다."
+                $"요청 피해 {amount} / " +
+                $"실제 체력 피해 {actualHealthDamage}"
             );
         }
     }

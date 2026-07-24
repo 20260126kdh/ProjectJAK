@@ -112,6 +112,7 @@ MonoBehaviour:
   playerData: {fileID: 0}
   currentBlock: 0
   damagedThisTurn: 0
+  playerAnimationController: {fileID: 8542175726003996510}
 --- !u!114 &-584120471793848454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,7 +231,7 @@ MonoBehaviour:
   hitImpactObject: {fileID: 5381586641610784335}
   hitImpactAnimator: {fileID: 2577770522512270883}
   hitImpactStateName: HitImpact
-  hitDuration: 1
+  hitDuration: 0.48
 --- !u!1 &2718255300899967861
 GameObject:
   m_ObjectHideFlags: 0
