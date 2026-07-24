@@ -1,0 +1,1079 @@
+fileFormatVersion: 2
+guid: 00bab5cfe3016614094bdd1290a0471d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3986173904911584982
+    second: PHY_AttackMo_0
+  - first:
+      213: 7843680734417677215
+    second: PHY_AttackMo_1
+  - first:
+      213: 2549878401292793029
+    second: PHY_AttackMo_2
+  - first:
+      213: -4315793421837430091
+    second: PHY_AttackMo_3
+  - first:
+      213: 2968970703768829202
+    second: PHY_AttackMo_4
+  - first:
+      213: -667211451633580507
+    second: PHY_AttackMo_5
+  - first:
+      213: -6251104817647537824
+    second: PHY_AttackMo_6
+  - first:
+      213: 8801637842672231176
+    second: PHY_AttackMo_7
+  - first:
+      213: 8185103918855133137
+    second: PHY_AttackMo_8
+  - first:
+      213: 8211868390398808107
+    second: PHY_AttackMo_9
+  - first:
+      213: 1240359462289234952
+    second: PHY_AttackMo_10
+  - first:
+      213: -7430037753770551691
+    second: PHY_AttackMo_11
+  - first:
+      213: 7228177366321552522
+    second: PHY_AttackMo_12
+  - first:
+      213: 156990098205509722
+    second: PHY_AttackMo_13
+  - first:
+      213: -299778995150744518
+    second: PHY_AttackMo_14
+  - first:
+      213: -7238992726559886680
+    second: PHY_AttackMo_15
+  - first:
+      213: -7140170653932518898
+    second: PHY_AttackMo_16
+  - first:
+      213: -1323772177678496126
+    second: PHY_AttackMo_17
+  - first:
+      213: -5294978883019265168
+    second: PHY_AttackMo_18
+  - first:
+      213: 4568961195485033865
+    second: PHY_AttackMo_19
+  - first:
+      213: -1333421427665022363
+    second: PHY_AttackMo_20
+  - first:
+      213: -8853569506652382794
+    second: PHY_AttackMo_21
+  - first:
+      213: -8109483449380634053
+    second: PHY_AttackMo_22
+  - first:
+      213: 3088225010020925705
+    second: PHY_AttackMo_23
+  - first:
+      213: -4661951571544327336
+    second: PHY_AttackMo_24
+  - first:
+      213: -7495065043572760953
+    second: PHY_AttackMo_25
+  - first:
+      213: -3398885595000532696
+    second: PHY_AttackMo_26
+  - first:
+      213: -6129209575623562471
+    second: PHY_AttackMo_27
+  - first:
+      213: 6036386694055124195
+    second: PHY_AttackMo_28
+  - first:
+      213: -4072067370400649469
+    second: PHY_AttackMo_29
+  - first:
+      213: -1299692978216014213
+    second: PHY_AttackMo_30
+  - first:
+      213: -9030700586730342734
+    second: PHY_AttackMo_31
+  - first:
+      213: -62073637418231266
+    second: PHY_AttackMo_32
+  - first:
+      213: 1611264840511134443
+    second: PHY_AttackMo_33
+  - first:
+      213: -2639956442046874382
+    second: PHY_AttackMo_34
+  - first:
+      213: 5779369137415248716
+    second: PHY_AttackMo_35
+  - first:
+      213: -4516886518390210576
+    second: PHY_AttackMo_36
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PHY_AttackMo_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1800
+        width: 1246
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2130d004f34ea8c0800000000000000
+      internalID: -3986173904911584982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_1
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 1994
+        width: 71
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9b6a82021a5adc60800000000000000
+      internalID: 7843680734417677215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_2
+      rect:
+        serializedVersion: 2
+        x: 1251
+        y: 1735
+        width: 138
+        height: 311
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c47f7965ecf26320800000000000000
+      internalID: 2549878401292793029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_3
+      rect:
+        serializedVersion: 2
+        x: 1398
+        y: 1952
+        width: 71
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b29967bfb83b14c0800000000000000
+      internalID: -4315793421837430091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_4
+      rect:
+        serializedVersion: 2
+        x: 1473
+        y: 1949
+        width: 70
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21dbea2ff17e33920800000000000000
+      internalID: 2968970703768829202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_5
+      rect:
+        serializedVersion: 2
+        x: 1755
+        y: 1736
+        width: 96
+        height: 307
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 526ce4348b69db6f0800000000000000
+      internalID: -667211451633580507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_6
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 1733
+        width: 64
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 061b262c94d9f39a0800000000000000
+      internalID: -6251104817647537824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_7
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 1736
+        width: 344
+        height: 209
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8032d1e1cf2b52a70800000000000000
+      internalID: 8801637842672231176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_8
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 1471
+        width: 1693
+        height: 260
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d7940dc5a4579170800000000000000
+      internalID: 8185103918855133137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_9
+      rect:
+        serializedVersion: 2
+        x: 1731
+        y: 1687
+        width: 73
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b20daffeaca66f170800000000000000
+      internalID: 8211868390398808107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_10
+      rect:
+        serializedVersion: 2
+        x: 830
+        y: 1454
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80c5b87fb54a63110800000000000000
+      internalID: 1240359462289234952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_11
+      rect:
+        serializedVersion: 2
+        x: 1605
+        y: 1372
+        width: 59
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 576d3ca670433e890800000000000000
+      internalID: -7430037753770551691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_12
+      rect:
+        serializedVersion: 2
+        x: 1727
+        y: 1374
+        width: 100
+        height: 309
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8c5d15a405af4460800000000000000
+      internalID: 7228177366321552522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_13
+      rect:
+        serializedVersion: 2
+        x: 1832
+        y: 1375
+        width: 144
+        height: 304
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a580bcc99adbd2200800000000000000
+      internalID: 156990098205509722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_14
+      rect:
+        serializedVersion: 2
+        x: 1361
+        y: 1294
+        width: 236
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a349aea9798f6dbf0800000000000000
+      internalID: -299778995150744518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_15
+      rect:
+        serializedVersion: 2
+        x: 1606
+        y: 1291
+        width: 298
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a2f2c1187ee98b90800000000000000
+      internalID: -7238992726559886680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_16
+      rect:
+        serializedVersion: 2
+        x: 1909
+        y: 1269
+        width: 96
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e020fa8de9409ec90800000000000000
+      internalID: -7140170653932518898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_17
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 723
+        width: 1359
+        height: 326
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28e8de1d73401ade0800000000000000
+      internalID: -1323772177678496126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_18
+      rect:
+        serializedVersion: 2
+        x: 1364
+        y: 821
+        width: 333
+        height: 464
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07b217882c47486b0800000000000000
+      internalID: -5294978883019265168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_19
+      rect:
+        serializedVersion: 2
+        x: 1708
+        y: 981
+        width: 216
+        height: 263
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 985fd69fff5386f30800000000000000
+      internalID: 4568961195485033865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_20
+      rect:
+        serializedVersion: 2
+        x: 1702
+        y: 820
+        width: 88
+        height: 150
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 562d12cb64cbe7de0800000000000000
+      internalID: -1333421427665022363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_21
+      rect:
+        serializedVersion: 2
+        x: 1801
+        y: 764
+        width: 88
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b911c1217dc12580800000000000000
+      internalID: -8853569506652382794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_22
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 732
+        width: 84
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3202c7c4c3557f80800000000000000
+      internalID: -8109483449380634053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_23
+      rect:
+        serializedVersion: 2
+        x: 1363
+        y: 736
+        width: 25
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90146c4d8449bda20800000000000000
+      internalID: 3088225010020925705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_24
+      rect:
+        serializedVersion: 2
+        x: 1397
+        y: 20
+        width: 267
+        height: 787
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85bb60aeebb6d4fb0800000000000000
+      internalID: -4661951571544327336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_25
+      rect:
+        serializedVersion: 2
+        x: 1666
+        y: 1
+        width: 50
+        height: 818
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78ed56dad0e2cf790800000000000000
+      internalID: -7495065043572760953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_26
+      rect:
+        serializedVersion: 2
+        x: 1721
+        y: 766
+        width: 21
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8211dc53f8bb4d0d0800000000000000
+      internalID: -3398885595000532696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_27
+      rect:
+        serializedVersion: 2
+        x: 1740
+        y: 760
+        width: 53
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91be80b6d5ca0faa0800000000000000
+      internalID: -6129209575623562471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_28
+      rect:
+        serializedVersion: 2
+        x: 1716
+        y: 545
+        width: 85
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ecdc0257bd85c350800000000000000
+      internalID: 6036386694055124195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_29
+      rect:
+        serializedVersion: 2
+        x: 1810
+        y: 558
+        width: 215
+        height: 191
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30f6fc52d4c1d77c0800000000000000
+      internalID: -4072067370400649469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_30
+      rect:
+        serializedVersion: 2
+        x: 1718
+        y: 8
+        width: 131
+        height: 537
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7e6d545f1096fde0800000000000000
+      internalID: -1299692978216014213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_31
+      rect:
+        serializedVersion: 2
+        x: 1857
+        y: 351
+        width: 70
+        height: 105
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b6b60fb9a18ca280800000000000000
+      internalID: -9030700586730342734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_32
+      rect:
+        serializedVersion: 2
+        x: 1930
+        y: 354
+        width: 88
+        height: 145
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1a15cb0b58732ff0800000000000000
+      internalID: -62073637418231266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_33
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 73
+        width: 1394
+        height: 244
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bea1eb9e5dc5c5610800000000000000
+      internalID: 1611264840511134443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_34
+      rect:
+        serializedVersion: 2
+        x: 1859
+        y: 132
+        width: 121
+        height: 213
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fcba416a9dfc5bd0800000000000000
+      internalID: -2639956442046874382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_35
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 1
+        width: 86
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4bdd7d2c91743050800000000000000
+      internalID: 5779369137415248716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PHY_AttackMo_36
+      rect:
+        serializedVersion: 2
+        x: 1861
+        y: 5
+        width: 150
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ffb99c94abc051c0800000000000000
+      internalID: -4516886518390210576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PHY_AttackMo_0: -3986173904911584982
+      PHY_AttackMo_1: 7843680734417677215
+      PHY_AttackMo_10: 1240359462289234952
+      PHY_AttackMo_11: -7430037753770551691
+      PHY_AttackMo_12: 7228177366321552522
+      PHY_AttackMo_13: 156990098205509722
+      PHY_AttackMo_14: -299778995150744518
+      PHY_AttackMo_15: -7238992726559886680
+      PHY_AttackMo_16: -7140170653932518898
+      PHY_AttackMo_17: -1323772177678496126
+      PHY_AttackMo_18: -5294978883019265168
+      PHY_AttackMo_19: 4568961195485033865
+      PHY_AttackMo_2: 2549878401292793029
+      PHY_AttackMo_20: -1333421427665022363
+      PHY_AttackMo_21: -8853569506652382794
+      PHY_AttackMo_22: -8109483449380634053
+      PHY_AttackMo_23: 3088225010020925705
+      PHY_AttackMo_24: -4661951571544327336
+      PHY_AttackMo_25: -7495065043572760953
+      PHY_AttackMo_26: -3398885595000532696
+      PHY_AttackMo_27: -6129209575623562471
+      PHY_AttackMo_28: 6036386694055124195
+      PHY_AttackMo_29: -4072067370400649469
+      PHY_AttackMo_3: -4315793421837430091
+      PHY_AttackMo_30: -1299692978216014213
+      PHY_AttackMo_31: -9030700586730342734
+      PHY_AttackMo_32: -62073637418231266
+      PHY_AttackMo_33: 1611264840511134443
+      PHY_AttackMo_34: -2639956442046874382
+      PHY_AttackMo_35: 5779369137415248716
+      PHY_AttackMo_36: -4516886518390210576
+      PHY_AttackMo_4: 2968970703768829202
+      PHY_AttackMo_5: -667211451633580507
+      PHY_AttackMo_6: -6251104817647537824
+      PHY_AttackMo_7: 8801637842672231176
+      PHY_AttackMo_8: 8185103918855133137
+      PHY_AttackMo_9: 8211868390398808107
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

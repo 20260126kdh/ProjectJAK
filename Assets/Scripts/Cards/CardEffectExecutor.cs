@@ -12,6 +12,10 @@ public class CardEffectExecutor : MonoBehaviour
     [SerializeField]
     private string playerTag = "Player";
 
+    [Header("플레이어 애니메이션")]
+    [SerializeField]
+    private PlayerAnimationController playerAnimationController;
+
     /// <summary>
     /// 현재 실행 중인 카드가 희생한
     /// 선원들의 현재 체력 합계입니다.
@@ -24,6 +28,23 @@ public class CardEffectExecutor : MonoBehaviour
     /// 무너진 의지는 -4를 전달합니다.
     /// </summary>
     private int currentCardDamageModifier;
+
+    private void Start()
+    {
+        if (playerAnimationController == null)
+        {
+            playerAnimationController =
+                FindFirstObjectByType<PlayerAnimationController>();
+        }
+
+        if (playerAnimationController == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] " +
+                "PlayerAnimationController를 찾지 못했습니다."
+            );
+        }
+    }
 
     /// <summary>
     /// 카드 효과 목록을 실행합니다.
@@ -532,12 +553,29 @@ public class CardEffectExecutor : MonoBehaviour
     /// 실제 피해량을 기준으로 흡혈을 처리합니다.
     /// </summary>
     private int ApplyPlayerAttackDamage(
-        int baseDamage,
-        Enemy targetEnemy)
+    int baseDamage,
+    Enemy targetEnemy)
     {
         if (!IsEnemyAlive(targetEnemy))
         {
             return 0;
+        }
+
+        if (playerAnimationController != null)
+        {
+            playerAnimationController.PlayAttack();
+        }
+
+        if (playerAnimationController != null)
+        {
+            playerAnimationController.PlayAttack();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] " +
+                "PlayerAnimationController가 연결되지 않았습니다."
+            );
         }
 
         PlayerCombat playerCombat =
