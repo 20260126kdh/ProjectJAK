@@ -76,7 +76,8 @@ public class EnemyStatusIconUI : MonoBehaviour
         }
 
         RefreshValue(
-            statusEffect.value
+        statusEffect.value,
+        statusEffect.statusEffectType
         );
 
         RefreshTurn(
@@ -87,11 +88,13 @@ public class EnemyStatusIconUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 상태 효과 수치를 표시합니다.
-    /// 수치가 0 이하라면 숫자를 숨깁니다.
+    /// 상태 효과 종류에 따라 수치가 필요한 경우에만 표시합니다.
+    /// 힘, 속도, 무감각, 불운, 마비, 중독 등
+    /// 실제 수치가 게임 계산에 사용되는 상태만 표시합니다.
     /// </summary>
     private void RefreshValue(
-        int value)
+        int value,
+        StatusEffectType effectType)
     {
         if (valueText == null)
         {
@@ -99,7 +102,10 @@ public class EnemyStatusIconUI : MonoBehaviour
         }
 
         bool shouldShow =
-            value > 0;
+            ShouldShowValue(
+                effectType
+            ) &&
+            value != 0;
 
         valueText.gameObject.SetActive(
             shouldShow
@@ -107,6 +113,7 @@ public class EnemyStatusIconUI : MonoBehaviour
 
         if (!shouldShow)
         {
+            valueText.text = string.Empty;
             return;
         }
 
@@ -115,10 +122,30 @@ public class EnemyStatusIconUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 상태 효과의 남은 지속 턴을 표시합니다.
-    ///
-    /// 영구 상태 효과와 중독은
-    /// 지속 턴 숫자를 표시하지 않습니다.
+    /// 아이콘에 상태 효과 수치를 표시해야 하는지 반환합니다.
+    /// 고정 비율 효과는 수치를 표시하지 않습니다.
+    /// </summary>
+    private bool ShouldShowValue(
+        StatusEffectType effectType)
+    {
+        switch (effectType)
+        {
+            case StatusEffectType.Might:
+            case StatusEffectType.Guard:
+            case StatusEffectType.Resist:
+            case StatusEffectType.Jinx:
+            case StatusEffectType.Paralyze:
+            case StatusEffectType.Toxic:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// 턴 감소형 상태 효과에만 남은 지속 턴을 표시합니다.
+    /// 영구 효과와 수치형 효과에는 지속 턴을 표시하지 않습니다.
     /// </summary>
     private void RefreshTurn(
         int remainingTurn,
@@ -132,7 +159,9 @@ public class EnemyStatusIconUI : MonoBehaviour
 
         bool shouldShow =
             !isPermanent &&
-            effectType != StatusEffectType.Toxic &&
+            ShouldShowRemainingTurn(
+                effectType
+            ) &&
             remainingTurn > 0;
 
         turnText.gameObject.SetActive(
@@ -141,10 +170,42 @@ public class EnemyStatusIconUI : MonoBehaviour
 
         if (!shouldShow)
         {
+            turnText.text = string.Empty;
             return;
         }
 
         turnText.text =
             remainingTurn.ToString();
+    }
+
+    /// <summary>
+    /// 아이콘에 남은 지속 턴을 표시해야 하는지 반환합니다.
+    /// 효과 강도가 고정되어 있고 턴이 감소하는 상태와
+    /// 현재 턴에만 유지되는 일시 효과를 분류합니다.
+    /// </summary>
+    private bool ShouldShowRemainingTurn(
+        StatusEffectType effectType)
+    {
+        switch (effectType)
+        {
+            /*
+             * 현재 턴에만 유지되는 일시형 버프
+             */
+            case StatusEffectType.Lifesteal:
+            case StatusEffectType.Echo:
+
+            /*
+             * 남은 턴이 감소하는 디버프
+             */
+            case StatusEffectType.Weaken:
+            case StatusEffectType.Vulnerable:
+            case StatusEffectType.Cripple:
+            case StatusEffectType.NoBlock:
+            case StatusEffectType.Broken:
+                return true;
+
+            default:
+                return false;
+        }
     }
 }

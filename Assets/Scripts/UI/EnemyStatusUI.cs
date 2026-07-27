@@ -1,3 +1,4 @@
+using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,10 +26,9 @@ public class EnemyStatusUI : MonoBehaviour
     [SerializeField]
     private EnemyStatusIconUI statusIconPrefab;
 
-    [Header("상태 효과 아이콘 목록")]
+    [Header("상태 효과 아이콘 데이터베이스")]
     [SerializeField]
-    private List<StatusEffectIconData> statusIconDataList =
-        new List<StatusEffectIconData>();
+    private StatusEffectIconDatabase statusEffectIconDatabase;
 
     private StatusEffectHandler statusEffectHandler;
 
@@ -49,6 +49,15 @@ public class EnemyStatusUI : MonoBehaviour
             Debug.LogWarning(
                 "[EnemyStatusUI] 부모 오브젝트에서 " +
                 "StatusEffectHandler를 찾지 못했습니다.",
+                this
+            );
+        }
+
+        if (statusEffectIconDatabase == null)
+        {
+            Debug.LogWarning(
+                "[EnemyStatusUI] " +
+                "StatusEffectIconDatabase가 연결되지 않았습니다.",
                 this
             );
         }
@@ -268,35 +277,51 @@ public class EnemyStatusUI : MonoBehaviour
             statusEffect.statusEffectType,
             newIcon
         );
+
+        RectTransform containerRect =
+    statusIconContainer as RectTransform;
+
+        if (containerRect != null)
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(
+                containerRect
+            );
+        }
     }
 
     /// <summary>
-    /// 상태 효과 종류에 해당하는
-    /// 아이콘 Sprite를 찾습니다.
+    /// 상태 효과 종류에 해당하는 아이콘 Sprite를
+    /// 데이터베이스에서 가져옵니다.
     /// </summary>
     private Sprite FindIconSprite(
         StatusEffectType statusEffectType)
     {
-        StatusEffectIconData iconData =
-            statusIconDataList.Find(
-                data =>
-                    data != null &&
-                    data.statusEffectType ==
-                    statusEffectType
-            );
-
-        if (iconData == null)
+        if (statusEffectIconDatabase == null)
         {
             Debug.LogWarning(
-                $"[EnemyStatusUI] {statusEffectType}에 연결된 " +
-                "상태 효과 아이콘이 없습니다.",
+                "[EnemyStatusUI] " +
+                "StatusEffectIconDatabase가 연결되지 않았습니다.",
                 this
             );
 
             return null;
         }
 
-        return iconData.iconSprite;
+        Sprite iconSprite =
+            statusEffectIconDatabase.GetIcon(
+                statusEffectType
+            );
+
+        if (iconSprite == null)
+        {
+            Debug.LogWarning(
+                $"[EnemyStatusUI] " +
+                $"{statusEffectType} 아이콘을 찾지 못했습니다.",
+                this
+            );
+        }
+
+        return iconSprite;
     }
 
     /// <summary>

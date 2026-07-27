@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06dc9a17654cf58419cecc36481448af, type: 3}
+  m_Name: StatusEffectIconDatabase
+  m_EditorClassIdentifier: 
+  iconDataList:
+  - statusEffectType: 1
+    iconSprite: {fileID: 3862273165461876074, guid: 20716fadaa4015f4699e7f3fde9d57ff, type: 3}
+  - statusEffectType: 2
+    iconSprite: {fileID: -7809785511404226330, guid: f1dcdf25dbfc474478f0ef5e4bf5e2b5, type: 3}
+  - statusEffectType: 3
+    iconSprite: {fileID: -4093756183754769994, guid: adf1b9dc86cfb3c41988cdd19d3322be, type: 3}
+  - statusEffectType: 4
+    iconSprite: {fileID: -8754744741259069018, guid: 4a9cc3b6cb06a724cb27887ee41b54af, type: 3}
+  - statusEffectType: 5
+    iconSprite: {fileID: 555706738829966454, guid: 2266d54cc5bf4634090bb3ed2bb3007c, type: 3}
+  - statusEffectType: 6
+    iconSprite: {fileID: -2175802193729752757, guid: bb081fe0e5758ae4286c50822481be9b, type: 3}
+  - statusEffectType: 7
+    iconSprite: {fileID: -3818457467549009898, guid: 12fb85c2c2ee5c846a0db6f3c4df993c, type: 3}
+  - statusEffectType: 8
+    iconSprite: {fileID: 8636345984454726758, guid: bd58f67e20af0ed408b25701ac7be068, type: 3}
+  - statusEffectType: 9
+    iconSprite: {fileID: 406558275545448882, guid: 52a0a7b5ef0075144b422d3e3d3fe62a, type: 3}
+  - statusEffectType: 10
+    iconSprite: {fileID: -1152314735560301972, guid: c04c1cccfec15ba4195c353344d69df1, type: 3}
+  - statusEffectType: 11
+    iconSprite: {fileID: -5925944103715829118, guid: da5614b5cc144314da5168eb6d134bec, type: 3}
+  - statusEffectType: 12
+    iconSprite: {fileID: -8712641876740161571, guid: a829e71afaa3fa94396287c6925a47d0, type: 3}
+  - statusEffectType: 13
+    iconSprite: {fileID: 8307552539660093011, guid: 943ded7e15c7d5c41a32c4d75c521fa8, type: 3}
+  - statusEffectType: 14
+    iconSprite: {fileID: -4401676136621217883, guid: a320fa7574a81b347a7fc577ded58396, type: 3}
+  - statusEffectType: 15
+    iconSprite: {fileID: 3758734644524211337, guid: 53d5d23d5b65f934fb518f71942ab274, type: 3}
+  - statusEffectType: 16
+    iconSprite: {fileID: -9120369034046867018, guid: 70cca28803068eb4b99970ea2bf3ac7a, type: 3}
+  - statusEffectType: 17
+    iconSprite: {fileID: -5341871129622003560, guid: a8090c7ac4556ce4b82cd206ce994d34, type: 3}
+  - statusEffectType: 18
+    iconSprite: {fileID: 8568544660081664720, guid: 683fd255e1b658649a0f4ce253a51016, type: 3}
+  - statusEffectType: 19
+    iconSprite: {fileID: -859234161726942517, guid: 6b1a3ffa5d33f6e4281c9e91155f33bc, type: 3}
+  - statusEffectType: 20
+    iconSprite: {fileID: -149676000877599712, guid: 8d188c3280ee4bb4fb1ffc062d109513, type: 3}
+  - statusEffectType: 21
+    iconSprite: {fileID: 893977028659320664, guid: 1cab97c448c67934f8200149e5237cc7, type: 3}
+  - statusEffectType: 22
+    iconSprite: {fileID: 38555356946100257, guid: 3cd8ff1354485eb46983e3c5ea518a66, type: 3}

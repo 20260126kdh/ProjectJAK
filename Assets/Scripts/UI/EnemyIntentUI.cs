@@ -1,15 +1,18 @@
 using System.Collections.Generic;
-using System.Text;
-using TMPro;
 using UnityEngine;
 
 /// <summary>
-/// 적이 다음 턴에 실행할 행동을 화면에 표시합니다.
+/// 적이 다음 턴에 실행할 행동을 아이콘으로 표시합니다.
 ///
-/// 현재 패턴 턴의 조건을 만족하는 행동들을 가져와
-/// 하나의 Intent 문자열로 조합합니다.
+/// 현재 패턴 턴의 조건을 만족하는 행동을 읽어
+/// 피해, 방어도, 버프, 디버프 네 종류로 분류합니다.
 ///
-/// 표시할 행동이 없으면 IntentRoot를 숨깁니다.
+/// 피해 아이콘은 모든 공격의 총 최종 피해를 기준으로 결정합니다.
+///
+/// 다단히트 공격은 화면에:
+/// 9 × 3
+///
+/// 형식으로 표시합니다.
 /// </summary>
 public class EnemyIntentUI : MonoBehaviour
 {
@@ -17,16 +20,72 @@ public class EnemyIntentUI : MonoBehaviour
     [SerializeField]
     private GameObject intentRoot;
 
-    [Header("Intent 텍스트")]
+    [Header("아이콘 생성 위치")]
     [SerializeField]
-    private TMP_Text intentText;
+    private Transform iconContainer;
+
+    [Header("Intent 아이콘 프리팹")]
+    [SerializeField]
+    private EnemyIntentIconUI intentIconPrefab;
+
+    [Header("Intent 아이콘 데이터베이스")]
+    [SerializeField]
+    private EnemyIntentIconDatabase iconDatabase;
 
     private EnemyPatternController patternController;
+    private Enemy ownerEnemy;
+
+    /// <summary>
+    /// 현재 피해 Intent에 표시할 문자열입니다.
+    ///
+    /// 예:
+    /// 17
+    /// 9 × 3
+    /// 5 + 9 × 3
+    /// </summary>
+    private string damageDisplayText;
 
     private void Awake()
     {
-        patternController =
-            GetComponentInParent<EnemyPatternController>();
+        FindReferences();
+    }
+
+    private void Start()
+    {
+        /*
+         * EnemyPatternController의 Start에서
+         * Initialize가 실행되므로 시작 시 한 번 갱신합니다.
+         */
+        RefreshIntent();
+    }
+
+    private void OnEnable()
+    {
+        FindReferences();
+        Subscribe();
+    }
+
+    private void OnDisable()
+    {
+        Unsubscribe();
+    }
+
+    /// <summary>
+    /// 필요한 컴포넌트들을 자동으로 찾습니다.
+    /// </summary>
+    private void FindReferences()
+    {
+        if (patternController == null)
+        {
+            patternController =
+                GetComponentInParent<EnemyPatternController>();
+        }
+
+        if (ownerEnemy == null)
+        {
+            ownerEnemy =
+                GetComponentInParent<Enemy>();
+        }
 
         if (patternController == null)
         {
@@ -36,25 +95,15 @@ public class EnemyIntentUI : MonoBehaviour
                 this
             );
         }
-    }
 
-    private void Start()
-    {
-        /*
-         * EnemyPatternController의 Start에서 Initialize가 실행되므로
-         * 첫 프레임이 끝난 뒤 현재 Intent를 한 번 표시합니다.
-         */
-        RefreshIntent();
-    }
-
-    private void OnEnable()
-    {
-        Subscribe();
-    }
-
-    private void OnDisable()
-    {
-        Unsubscribe();
+        if (ownerEnemy == null)
+        {
+            Debug.LogWarning(
+                "[EnemyIntentUI] 부모 오브젝트에서 " +
+                "Enemy를 찾지 못했습니다.",
+                this
+            );
+        }
     }
 
     /// <summary>
@@ -75,7 +124,7 @@ public class EnemyIntentUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Intent 변경 이벤트 연결을 해제합니다.
+    /// 패턴 컨트롤러의 Intent 변경 이벤트를 해제합니다.
     /// </summary>
     private void Unsubscribe()
     {
@@ -89,12 +138,15 @@ public class EnemyIntentUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 조건을 만족하는 패턴 행동을 읽어
-    /// Intent 텍스트를 갱신합니다.
+    /// 현재 조건을 만족하는 패턴 행동을 분석해
+    /// Intent 아이콘을 다시 생성합니다.
     /// </summary>
     public void RefreshIntent()
     {
-        if (patternController == null)
+        FindReferences();
+        ClearGeneratedIcons();
+
+        if (!CanRefreshIntent())
         {
             SetIntentRootActive(false);
             return;
@@ -115,33 +167,16 @@ public class EnemyIntentUI : MonoBehaviour
             return;
         }
 
-        string intentDescription =
-            CreateIntentDescription(actions);
+        int totalDamage = 0;
+        int totalBlock = 0;
+        int totalBuffValue = 0;
+        int totalDebuffValue = 0;
 
-        bool hasDescription =
-            !string.IsNullOrWhiteSpace(
-                intentDescription
-            );
+        bool hasBuff = false;
+        bool hasDebuff = false;
 
-        SetIntentRootActive(
-            hasDescription
-        );
-
-        if (intentText != null)
-        {
-            intentText.text =
-                intentDescription;
-        }
-    }
-
-    /// <summary>
-    /// 여러 행동을 하나의 Intent 문장으로 조합합니다.
-    /// </summary>
-    private string CreateIntentDescription(
-        List<EnemyPatternData> actions)
-    {
-        StringBuilder builder =
-            new StringBuilder();
+        damageDisplayText =
+            string.Empty;
 
         for (int i = 0;
              i < actions.Count;
@@ -155,158 +190,435 @@ public class EnemyIntentUI : MonoBehaviour
                 continue;
             }
 
-            string actionText =
-                CreateActionDescription(action);
-
-            if (string.IsNullOrWhiteSpace(actionText))
+            switch (action.actionType)
             {
-                continue;
-            }
+                case EnemyPatternActionType.DealDamage:
+                    {
+                        int actionTotalDamage =
+                            CalculateTotalDamage(
+                                action,
+                                out string actionDisplayText
+                            );
 
-            if (builder.Length > 0)
-            {
-                builder.Append(" + ");
-            }
+                        totalDamage +=
+                            actionTotalDamage;
 
-            builder.Append(actionText);
+                        AddDamageDisplayText(
+                            actionDisplayText
+                        );
+
+                        break;
+                    }
+
+                case EnemyPatternActionType.GainBlock:
+                    {
+                        totalBlock +=
+                            Mathf.Max(
+                                0,
+                                action.value
+                            );
+
+                        break;
+                    }
+
+                case EnemyPatternActionType.ApplyStatus:
+                    {
+                        ClassifyStatusAction(
+                            action,
+                            ref hasBuff,
+                            ref totalBuffValue,
+                            ref hasDebuff,
+                            ref totalDebuffValue
+                        );
+
+                        break;
+                    }
+            }
         }
 
-        return builder.ToString();
-    }
+        int createdIconCount = 0;
 
-    /// <summary>
-    /// 행동 하나를 플레이어에게 보여줄 문자열로 변환합니다.
-    /// </summary>
-    private string CreateActionDescription(
-        EnemyPatternData action)
-    {
-        switch (action.actionType)
+        /*
+         * Intent 표시 순서:
+         * 피해 → 방어도 → 버프 → 디버프
+         */
+
+        if (totalDamage > 0)
         {
-            case EnemyPatternActionType.DealDamage:
-                return CreateDamageDescription(action);
+            bool wasCreated =
+                CreateIntentIcon(
+                    iconDatabase.GetDamageIcon(
+                        totalDamage
+                    ),
+                    damageDisplayText
+                );
 
-            case EnemyPatternActionType.GainBlock:
-                return $"방어 {action.value}";
-
-            case EnemyPatternActionType.ApplyStatus:
-                return CreateStatusDescription(action);
-
-            case EnemyPatternActionType.Heal:
-                return $"회복 {action.value}";
-
-            case EnemyPatternActionType.SummonFuneralSpirit:
-                return "원혼 소환";
-
-            case EnemyPatternActionType.NoAction:
-                return "대기";
-
-            case EnemyPatternActionType.ReadyToStrongAttack:
-                return "강공격 준비";
-
-            case EnemyPatternActionType.None:
-            default:
-                return string.Empty;
+            if (wasCreated)
+            {
+                createdIconCount++;
+            }
         }
+
+        if (totalBlock > 0)
+        {
+            bool wasCreated =
+                CreateIntentIcon(
+                    iconDatabase.BlockIcon,
+                    totalBlock.ToString()
+                );
+
+            if (wasCreated)
+            {
+                createdIconCount++;
+            }
+        }
+
+        if (hasBuff)
+        {
+            string buffDisplayText =
+                totalBuffValue > 0
+                    ? totalBuffValue.ToString()
+                    : string.Empty;
+
+            bool wasCreated =
+                CreateIntentIcon(
+                    iconDatabase.BuffIcon,
+                    buffDisplayText
+                );
+
+            if (wasCreated)
+            {
+                createdIconCount++;
+            }
+        }
+
+        if (hasDebuff)
+        {
+            string debuffDisplayText =
+                totalDebuffValue > 0
+                    ? totalDebuffValue.ToString()
+                    : string.Empty;
+
+            bool wasCreated =
+                CreateIntentIcon(
+                    iconDatabase.DebuffIcon,
+                    debuffDisplayText
+                );
+
+            if (wasCreated)
+            {
+                createdIconCount++;
+            }
+        }
+
+        SetIntentRootActive(
+            createdIconCount > 0
+        );
     }
 
     /// <summary>
-    /// 피해 행동의 표시 문자열을 생성합니다.
+    /// Intent UI를 갱신할 수 있는 상태인지 확인합니다.
     /// </summary>
-    private string CreateDamageDescription(
-        EnemyPatternData action)
+    private bool CanRefreshIntent()
     {
+        if (patternController == null)
+        {
+            return false;
+        }
+
+        if (iconContainer == null)
+        {
+            Debug.LogWarning(
+                "[EnemyIntentUI] " +
+                "Icon Container가 연결되지 않았습니다.",
+                this
+            );
+
+            return false;
+        }
+
+        if (intentIconPrefab == null)
+        {
+            Debug.LogWarning(
+                "[EnemyIntentUI] " +
+                "Intent Icon Prefab이 연결되지 않았습니다.",
+                this
+            );
+
+            return false;
+        }
+
+        if (iconDatabase == null)
+        {
+            Debug.LogWarning(
+                "[EnemyIntentUI] " +
+                "Intent Icon Database가 연결되지 않았습니다.",
+                this
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 피해 행동 하나의 총 최종 피해를 계산하고,
+    /// 화면에 표시할 공격 문자열을 반환합니다.
+    ///
+    /// 피해 아이콘 판정:
+    /// 최종 1회 피해 × 반복 횟수
+    ///
+    /// 화면 표기:
+    /// 최종 1회 피해 × 반복 횟수
+    ///
+    /// 예:
+    /// 기본 피해 9, 힘 1, 반복 3회
+    /// → 1회 최종 피해 10
+    /// → 총 피해 30
+    /// → 화면 표기 "10 × 3"
+    /// </summary>
+    private int CalculateTotalDamage(
+        EnemyPatternData action,
+        out string displayText)
+    {
+        int baseDamage =
+            Mathf.Max(
+                0,
+                action.value
+            );
+
         int repeatCount =
-            Mathf.Max(1, action.repeatCount);
+            Mathf.Max(
+                1,
+                action.repeatCount
+            );
 
-        if (repeatCount <= 1)
+        int oneHitDamage =
+            baseDamage;
+
+        if (ownerEnemy != null)
         {
-            return $"공격 {action.value}";
+            oneHitDamage =
+                ownerEnemy.CalculateOutgoingDamage(
+                    baseDamage
+                );
         }
 
-        return $"공격 {action.value} × {repeatCount}";
+        oneHitDamage =
+            Mathf.Max(
+                0,
+                oneHitDamage
+            );
+
+        if (repeatCount > 1)
+        {
+            displayText =
+                $"{oneHitDamage}×{repeatCount}";
+        }
+        else
+        {
+            displayText =
+                oneHitDamage.ToString();
+        }
+
+        return oneHitDamage *
+               repeatCount;
     }
 
     /// <summary>
-    /// 상태효과 부여 행동의 표시 문자열을 생성합니다.
+    /// 한 턴에 피해 행동이 여러 개 존재할 경우
+    /// 각 공격 표기를 하나의 문자열로 조합합니다.
+    ///
+    /// 예:
+    /// 5 피해 후 9 × 3 피해
+    /// → 5 + 9 × 3
     /// </summary>
-    private string CreateStatusDescription(
-        EnemyPatternData action)
+    private void AddDamageDisplayText(
+        string actionDisplayText)
+    {
+        if (string.IsNullOrWhiteSpace(
+                actionDisplayText))
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(
+                damageDisplayText))
+        {
+            damageDisplayText =
+                actionDisplayText;
+
+            return;
+        }
+
+        damageDisplayText +=
+            $" + {actionDisplayText}";
+    }
+
+    /// <summary>
+    /// 상태효과 행동을 버프 또는 디버프로 분류합니다.
+    /// </summary>
+    private void ClassifyStatusAction(
+        EnemyPatternData action,
+        ref bool hasBuff,
+        ref int totalBuffValue,
+        ref bool hasDebuff,
+        ref int totalDebuffValue)
     {
         if (!action.hasStatusType)
         {
-            return "상태효과 부여";
+            return;
         }
 
-        string statusName =
-            GetStatusDisplayName(
-                action.statusType
+        int statusValue =
+            Mathf.Max(
+                0,
+                action.value
             );
 
-        if (action.value > 0)
+        if (IsBuffStatus(action.statusType))
         {
-            return $"{statusName} {action.value}";
+            hasBuff = true;
+
+            totalBuffValue +=
+                statusValue;
+
+            return;
         }
 
-        return statusName;
+        if (IsDebuffStatus(action.statusType))
+        {
+            hasDebuff = true;
+
+            totalDebuffValue +=
+                statusValue;
+        }
     }
 
     /// <summary>
-    /// 상태효과 enum을 플레이어에게 표시할 이름으로 변환합니다.
+    /// 버프로 분류되는 상태효과인지 반환합니다.
     /// </summary>
-    private string GetStatusDisplayName(
-        StatusEffectType statusEffectType)
+    private bool IsBuffStatus(
+        StatusEffectType statusType)
     {
-        switch (statusEffectType)
+        switch (statusType)
         {
             case StatusEffectType.Might:
-                return "힘";
-
             case StatusEffectType.Guard:
-                return "수호";
-
             case StatusEffectType.Resist:
-                return "저항";
-
             case StatusEffectType.Lifesteal:
-                return "흡혈";
-
             case StatusEffectType.Echo:
-                return "메아리";
-
             case StatusEffectType.Immortal:
-                return "불사";
-
-            case StatusEffectType.Weaken:
-                return "약화";
-
-            case StatusEffectType.Vulnerable:
-                return "취약";
-
-            case StatusEffectType.Cripple:
-                return "불구";
-
-            case StatusEffectType.NoBlock:
-                return "방어 불가";
-
-            case StatusEffectType.Broken:
-                return "파괴";
-
-            case StatusEffectType.Jinx:
-                return "징크스";
-
-            case StatusEffectType.Paralyze:
-                return "마비";
-
-            case StatusEffectType.Toxic:
-                return "중독";
+            case StatusEffectType.Undead:
+            case StatusEffectType.KShellguard:
+            case StatusEffectType.DToxinSwitch:
+            case StatusEffectType.FFesteredSkin:
+            case StatusEffectType.HRevelation:
+            case StatusEffectType.UnderGround:
+            case StatusEffectType.UnderWater:
+            case StatusEffectType.ProfanedHalo:
+                return true;
 
             default:
-                return statusEffectType.ToString();
+                return false;
         }
     }
 
     /// <summary>
-    /// IntentRoot의 표시 여부를 변경합니다.
+    /// 디버프로 분류되는 상태효과인지 반환합니다.
+    /// </summary>
+    private bool IsDebuffStatus(
+        StatusEffectType statusType)
+    {
+        switch (statusType)
+        {
+            case StatusEffectType.Weaken:
+            case StatusEffectType.Vulnerable:
+            case StatusEffectType.Cripple:
+            case StatusEffectType.NoBlock:
+            case StatusEffectType.Broken:
+            case StatusEffectType.Jinx:
+            case StatusEffectType.Paralyze:
+            case StatusEffectType.Toxic:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// Intent 아이콘 프리팹을 생성합니다.
+    ///
+    /// 정상적으로 생성됐으면 true를 반환합니다.
+    /// </summary>
+    private bool CreateIntentIcon(
+        Sprite iconSprite,
+        string displayText)
+    {
+        if (iconSprite == null)
+        {
+            Debug.LogWarning(
+                "[EnemyIntentUI] " +
+                "표시할 Intent Sprite가 없습니다.",
+                this
+            );
+
+            return false;
+        }
+
+        EnemyIntentIconUI createdIcon =
+            Instantiate(
+                intentIconPrefab,
+                iconContainer
+            );
+
+        if (createdIcon == null)
+        {
+            Debug.LogWarning(
+                "[EnemyIntentUI] " +
+                "Intent 아이콘 생성에 실패했습니다.",
+                this
+            );
+
+            return false;
+        }
+
+        createdIcon.Initialize(
+            iconSprite,
+            displayText
+        );
+
+        return true;
+    }
+
+    /// <summary>
+    /// 기존에 생성된 Intent 아이콘들을 제거합니다.
+    /// </summary>
+    private void ClearGeneratedIcons()
+    {
+        if (iconContainer == null)
+        {
+            return;
+        }
+
+        for (int i =
+                 iconContainer.childCount - 1;
+             i >= 0;
+             i--)
+        {
+            Transform child =
+                iconContainer.GetChild(i);
+
+            Destroy(
+                child.gameObject
+            );
+        }
+    }
+
+    /// <summary>
+    /// IntentRoot 표시 여부를 변경합니다.
     /// </summary>
     private void SetIntentRootActive(
         bool isActive)
@@ -324,5 +636,14 @@ public class EnemyIntentUI : MonoBehaviour
         intentRoot.SetActive(
             isActive
         );
+    }
+
+    /// <summary>
+    /// Inspector에서 현재 Intent를 다시 갱신합니다.
+    /// </summary>
+    [ContextMenu("Intent 아이콘 새로고침")]
+    private void TestRefreshIntent()
+    {
+        RefreshIntent();
     }
 }
