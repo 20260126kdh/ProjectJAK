@@ -19,8 +19,8 @@ MonoBehaviour:
   ownerClass: 4
   cardType: 1
   cardRarity: 1
-  artworkPath: CAP_DEF_003
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Captain/CAP_DEF_003.png
+  artwork: {fileID: 3787306268401627869, guid: 4a95ec29c812a434db1ef7f357cdcc64, type: 3}
   effects:
   - order: 1
     effectType: 17

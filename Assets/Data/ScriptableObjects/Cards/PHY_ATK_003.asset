@@ -14,23 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: PHY_ATK_003
   cardName: "\uD608\uAD00 \uC99D\uD3ED"
-  description: "\uCCB4\uB825\uC744 1 \uC783\uC2B5\uB2C8\uB2E4. \uBAA8\uB4E0 \uC801\uC5D0\uAC8C
-    \uD53C\uD574\uB97C 11 \uC90D\uB2C8\uB2E4."
+  description: "\uCCB4\uB825\uC744 2 \uC783\uC2B5\uB2C8\uB2E4. \uBAA8\uB4E0 \uC801\uC5D0\uAC8C
+    \uD53C\uD574\uB97C 14 \uC90D\uB2C8\uB2E4."
   ownerClass: 2
   cardType: 0
   cardRarity: 0
-  artworkPath: PHY_ATK_003
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Physique/PHY_ATK_003.png
+  artwork: {fileID: -4835940406009253651, guid: 723e8f422d507ed49b12e2a2e3f3a5ca, type: 3}
   effects:
   - order: 1
     effectType: 3
     statusEffectType: 0
-    value: 1
+    value: 2
     target: 0
     repeatCount: 1
   - order: 2
     effectType: 0
     statusEffectType: 0
-    value: 11
+    value: 14
     target: 3
     repeatCount: 1

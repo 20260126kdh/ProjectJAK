@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: CAP_ATK_001
   cardName: "\uB358\uC838\uB77C!"
-  description: "\uC120\uC6D0 \uD55C \uBA85\uC774 \uD53C\uD574\uB97C 7 \uC90D\uB2C8\uB2E4."
+  description: "\uC120\uC6D0 \uD55C \uBA85\uC774 \uD53C\uD574\uB97C 8 \uC90D\uB2C8\uB2E4."
   ownerClass: 4
   cardType: 0
   cardRarity: 0
-  artworkPath: CAP_ATK_001
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Captain/CAP_ATK_001.png
+  artwork: {fileID: 7621124069294872616, guid: d1ee6789621b8e84f8d094b902af43f3, type: 3}
   effects:
   - order: 1
-    effectType: 0
+    effectType: 13
     statusEffectType: 0
-    value: 7
+    value: 8
     target: 1
     repeatCount: 1

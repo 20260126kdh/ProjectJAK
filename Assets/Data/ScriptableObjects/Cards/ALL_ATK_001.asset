@@ -18,8 +18,8 @@ MonoBehaviour:
   ownerClass: 1
   cardType: 0
   cardRarity: 0
-  artworkPath: Assets/Art/Cards/Physique/ALL_ATK_001.png
-  artwork: {fileID: -3692128062207371750, guid: 74be31aac272d6e49b910885324f3182, type: 3}
+  artworkPath: Assets/Art/Cards/Public/ALL_ATK_001.png
+  artwork: {fileID: -3692128062207371750, guid: 991bd1ba162bd9140b01c8e41dc9a4e0, type: 3}
   effects:
   - order: 1
     effectType: 0

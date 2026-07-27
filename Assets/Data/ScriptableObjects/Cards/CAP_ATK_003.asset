@@ -14,23 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: CAP_ATK_003
   cardName: "\uC601\uD63C \uD30C\uAD34"
-  description: "\uD53C\uD574\uB97C 4\uB9CC\uD07C 2\uBC88 \uC90D\uB2C8\uB2E4. \uC57D\uD654\uB97C
+  description: "\uD53C\uD574\uB97C 5\uB9CC\uD07C 2\uBC88 \uC90D\uB2C8\uB2E4. \uC57D\uD654\uB97C
     1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   ownerClass: 4
   cardType: 0
   cardRarity: 0
-  artworkPath: CAP_ATK_003
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Captain/CAP_ATK_003.png
+  artwork: {fileID: -3221772729324258600, guid: bcf57fd0e3c28dd439304ea4290c80e0, type: 3}
   effects:
   - order: 1
     effectType: 0
     statusEffectType: 0
-    value: 4
+    value: 5
     target: 1
     repeatCount: 2
   - order: 2
     effectType: 5
-    statusEffectType: 14
+    statusEffectType: 15
     value: 1
     target: 1
     repeatCount: 1

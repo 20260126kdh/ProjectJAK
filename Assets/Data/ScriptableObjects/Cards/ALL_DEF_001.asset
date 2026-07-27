@@ -18,8 +18,8 @@ MonoBehaviour:
   ownerClass: 1
   cardType: 1
   cardRarity: 0
-  artworkPath: ALL_DEF_001
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Public/ALL_DEF_001.png
+  artwork: {fileID: -2760981777878703464, guid: 17370790ef1118d42be66678d743b31c, type: 3}
   effects:
   - order: 1
     effectType: 1

@@ -1,54 +1,54 @@
 ﻿CardID,CardName,Description,OwnerClass,CardType,CardRariy,Artwork
-ALL_ATK_001,투창,피해를 6 줍니다.,All,Attack,Common,Assets/Art/Cards/Physique/ALL_ATK_001.png
-ALL_DEF_001,회피,방어도를 5 얻습니다.,All,Defense,Common,ALL_DEF_001
-PHY_ATK_001,분노,피해를 8 줍니다.,Physique,Attack,Common,PHY_ATK_001
-PHY_ATK_002,사슬 투창,피해를 7 줍니다. 취약을 1 부여합니다.,Physique,Attack,Common,PHY_ATK_002
-PHY_ATK_003,혈관 증폭,체력을 1 잃습니다. 모든 적에게 피해를 11 줍니다.,Physique,Attack,Common,PHY_ATK_003
-PHY_ATK_004,악랄한 투창,피해를 9 줍니다. 약화를 1 부여합니다.,Physique,Attack,Common,PHY_ATK_004
-PHY_ATK_005,피를 부르는 자,피해를 6 줍니다. 이 카드로 입힌 피해량만큼 체력을 회복합니다.,Physique,Attack,Rare,PHY_ATK_005
-PHY_ATK_006,악마의 속삭임,체력을 4 잃습니다. 피해를 24 줍니다.,Physique,Attack,Rare,PHY_ATK_006
-PHY_ATK_007,악마의 외침,모든 적에게 피해를 12 줍니다. 이 카드로 입힌 피해량만큼 체력을 회복합니다.,Physique,Attack,Epic,PHY_ATK_007
-PHY_DEF_001,혈류 장벽,체력을 2 잃습니다. 방어도를 10 얻습니다.,Physique,Defense,Common,PHY_DEF_001
-PHY_DEF_002,무감각,적에게 받는 피해를 이번 턴 동안 30% 감소시킵니다.,Physique,Defense,Common,PHY_DEF_002
-PHY_DEF_003,악마의 눈,방어도를 8 얻습니다. 이번 턴동안 체력을 잃었다면 방어도를 추가로 8 얻습니다.,Physique,Defense,Rare,PHY_DEF_003
-PHY_DEF_004,응고,체력을 8 잃습니다. 방어도를 30 얻습니다.,Physique,Defense,Epic,PHY_DEF_004
-PHY_SKL_001,악마의 힘,다음에 내가 사용하는 공격카드의 데미지가 2배가 됩니다.,Physique,Skill,Common,PHY_SKL_001
-PHY_SKL_002,악마와의 거래,체력을 5 잃습니다. 힘을 5 얻습니다. 소멸.,Physique,Skill,Common,PHY_SKL_002
-PHY_SKL_003,위협,취약을 2 부여합니다.,Physique,Skill,Common,PHY_SKL_003
-PHY_SKL_004,핏기 어린 눈,체력을 3 잃습니다. 이번 턴 동안 힘을 2 얻습니다.,Physique,Skill,Common,PHY_SKL_004
-PHY_SKL_005,피 맛,이번 턴 동안 적에게 피해를 입힐 때 입힌 피해량만큼 체력을 회복합니다.,Physique,Skill,Rare,PHY_SKL_005
-PHY_SKL_006,합일,이번 전투동안 힘을 5 속도를 5 얻습니다. 소멸,Physique,Skill,Epic,PHY_SKL_006
-TEC_ATK_001,꼬챙이,피해를 2만큼 2번 줍니다.,Technician,Attack,Common,TEC_ATK_001
-TEC_ATK_002,피하고 던지기,피해를 4 줍니다. 방어도를 4 얻습니다. 작살잡이 스택을 2 부여합니다.,Technician,Attack,Common,TEC_ATK_002
-TEC_ATK_003,파고들기,피해를 3 줍니다. 작살잡이 스택을 3 부여합니다.,Technician,Attack,Common,TEC_ATK_003
-TEC_ATK_004,정밀한 저격,피해를 11 줍니다. 작살잡이 스택을 1 부여합니다.,Technician,Attack,Common,TEC_ATK_004
-TEC_ATK_005,전창 투척,무작위 적에게 피해를 4만큼 4번 줍니다.,Technician,Attack,Rare,TEC_ATK_005
-TEC_ATK_006,환영 투창,피해를 9만큼 2번 줍니다.,Technician,Attack,Rare,TEC_ATK_006
-TEC_ATK_007,투창의 천재,모든 적에게 피해를 6만큼 5번 줍니다.,Technician,Attack,Epic,TEC_ATK_007
-TEC_DEF_001,발놀림,방어도를 7 얻습니다.,Technician,Defense,Common,TEC_DEF_002
-TEC_DEF_002,전략가,방어도를 4 얻습니다. 모든 적에게 작살잡이 스택을 4 부여합니다.,Technician,Defense,Common,TEC_DEF_003
-TEC_DEF_003,흐릿함,방어도를 13 얻습니다. 모든 적에게 작살잡이 스택을 4 부여합니다.,Technician,Defense,Rare,TEC_DEF_004
-TEC_DEF_004,그림자 은신,속도를 2 얻습니다. 방어도를 20 얻습니다.,Technician,Defense,Epic,TEC_DEF_005
-TEC_SKL_001,진압,피해를 4 줍니다. 약화를 2 부여합니다.,Technician,Skill,Common,TEC_SKL_001
-TEC_SKL_002,엄폐,방어도를 12 얻습니다. 적에게 작살잡이 스택을 3 부여합니다.,Technician,Skill,Common,TEC_SKL_002
-TEC_SKL_003,날 세우기,작살잡이 스택을 5 부여합니다.,Technician,Skill,Common,TEC_SKL_003
-TEC_SKL_004,시야 지우기,이번 턴 동안 모든 적이 힘을 4 잃습니다.,Technician,Skill,Common,TEC_SKL_004
-TEC_SKL_005,잔상,이번 턴에 다음으로 사용하는 공격 카드가 2번 사용됩니다. 모든 적에게 작살잡이 스택을 5 부여합니다.,Technician,Skill,Rare,TEC_SKL_005
-TEC_SKL_006,불사의 존재,이번 전투 동안 모든 체력을 잃을 시 체력 1을 남기고 부활합니다. 소멸.,Technician,Skill,Epic,TEC_SKL_006
-CAP_ATK_001,던져라!,선원 한 명이 피해를 7 줍니다.,Captain,Attack,Common,CAP_ATK_001
-CAP_ATK_002,화약 폭발,모든 적에게 피해를 4 주고 모든 적에게 취약을 1 부여합니다.,Captain,Attack,Common,CAP_ATK_002
-CAP_ATK_003,영혼 파괴,피해를 4만큼 2번 줍니다. 약화를 1 부여합니다.,Captain,Attack,Common,CAP_ATK_003
-CAP_ATK_004,덮쳐!,모든 선원이 무작위 적에게 피해를 3 줍니다.,Captain,Attack,Common,CAP_ATK_004
-CAP_ATK_005,영혼의 행진,피해를 8 줍니다. 모든 선원들이 방어도를 2 얻습니다.,Captain,Attack,Rare,CAP_ATK_005
-CAP_ATK_006,역병의 작살,모든 선원이 무작위 적에게 피해를 4 줍니다. 모든 적에게 약화를 2 작살잡이 스택을 2 부여합니다.,Captain,Attack,Rare,CAP_ATK_006
-CAP_ATK_007,전원! 던져라!,모든 선원들이 모든 적에게 피해를 2만큼 5번 줍니다.,Captain,Attack,Epic,CAP_ATK_007
-CAP_DEF_001,고동치는 맥박,방어도를 5 얻습니다. 모든 적에게 작살잡이 스택을 1 부여합니다.,Captain,Defense,Common,CAP_DEF_001
-CAP_DEF_002,장송가,모든 선원들의 체력을 1 회복합니다.,Captain,Defense,Common,CAP_DEF_002
-CAP_DEF_003,비애,선원 두 명을 희생시킵니다. 방어도를 16 얻습니다.,Captain,Defense,Rare,CAP_DEF_003
-CAP_DEF_004,영혼 흡수,모든 선원을 희생시킵니다. 방어도를 25 얻습니다. 속도를 2 얻습니다.,Captain,Defense,Epic,CAP_DEF_004
-CAP_SKL_001,길잡이,모든 적에게 피해를 10 주고 약화와 취약을 1씩 부여합니다.,Captain,Skill,Common,CAP_SKL_001
-CAP_SKL_002,배신,선원 하나를 희생시킵니다. 선원의 현재 체력만큼 힘을 얻습니다. 소멸.,Captain,Skill,Common,CAP_SKL_002
-CAP_SKL_003,기초강령술,선원 한 명을 소환합니다.,Captain,Skill,Common,CAP_SKL_003
-CAP_SKL_004,약탈,선원 한 명을 희생시킵니다. 방어도를 7 얻습니다. 모든 적에게 작살잡이 스택을 1 부여합니다.,Captain,Skill,Common,CAP_SKL_004
-CAP_SKL_005,고급강령술,선원 한 명을 소환합니다.,Captain,Skill,Rare,CAP_SKL_005
-CAP_SKL_006,전원! 안식을 선사해라!,선원 세 명을 소환합니다. 모든 선원의 최대체력이 7이 됩니다. 적이 현재 보유하고 있는 작살잡이 스택만큼 피해를 줍니다.,Captain,Skill,Epic,CAP_SKL_006
+ALL_ATK_001,투창,피해를 6 줍니다.,All,Attack,Common,Assets/Art/Cards/Public/ALL_ATK_001.png
+ALL_DEF_001,회피,방어도를 5 얻습니다.,All,Defense,Common,Assets/Art/Cards/Public/ALL_DEF_001.png
+PHY_ATK_001,분노,피해를 13 줍니다.,Physique,Attack,Common,Assets/Art/Cards/Physique/PHY_ATK_001.png
+PHY_ATK_002,사슬 투창,피해를 10 줍니다. 취약을 2 부여합니다.,Physique,Attack,Common,Assets/Art/Cards/Physique/PHY_ATK_002.png
+PHY_ATK_003,혈관 증폭,체력을 2 잃습니다. 모든 적에게 피해를 14 줍니다.,Physique,Attack,Common,Assets/Art/Cards/Physique/PHY_ATK_003.png
+PHY_ATK_004,악랄한 투창,피해를 8 줍니다. 약화를 2 부여합니다.,Physique,Attack,Common,Assets/Art/Cards/Physique/PHY_ATK_004.png
+PHY_ATK_005,피를 부르는 자,피해를 6 줍니다. 이 카드로 입힌 피해량만큼 체력을 회복합니다.,Physique,Attack,Rare,Assets/Art/Cards/Physique/PHY_ATK_005.png
+PHY_ATK_006,악마의 속삭임,체력을 5 잃습니다. 피해를 20 줍니다.,Physique,Attack,Rare,Assets/Art/Cards/Physique/PHY_ATK_006.png
+PHY_ATK_007,악마의 외침,모든 적에게 피해를 12 줍니다. 이 카드로 입힌 피해량만큼 체력을 회복합니다.,Physique,Attack,Epic,Assets/Art/Cards/Physique/PHY_ATK_007.png
+PHY_DEF_001,혈류 장벽,체력을 2 잃습니다. 방어도를 10 얻습니다.,Physique,Defense,Common,Assets/Art/Cards/Physique/PHY_DEF_001.png
+PHY_DEF_002,무감각,적에게 받는 피해를 이번 턴 동안 30% 감소시킵니다.,Physique,Defense,Common,Assets/Art/Cards/Physique/PHY_DEF_002.png
+PHY_DEF_003,악마의 눈,방어도를 8 얻습니다. 이번 턴동안 체력을 잃었다면 방어도를 추가로 8 얻습니다.,Physique,Defense,Rare,Assets/Art/Cards/Physique/PHY_DEF_003.png
+PHY_DEF_004,응고,체력을 8 잃습니다. 방어도를 30 얻습니다.,Physique,Defense,Epic,Assets/Art/Cards/Physique/PHY_DEF_004.png
+PHY_SKL_001,악마의 힘,다음에 내가 사용하는 공격카드의 데미지가 2배가 됩니다.,Physique,Skill,Common,Assets/Art/Cards/Physique/PHY_SKL_001.png
+PHY_SKL_002,악마와의 거래,체력을 5 잃습니다. 힘을 5 얻습니다. 소멸.,Physique,Skill,Common,Assets/Art/Cards/Physique/PHY_SKL_002.png
+PHY_SKL_003,위협,취약을 2 부여합니다.,Physique,Skill,Common,Assets/Art/Cards/Physique/PHY_SKL_003.png
+PHY_SKL_004,핏기 어린 눈,체력을 3 잃습니다. 이번 턴 동안 힘을 2 얻습니다.,Physique,Skill,Common,Assets/Art/Cards/Physique/PHY_SKL_004.png
+PHY_SKL_005,피 맛,이번 턴 동안 적에게 피해를 입힐 때 입힌 피해량만큼 체력을 회복합니다.,Physique,Skill,Rare,Assets/Art/Cards/Physique/PHY_SKL_005.png
+PHY_SKL_006,합일,이번 전투동안 힘을 5 속도를 5 얻습니다. 소멸,Physique,Skill,Epic,Assets/Art/Cards/Physique/PHY_SKL_006.png
+TEC_ATK_001,꼬챙이,피해를 3만큼 2번 줍니다.,Technician,Attack,Common,Assets/Art/Cards/Technician/TEC_ATK_001.png
+TEC_ATK_002,피하고 던지기,피해를 5 줍니다. 방어도를 4 얻습니다. 작살잡이 스택을 2 부여합니다.,Technician,Attack,Common,Assets/Art/Cards/Technician/TEC_ATK_002.png
+TEC_ATK_003,파고들기,피해를 4 줍니다. 작살잡이 스택을 3 부여합니다.,Technician,Attack,Common,Assets/Art/Cards/Technician/TEC_ATK_003.png
+TEC_ATK_004,정밀한 저격,피해를 12 줍니다. 작살잡이 스택을 1 부여합니다.,Technician,Attack,Common,Assets/Art/Cards/Technician/TEC_ATK_004.png
+TEC_ATK_005,전창 투척,무작위 적에게 피해를 7만큼 4번 줍니다.,Technician,Attack,Rare,Assets/Art/Cards/Technician/TEC_ATK_005.png
+TEC_ATK_006,환영 투창,피해를 10만큼 2번 줍니다.,Technician,Attack,Rare,Assets/Art/Cards/Technician/TEC_ATK_006.png
+TEC_ATK_007,투창의 천재,모든 적에게 피해를 6만큼 5번 줍니다.,Technician,Attack,Epic,Assets/Art/Cards/Technician/TEC_ATK_007.png
+TEC_DEF_001,발놀림,방어도를 7 얻습니다.,Technician,Defense,Common,Assets/Art/Cards/Technician/TEC_DEF_001.png
+TEC_DEF_002,전략가,방어도를 4 얻습니다. 모든 적에게 작살잡이 스택을 4 부여합니다.,Technician,Defense,Common,Assets/Art/Cards/Technician/TEC_DEF_002.png
+TEC_DEF_003,흐릿함,방어도를 13 얻습니다. 모든 적에게 작살잡이 스택을 4 부여합니다.,Technician,Defense,Rare,Assets/Art/Cards/Technician/TEC_DEF_003.png
+TEC_DEF_004,그림자 은신,속도를 2 얻습니다. 방어도를 20 얻습니다.,Technician,Defense,Epic,Assets/Art/Cards/Technician/TEC_DEF_004.png
+TEC_SKL_001,진압,피해를 4 줍니다. 약화를 2 부여합니다.,Technician,Skill,Common,Assets/Art/Cards/Technician/TEC_SKL_001.png
+TEC_SKL_002,엄폐,방어도를 15 얻습니다. 적에게 작살잡이 스택을 3 부여합니다.,Technician,Skill,Common,Assets/Art/Cards/Technician/TEC_SKL_002.png
+TEC_SKL_003,날 세우기,작살잡이 스택을 5 부여합니다.,Technician,Skill,Common,Assets/Art/Cards/Technician/TEC_SKL_003.png
+TEC_SKL_004,시야 지우기,이번 턴 동안 모든 적이 힘을 4 잃습니다.,Technician,Skill,Common,Assets/Art/Cards/Technician/TEC_SKL_004.png
+TEC_SKL_005,잔상,이번 턴에 다음으로 사용하는 공격 카드가 2번 사용됩니다. 모든 적에게 작살잡이 스택을 5 부여합니다.,Technician,Skill,Rare,Assets/Art/Cards/Technician/TEC_SKL_005.png
+TEC_SKL_006,불사의 존재,이번 전투 동안 모든 체력을 잃을 시 체력 1을 남기고 부활합니다. 소멸.,Technician,Skill,Epic,Assets/Art/Cards/Technician/TEC_SKL_006.png
+CAP_ATK_001,던져라!,선원 한 명이 피해를 8 줍니다.,Captain,Attack,Common,Assets/Art/Cards/Captain/CAP_ATK_001.png
+CAP_ATK_002,화약 폭발,모든 적에게 피해를 5 주고 모든 적에게 취약을 1 부여합니다.,Captain,Attack,Common,Assets/Art/Cards/Captain/CAP_ATK_002.png
+CAP_ATK_003,영혼 파괴,피해를 5만큼 2번 줍니다. 약화를 1 부여합니다.,Captain,Attack,Common,Assets/Art/Cards/Captain/CAP_ATK_003.png
+CAP_ATK_004,덮쳐!,모든 선원이 무작위 적에게 피해를 4 줍니다.,Captain,Attack,Common,Assets/Art/Cards/Captain/CAP_ATK_004.png
+CAP_ATK_005,영혼의 행진,피해를 11 줍니다. 모든 선원들이 방어도를 2 얻습니다.,Captain,Attack,Rare,Assets/Art/Cards/Captain/CAP_ATK_005.png
+CAP_ATK_006,역병의 작살,모든 선원이 무작위 적에게 피해를 7 줍니다. 모든 적에게 약화를 2 작살잡이 스택을 2 부여합니다.,Captain,Attack,Rare,Assets/Art/Cards/Captain/CAP_ATK_006.png
+CAP_ATK_007,전원! 던져라!,모든 선원들이 모든 적에게 피해를 4만큼 6번 줍니다.,Captain,Attack,Epic,Assets/Art/Cards/Captain/CAP_ATK_007.png
+CAP_DEF_001,고동치는 맥박,방어도를 5 얻습니다. 모든 적에게 작살잡이 스택을 1 부여합니다.,Captain,Defense,Common,Assets/Art/Cards/Captain/CAP_DEF_001.png
+CAP_DEF_002,장송가,모든 선원들의 체력을 1 회복합니다.,Captain,Defense,Common,Assets/Art/Cards/Captain/CAP_DEF_002.png
+CAP_DEF_003,비애,선원 두 명을 희생시킵니다. 방어도를 16 얻습니다.,Captain,Defense,Rare,Assets/Art/Cards/Captain/CAP_DEF_003.png
+CAP_DEF_004,영혼 흡수,모든 선원을 희생시킵니다. 방어도를 25 얻습니다. 속도를 2 얻습니다.,Captain,Defense,Epic,Assets/Art/Cards/Captain/CAP_DEF_004.png
+CAP_SKL_001,길잡이,모든 적에게 피해를 10 주고 약화와 취약을 1씩 부여합니다.,Captain,Skill,Common,Assets/Art/Cards/Captain/CAP_SKL_001.png
+CAP_SKL_002,배신,선원 하나를 희생시킵니다. 선원의 현재 체력만큼 힘을 얻습니다. 소멸.,Captain,Skill,Common,Assets/Art/Cards/Captain/CAP_SKL_002.png
+CAP_SKL_003,기초강령술,선원 한 명을 소환합니다.,Captain,Skill,Common,Assets/Art/Cards/Captain/CAP_SKL_003.png
+CAP_SKL_004,약탈,선원 한 명을 희생시킵니다. 방어도를 7 얻습니다. 모든 적에게 작살잡이 스택을 1 부여합니다.,Captain,Skill,Common,Assets/Art/Cards/Captain/CAP_SKL_004.png
+CAP_SKL_005,고급강령술,선원 두 명을 소환합니다.,Captain,Skill,Rare,Assets/Art/Cards/Captain/CAP_SKL_005.png
+CAP_SKL_006,전원! 안식을 선사해라!,10/10 선원 세 명을 소환합니다. 적이 현재 보유하고 있는 작살잡이 스택만큼 피해를 줍니다.,Captain,Skill,Epic,Assets/Art/Cards/Captain/CAP_SKL_006.png

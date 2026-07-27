@@ -14,22 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: PHY_ATK_004
   cardName: "\uC545\uB784\uD55C \uD22C\uCC3D"
-  description: "\uD53C\uD574\uB97C 9 \uC90D\uB2C8\uB2E4. \uC57D\uD654\uB97C 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+  description: "\uD53C\uD574\uB97C 8 \uC90D\uB2C8\uB2E4. \uC57D\uD654\uB97C 2 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   ownerClass: 2
   cardType: 0
   cardRarity: 0
-  artworkPath: PHY_ATK_004
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Physique/PHY_ATK_004.png
+  artwork: {fileID: -5564471506230653906, guid: 301446353eb3d394a8e31e146740f237, type: 3}
   effects:
   - order: 1
     effectType: 0
     statusEffectType: 0
-    value: 9
+    value: 8
     target: 1
     repeatCount: 1
   - order: 2
     effectType: 5
-    statusEffectType: 14
-    value: 1
+    statusEffectType: 15
+    value: 2
     target: 1
     repeatCount: 1

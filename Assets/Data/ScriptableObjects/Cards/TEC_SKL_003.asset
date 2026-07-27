@@ -18,8 +18,8 @@ MonoBehaviour:
   ownerClass: 3
   cardType: 2
   cardRarity: 0
-  artworkPath: TEC_SKL_003
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Technician/TEC_SKL_003.png
+  artwork: {fileID: 666771785896755238, guid: 586768d5a400aec40b1699df9fc492d4, type: 3}
   effects:
   - order: 1
     effectType: 7

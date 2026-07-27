@@ -18,12 +18,12 @@ MonoBehaviour:
   ownerClass: 2
   cardType: 2
   cardRarity: 0
-  artworkPath: PHY_SKL_003
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Physique/PHY_SKL_003.png
+  artwork: {fileID: 12475901884005559, guid: abe8076a681c217498282bf81650286b, type: 3}
   effects:
   - order: 1
     effectType: 5
-    statusEffectType: 15
+    statusEffectType: 16
     value: 2
     target: 1
     repeatCount: 1

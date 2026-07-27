@@ -19,8 +19,8 @@ MonoBehaviour:
   ownerClass: 2
   cardType: 0
   cardRarity: 1
-  artworkPath: PHY_ATK_005
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Physique/PHY_ATK_005.png
+  artwork: {fileID: -9173762237421221294, guid: 201c54a9591a90e47a3352ebc7c35d2d, type: 3}
   effects:
   - order: 1
     effectType: 0

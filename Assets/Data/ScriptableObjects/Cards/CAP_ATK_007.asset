@@ -15,16 +15,16 @@ MonoBehaviour:
   cardID: CAP_ATK_007
   cardName: "\uC804\uC6D0! \uB358\uC838\uB77C!"
   description: "\uBAA8\uB4E0 \uC120\uC6D0\uB4E4\uC774 \uBAA8\uB4E0 \uC801\uC5D0\uAC8C
-    \uD53C\uD574\uB97C 2\uB9CC\uD07C 5\uBC88 \uC90D\uB2C8\uB2E4."
+    \uD53C\uD574\uB97C 4\uB9CC\uD07C 6\uBC88 \uC90D\uB2C8\uB2E4."
   ownerClass: 4
   cardType: 0
   cardRarity: 2
-  artworkPath: CAP_ATK_007
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Captain/CAP_ATK_007.png
+  artwork: {fileID: -1180205984392574588, guid: 67ac1b57d4fbea749bcacd88de5dc924, type: 3}
   effects:
   - order: 1
     effectType: 15
     statusEffectType: 0
-    value: 2
+    value: 4
     target: 3
-    repeatCount: 5
+    repeatCount: 6

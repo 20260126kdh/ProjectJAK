@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: TEC_ATK_001
   cardName: "\uAF2C\uCC59\uC774"
-  description: "\uD53C\uD574\uB97C 2\uB9CC\uD07C 2\uBC88 \uC90D\uB2C8\uB2E4."
+  description: "\uD53C\uD574\uB97C 3\uB9CC\uD07C 2\uBC88 \uC90D\uB2C8\uB2E4."
   ownerClass: 3
   cardType: 0
   cardRarity: 0
-  artworkPath: TEC_ATK_001
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Technician/TEC_ATK_001.png
+  artwork: {fileID: 1292330259898741075, guid: 4f38d6725533ede4db44da5602d829d9, type: 3}
   effects:
   - order: 1
     effectType: 0
     statusEffectType: 0
-    value: 2
+    value: 3
     target: 1
     repeatCount: 2

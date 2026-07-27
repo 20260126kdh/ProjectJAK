@@ -20,8 +20,8 @@ MonoBehaviour:
   ownerClass: 4
   cardType: 2
   cardRarity: 0
-  artworkPath: CAP_SKL_004
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Captain/CAP_SKL_004.png
+  artwork: {fileID: -3054579817418690840, guid: 9bcb46f94c6560c40b4ec63c407fb236, type: 3}
   effects:
   - order: 1
     effectType: 17

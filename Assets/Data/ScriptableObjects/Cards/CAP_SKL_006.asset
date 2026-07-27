@@ -14,15 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: CAP_SKL_006
   cardName: "\uC804\uC6D0! \uC548\uC2DD\uC744 \uC120\uC0AC\uD574\uB77C!"
-  description: "\uC120\uC6D0 \uC138 \uBA85\uC744 \uC18C\uD658\uD569\uB2C8\uB2E4.
-    \uBAA8\uB4E0 \uC120\uC6D0\uC758 \uCD5C\uB300\uCCB4\uB825\uC774 7\uC774 \uB429\uB2C8\uB2E4.
+  description: "10/10 \uC120\uC6D0 \uC138 \uBA85\uC744 \uC18C\uD658\uD569\uB2C8\uB2E4.
     \uC801\uC774 \uD604\uC7AC \uBCF4\uC720\uD558\uACE0 \uC788\uB294 \uC791\uC0B4\uC7A1\uC774
     \uC2A4\uD0DD\uB9CC\uD07C \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
   ownerClass: 4
   cardType: 2
   cardRarity: 2
-  artworkPath: CAP_SKL_006
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Captain/CAP_SKL_006.png
+  artwork: {fileID: 1933868655469122756, guid: 9f90c23349f43104ead9ed001dea0127, type: 3}
   effects:
   - order: 1
     effectType: 12
@@ -39,7 +38,7 @@ MonoBehaviour:
   - order: 3
     effectType: 19
     statusEffectType: 0
-    value: 7
+    value: 10
     target: 6
     repeatCount: 1
   - order: 4

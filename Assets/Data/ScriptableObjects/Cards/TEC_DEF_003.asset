@@ -19,8 +19,8 @@ MonoBehaviour:
   ownerClass: 3
   cardType: 1
   cardRarity: 1
-  artworkPath: TEC_DEF_004
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Technician/TEC_DEF_003.png
+  artwork: {fileID: -754927635210368928, guid: 904ce0ef8fa4d674caaf654a4575a2fe, type: 3}
   effects:
   - order: 1
     effectType: 1

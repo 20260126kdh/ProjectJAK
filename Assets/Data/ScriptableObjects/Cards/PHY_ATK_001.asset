@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: PHY_ATK_001
   cardName: "\uBD84\uB178"
-  description: "\uD53C\uD574\uB97C 8 \uC90D\uB2C8\uB2E4."
+  description: "\uD53C\uD574\uB97C 13 \uC90D\uB2C8\uB2E4."
   ownerClass: 2
   cardType: 0
   cardRarity: 0
-  artworkPath: PHY_ATK_001
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Physique/PHY_ATK_001.png
+  artwork: {fileID: -8923973502139171369, guid: 9ffd6fd587e9dc6438c75004a1476a98, type: 3}
   effects:
   - order: 1
     effectType: 0
     statusEffectType: 0
-    value: 8
+    value: 13
     target: 1
     repeatCount: 1

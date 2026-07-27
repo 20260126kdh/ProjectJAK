@@ -19,8 +19,8 @@ MonoBehaviour:
   ownerClass: 2
   cardType: 2
   cardRarity: 0
-  artworkPath: PHY_SKL_002
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Physique/PHY_SKL_002.png
+  artwork: {fileID: 5277130247135179050, guid: d824616c8571ec544a36222e437f30c5, type: 3}
   effects:
   - order: 1
     effectType: 3
@@ -32,11 +32,5 @@ MonoBehaviour:
     effectType: 5
     statusEffectType: 1
     value: 5
-    target: 0
-    repeatCount: 1
-  - order: 3
-    effectType: 5
-    statusEffectType: 22
-    value: 1
     target: 0
     repeatCount: 1

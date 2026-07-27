@@ -15,23 +15,23 @@ MonoBehaviour:
   cardID: CAP_ATK_006
   cardName: "\uC5ED\uBCD1\uC758 \uC791\uC0B4"
   description: "\uBAA8\uB4E0 \uC120\uC6D0\uC774 \uBB34\uC791\uC704 \uC801\uC5D0\uAC8C
-    \uD53C\uD574\uB97C 4 \uC90D\uB2C8\uB2E4. \uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uC57D\uD654\uB97C
+    \uD53C\uD574\uB97C 7 \uC90D\uB2C8\uB2E4. \uBAA8\uB4E0 \uC801\uC5D0\uAC8C \uC57D\uD654\uB97C
     2 \uC791\uC0B4\uC7A1\uC774 \uC2A4\uD0DD\uC744 2 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   ownerClass: 4
   cardType: 0
   cardRarity: 1
-  artworkPath: CAP_ATK_006
-  artwork: {fileID: 0}
+  artworkPath: Assets/Art/Cards/Captain/CAP_ATK_006.png
+  artwork: {fileID: -8244477790854873153, guid: f6eb22bb001255a4ca1c26f3afb12758, type: 3}
   effects:
   - order: 1
     effectType: 14
     statusEffectType: 0
-    value: 4
+    value: 7
     target: 4
     repeatCount: 1
   - order: 2
     effectType: 5
-    statusEffectType: 14
+    statusEffectType: 15
     value: 2
     target: 3
     repeatCount: 1
