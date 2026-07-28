@@ -48,12 +48,14 @@ MonoBehaviour:
   - statusEffectType: 17
     iconSprite: {fileID: -5341871129622003560, guid: a8090c7ac4556ce4b82cd206ce994d34, type: 3}
   - statusEffectType: 18
-    iconSprite: {fileID: 8568544660081664720, guid: 683fd255e1b658649a0f4ce253a51016, type: 3}
+    iconSprite: {fileID: -5341871129622003560, guid: a8090c7ac4556ce4b82cd206ce994d34, type: 3}
   - statusEffectType: 19
-    iconSprite: {fileID: -859234161726942517, guid: 6b1a3ffa5d33f6e4281c9e91155f33bc, type: 3}
+    iconSprite: {fileID: 8568544660081664720, guid: 683fd255e1b658649a0f4ce253a51016, type: 3}
   - statusEffectType: 20
-    iconSprite: {fileID: -149676000877599712, guid: 8d188c3280ee4bb4fb1ffc062d109513, type: 3}
+    iconSprite: {fileID: -859234161726942517, guid: 6b1a3ffa5d33f6e4281c9e91155f33bc, type: 3}
   - statusEffectType: 21
-    iconSprite: {fileID: 893977028659320664, guid: 1cab97c448c67934f8200149e5237cc7, type: 3}
+    iconSprite: {fileID: -149676000877599712, guid: 8d188c3280ee4bb4fb1ffc062d109513, type: 3}
   - statusEffectType: 22
+    iconSprite: {fileID: 893977028659320664, guid: 1cab97c448c67934f8200149e5237cc7, type: 3}
+  - statusEffectType: 23
     iconSprite: {fileID: 38555356946100257, guid: 3cd8ff1354485eb46983e3c5ea518a66, type: 3}
