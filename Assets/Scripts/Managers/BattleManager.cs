@@ -190,7 +190,8 @@ public class BattleManager : MonoBehaviour
 
             case StagePhase.BossBattle:
                 return battleDatabase.GetBossBattleData(
-                    stageManager.CurrentStage
+                    stageManager.CurrentStage,
+                    stageManager.CurrentBossSequence
                 );
 
             case StagePhase.Rest:
@@ -932,6 +933,13 @@ public class BattleManager : MonoBehaviour
 
     /// <summary>
     /// 전투 종료 처리를 수행합니다.
+    /// 일반 전투와 보스 전투의 승리 처리를 구분합니다.
+    ///
+    /// Stage 3 모르바엘 처치:
+    /// 리워드를 표시한 후 아리엘 전투로 진행합니다.
+    ///
+    /// Stage 3 아리엘 처치:
+    /// 리워드를 표시하지 않고 게임 클리어 처리합니다.
     /// </summary>
     private void EndBattle()
     {
@@ -946,7 +954,8 @@ public class BattleManager : MonoBehaviour
 
         HealPlayerAfterBattle();
 
-        StageManager stageManager = StageManager.Instance;
+        StageManager stageManager =
+            StageManager.Instance;
 
         if (stageManager == null)
         {
@@ -954,18 +963,81 @@ public class BattleManager : MonoBehaviour
                 FindFirstObjectByType<StageManager>();
         }
 
-        if (stageManager != null)
-        {
-            stageManager.BattleWin();
-        }
-        else
+        if (stageManager == null)
         {
             Debug.LogWarning(
                 "[BattleManager] StageManager를 찾지 못했습니다. " +
-                "전투 카운트는 증가하지 않습니다."
+                "전투 진행 상태를 변경할 수 없습니다."
             );
+
+            ShowRewardPanel();
+            return;
         }
 
+        /*
+         * 일반 전투 승리 처리
+         */
+        if (stageManager.CurrentPhase ==
+            StagePhase.NormalBattle)
+        {
+            stageManager.BattleWin();
+
+            ShowRewardPanel();
+            return;
+        }
+
+        /*
+         * 보스 전투 승리 처리
+         */
+        if (stageManager.CurrentPhase ==
+            StagePhase.BossBattle)
+        {
+            /*
+             * BossBattleWin 호출 전 현재 전투가
+             * 아리엘 전투였는지 저장합니다.
+             *
+             * BossBattleWin 이후에는 게임 클리어 상태가
+             * 변경되기 때문에 호출 전에 확인합니다.
+             */
+            bool wasStage3ArielBattle =
+                stageManager.IsStage3ArielBattle;
+
+            stageManager.BossBattleWin();
+
+            /*
+             * 아리엘 처치 후에는
+             * 리워드 패널을 표시하지 않습니다.
+             */
+            if (wasStage3ArielBattle &&
+                stageManager.IsGameClear)
+            {
+                Debug.Log(
+                    "[BattleManager] 아리엘 처치 완료 - " +
+                    "리워드 없이 게임 클리어"
+                );
+
+                return;
+            }
+
+            /*
+             * Stage 1·2 보스와 모르바엘은
+             * 기존처럼 리워드를 표시합니다.
+             */
+            ShowRewardPanel();
+            return;
+        }
+
+        Debug.LogWarning(
+            $"[BattleManager] 처리할 수 없는 전투 단계입니다: " +
+            $"{stageManager.CurrentPhase}"
+        );
+    }
+
+    /// <summary>
+    /// 전투 승리 리워드 패널을 표시합니다.
+    /// </summary>
+    private void ShowRewardPanel()
+    {
         if (rewardPanelUI != null)
         {
             rewardPanelUI.ShowRewardPanel();

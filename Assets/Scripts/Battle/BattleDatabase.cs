@@ -68,13 +68,82 @@ public class BattleDatabase : ScriptableObject
 
     /// <summary>
     /// 지정한 스테이지의 보스 전투 데이터를 반환합니다.
+    ///
+    /// Stage 1, 2:
+    /// 등록된 보스 중 하나를 무작위로 반환합니다.
+    ///
+    /// Stage 3:
+    /// bossSequence에 맞는 보스를 확정 반환합니다.
+    /// 0: 모르바엘
+    /// 1: 아리엘
     /// </summary>
-    /// <summary>
-    /// 지정한 스테이지에 등록된 보스 전투 데이터 중
-    /// 하나를 무작위로 선택하여 반환합니다.
-    /// </summary>
-    public EnemyBattleData GetBossBattleData(int stage)
+    public EnemyBattleData GetBossBattleData(
+        int stage,
+        int bossSequence)
     {
+        /*
+         * Stage 3은 연속 보스 구조이므로
+         * 순서에 맞는 보스 데이터를 확정 반환합니다.
+         */
+        if (stage == 3)
+        {
+            for (int i = 0;
+                 i < bossBattleEntries.Count;
+                 i++)
+            {
+                BossBattleEntry entry =
+                    bossBattleEntries[i];
+
+                if (entry == null)
+                {
+                    continue;
+                }
+
+                if (entry.Stage != stage)
+                {
+                    continue;
+                }
+
+                if (entry.BossSequence != bossSequence)
+                {
+                    continue;
+                }
+
+                if (entry.BattleData == null)
+                {
+                    Debug.LogWarning(
+                        $"[BattleDatabase] Stage {stage} / " +
+                        $"Boss Sequence {bossSequence}의 " +
+                        "보스 전투 데이터가 비어 있습니다.",
+                        this
+                    );
+
+                    return null;
+                }
+
+                Debug.Log(
+                    $"[BattleDatabase] Stage 3 보스 확정 선택 / " +
+                    $"Sequence: {bossSequence} / " +
+                    $"선택: {entry.BattleData.name}",
+                    entry.BattleData
+                );
+
+                return entry.BattleData;
+            }
+
+            Debug.LogWarning(
+                $"[BattleDatabase] Stage 3 보스 데이터를 찾지 못했습니다. " +
+                $"Boss Sequence: {bossSequence}",
+                this
+            );
+
+            return null;
+        }
+
+        /*
+         * Stage 1과 Stage 2는 기존처럼
+         * 같은 스테이지에 등록된 보스 중 무작위 선택합니다.
+         */
         List<EnemyBattleData> matchingBossBattleData =
             new List<EnemyBattleData>();
 
@@ -246,9 +315,14 @@ public class BossBattleEntry
     private int stage = 1;
 
     [SerializeField]
+    [Min(0)]
+    private int bossSequence = 0;
+
+    [SerializeField]
     private EnemyBattleData battleData;
 
     public int Stage => stage;
+    public int BossSequence => bossSequence;
     public EnemyBattleData BattleData => battleData;
 
 #if UNITY_EDITOR
@@ -258,6 +332,12 @@ public class BossBattleEntry
             Mathf.Max(
                 1,
                 stage
+            );
+
+        bossSequence =
+            Mathf.Max(
+                0,
+                bossSequence
             );
     }
 #endif
