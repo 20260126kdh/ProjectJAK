@@ -480,6 +480,11 @@ public class BattleManager : MonoBehaviour
                 usedCardData
             );
 
+        int damageMultiplier =
+            TryConsumeDevilPower(usedCardData)
+                ? 2
+                : 1;
+
         bool shouldActivateEcho =
             TryConsumeEcho(usedCardData);
 
@@ -491,11 +496,11 @@ public class BattleManager : MonoBehaviour
         /*
          * 기본 카드 효과를 한 번 실행합니다.
          */
-        cardEffectExecutor.ExecuteEffects
-        (
-        usedCardData,
-        targetEnemy,
-        damageModifier
+        cardEffectExecutor.ExecuteEffects(
+            usedCardData,
+            targetEnemy,
+            damageModifier,
+            damageMultiplier
         );
 
         /*
@@ -516,11 +521,11 @@ public class BattleManager : MonoBehaviour
                     $"{usedCardData.cardName} 효과 재실행"
                 );
 
-                cardEffectExecutor.ExecuteEffects
-                (
-                usedCardData,
-                targetEnemy,
-                damageModifier
+                cardEffectExecutor.ExecuteEffects(
+                    usedCardData,
+                    targetEnemy,
+                    damageModifier,
+                    damageMultiplier
                 );
             }
             else
@@ -619,6 +624,63 @@ public class BattleManager : MonoBehaviour
         }
 
         return -4;
+    }
+
+    /// <summary>
+    /// 다음에 사용하는 카드가 공격 카드이고
+    /// 플레이어가 악마의 힘을 보유 중이라면
+    /// 악마의 힘을 제거하고 true를 반환합니다.
+    /// </summary>
+    private bool TryConsumeDevilPower(
+        CardData usedCardData)
+    {
+        if (usedCardData == null)
+        {
+            return false;
+        }
+
+        if (usedCardData.cardType != CardType.Attack)
+        {
+            return false;
+        }
+
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
+
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[BattleManager] 악마의 힘 확인을 위한 " +
+                "PlayerCombat을 찾지 못했습니다."
+            );
+
+            return false;
+        }
+
+        StatusEffectHandler statusEffectHandler =
+            playerCombat.GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler == null)
+        {
+            return false;
+        }
+
+        if (!statusEffectHandler.HasStatusEffect(
+                StatusEffectType.DevilPower))
+        {
+            return false;
+        }
+
+        statusEffectHandler.RemoveStatusEffect(
+            StatusEffectType.DevilPower
+        );
+
+        Debug.Log(
+            "[BattleManager] 악마의 힘 소비 : " +
+            "이번 공격 카드 피해를 2배로 적용합니다."
+        );
+
+        return true;
     }
 
     private bool TryConsumeEcho(CardData usedCardData)
@@ -937,7 +999,7 @@ public class BattleManager : MonoBehaviour
             GameManager.Instance.PlayerData;
 
         int healAmount =
-            Mathf.CeilToInt(playerData.MaxHP * 0.15f);
+            Mathf.FloorToInt(playerData.MaxHP * 0.15f);
 
         playerData.Heal(healAmount);
 

@@ -125,11 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ace8601f2db7441b2a92c232553a54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statusEffects:
-  - statusEffectType: 0
-    value: 0
-    remainingTurn: 0
-    isPermanent: 0
+  statusEffects: []
 --- !u!114 &8717714851126448910
 MonoBehaviour:
   m_ObjectHideFlags: 0

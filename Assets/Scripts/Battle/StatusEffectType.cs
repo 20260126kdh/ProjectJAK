@@ -21,6 +21,7 @@ public enum StatusEffectType
     UnderGround,
     UnderWater,
     ProfanedHalo,
+    DevilPower,
 
     // 디버프
     Weaken,

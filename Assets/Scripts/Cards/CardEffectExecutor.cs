@@ -30,12 +30,19 @@ public class CardEffectExecutor : MonoBehaviour
     private int currentCardDamageModifier;
 
     /// <summary>
+    /// 현재 실행 중인 공격 카드에 적용할 피해 배율입니다.
+    /// 악마의 힘이 적용되면 2가 됩니다.
+    /// </summary>
+    private int currentCardDamageMultiplier = 1;
+
+    /// <summary>
     /// 카드 효과 목록을 실행합니다.
     /// </summary>
     public void ExecuteEffects(
     CardData cardData,
     Enemy targetEnemy,
-    int damageModifier = 0)
+    int damageModifier = 0,
+    int damageMultiplier = 1)
     {
         if (cardData == null)
         {
@@ -60,6 +67,8 @@ public class CardEffectExecutor : MonoBehaviour
 
         sacrificedHealthThisCard = 0;
         currentCardDamageModifier = damageModifier;
+        currentCardDamageMultiplier =
+            Mathf.Max(1, damageMultiplier);
 
         List<CardEffectData> orderedEffects =
             cardData.effects
@@ -160,10 +169,7 @@ public class CardEffectExecutor : MonoBehaviour
                 break;
 
             case CardEffectType.DoubleNextAttackDamage:
-                Debug.Log(
-                    $"[CardEffectExecutor] " +
-                    $"다음 공격 강화 예정 : {effect.value}"
-                );
+                ExecuteDoubleNextAttackDamage();
                 break;
 
             case CardEffectType.Sacrifice:
@@ -620,10 +626,25 @@ public class CardEffectExecutor : MonoBehaviour
         }
 
         finalDamage =
-    Mathf.Max(
-        0,
-        finalDamage
-    );
+            Mathf.Max(
+                0,
+                finalDamage
+            );
+
+        if (currentCardDamageMultiplier > 1)
+        {
+            int multipliedDamage =
+                finalDamage *
+                currentCardDamageMultiplier;
+
+            Debug.Log(
+                $"[CardEffectExecutor] 악마의 힘 적용 : " +
+                $"{finalDamage} → {multipliedDamage}"
+            );
+
+            finalDamage =
+                multipliedDamage;
+        }
 
         int harpoonBonusDamage = 0;
 
@@ -834,6 +855,60 @@ public class CardEffectExecutor : MonoBehaviour
         Debug.Log(
             $"[CardEffectExecutor] 모든 선원 희생 처리 / " +
             $"누적 희생 체력 {sacrificedHealthThisCard}"
+        );
+    }
+
+    /// <summary>
+    /// 플레이어에게 악마의 힘을 부여합니다.
+    /// 다음에 사용하는 공격 카드의 피해가 두 배가 되며,
+    /// 해당 공격 카드를 사용할 때 BattleManager에서 소비합니다.
+    /// </summary>
+    private void ExecuteDoubleNextAttackDamage()
+    {
+        PlayerCombat playerCombat =
+            FindPlayerCombat();
+
+        if (playerCombat == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 악마의 힘을 부여할 " +
+                "PlayerCombat을 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        StatusEffectHandler statusEffectHandler =
+            playerCombat.GetComponent<StatusEffectHandler>();
+
+        if (statusEffectHandler == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 플레이어에게 " +
+                "StatusEffectHandler가 없습니다."
+            );
+
+            return;
+        }
+
+        /*
+         * 악마의 힘은 수치 중첩이 필요한 상태가 아니라
+         * 다음 공격 카드 1회를 기다리는 조건부 상태입니다.
+         */
+        if (!statusEffectHandler.HasStatusEffect(
+                StatusEffectType.DevilPower))
+        {
+            statusEffectHandler.AddStatusEffect(
+                StatusEffectType.DevilPower,
+                1,
+                0,
+                true
+            );
+        }
+
+        Debug.Log(
+            "[CardEffectExecutor] 악마의 힘 부여 : " +
+            "다음 공격 카드 피해 2배"
         );
     }
 
