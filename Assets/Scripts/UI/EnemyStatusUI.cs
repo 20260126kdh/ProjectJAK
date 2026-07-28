@@ -111,9 +111,17 @@ public class EnemyStatusUI : MonoBehaviour
     /// </summary>
     private void RefreshStatusUI()
     {
+        /*
+         * StatusRoot에는 상태 효과 아이콘뿐 아니라
+         * 작살 스택 UI도 함께 들어갑니다.
+         *
+         * 따라서 상태 효과가 없어도
+         * StatusRoot 자체는 끄지 않습니다.
+         */
+        SetStatusRootActive(true);
+
         if (statusEffectHandler == null)
         {
-            SetStatusRootActive(false);
             return;
         }
 
@@ -126,14 +134,6 @@ public class EnemyStatusUI : MonoBehaviour
 
         CreateOrRefreshIcons(
             currentEffects
-        );
-
-        bool hasStatusEffect =
-            currentEffects != null &&
-            currentEffects.Count > 0;
-
-        SetStatusRootActive(
-            hasStatusEffect
         );
     }
 

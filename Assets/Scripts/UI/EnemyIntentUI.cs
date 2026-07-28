@@ -414,7 +414,7 @@ public class EnemyIntentUI : MonoBehaviour
         if (repeatCount > 1)
         {
             displayText =
-                $"{oneHitDamage}×{repeatCount}";
+                $"{oneHitDamage}x{repeatCount}";
         }
         else
         {
