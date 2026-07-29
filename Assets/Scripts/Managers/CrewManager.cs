@@ -41,6 +41,15 @@ public class CrewManager : MonoBehaviour
         crews.Count < maxCrewCount &&
         crews.Count < spawnPoints.Length;
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha0) ||
+            Input.GetKeyDown(KeyCode.Keypad0))
+        {
+            SummonCrewFromButton();
+        }
+    }
+
     /// <summary>
     /// 비어 있는 다음 소환 위치에 선원을 생성합니다.
     /// 소환에 성공하면 true를 반환합니다.

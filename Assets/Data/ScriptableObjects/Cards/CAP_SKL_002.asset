@@ -37,7 +37,7 @@ MonoBehaviour:
     repeatCount: 1
   - order: 3
     effectType: 5
-    statusEffectType: 23
+    statusEffectType: 24
     value: 1
     target: 0
     repeatCount: 1
