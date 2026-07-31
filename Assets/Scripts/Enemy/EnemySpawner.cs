@@ -76,15 +76,42 @@ public class EnemySpawner : MonoBehaviour
 
     /// <summary>
     /// 현재 살아 있는 메인 적 수입니다.
-    /// 장송의 원혼과 같은 소환 개체는 포함하지 않습니다.
+    /// 비활성화되었거나 사망 처리된 적은 포함하지 않습니다.
     /// </summary>
     public int ActiveEnemyCount
     {
         get
         {
-            RemoveInvalidEnemies();
+            RemoveDestroyedEnemies();
 
-            return spawnedEnemies.Count;
+            int activeCount = 0;
+
+            foreach (Enemy enemy in spawnedEnemies)
+            {
+                if (enemy == null)
+                {
+                    continue;
+                }
+
+                if (!enemy.gameObject.activeSelf)
+                {
+                    continue;
+                }
+
+                if (enemy.IsDeathProcessed)
+                {
+                    continue;
+                }
+
+                if (enemy.CurrentHP <= 0)
+                {
+                    continue;
+                }
+
+                activeCount++;
+            }
+
+            return activeCount;
         }
     }
 
@@ -319,8 +346,9 @@ public class EnemySpawner : MonoBehaviour
     /// <summary>
     /// 메인 적 한 마리가 사망했음을 등록합니다.
     ///
-    /// 생성 목록에서 해당 적을 제거한 뒤,
-    /// 남아 있는 메인 적이 없다면 전투 종료 검사를 요청합니다.
+    /// 죽은 적은 전투 종료 시 Destroy하기 위해
+    /// 생성 목록에서 제거하지 않습니다.
+    /// 살아 있는 메인 적이 없다면 전투 종료 검사를 요청합니다.
     /// </summary>
     public void NotifyEnemyDefeated(
         Enemy defeatedEnemy)
@@ -335,10 +363,7 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        bool removed =
-            spawnedEnemies.Remove(defeatedEnemy);
-
-        if (!removed)
+        if (!spawnedEnemies.Contains(defeatedEnemy))
         {
             Debug.LogWarning(
                 $"[EnemySpawner] 사망한 적이 메인 적 목록에 없습니다: " +
@@ -349,10 +374,14 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        RemoveInvalidEnemies();
-
+        /*
+         * 여기서 spawnedEnemies.Remove를 하지 않습니다.
+         *
+         * 전투 종료 시 ClearEnemies가 비활성화된 적까지
+         * Destroy할 수 있도록 목록에 계속 보관합니다.
+         */
         int remainingEnemyCount =
-            spawnedEnemies.Count;
+            ActiveEnemyCount;
 
         Debug.Log(
             $"[EnemySpawner] 메인 적 사망 등록 / " +
@@ -361,10 +390,6 @@ public class EnemySpawner : MonoBehaviour
             this
         );
 
-        /*
-         * 메인 적이 한 마리 이상 남아 있다면
-         * 전투를 계속 진행합니다.
-         */
         if (remainingEnemyCount > 0)
         {
             return;
@@ -422,18 +447,42 @@ public class EnemySpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 생성된 메인 적 목록을 복사하여 반환합니다.
-    ///
-    /// 외부에서 목록을 순회하는 동안
-    /// 원본 목록이 변경되는 문제를 방지합니다.
+    /// 현재 살아 있는 메인 적 목록을 복사하여 반환합니다.
+    /// 죽어서 비활성화된 적은 포함하지 않습니다.
     /// </summary>
     public List<Enemy> GetActiveEnemies()
     {
-        RemoveInvalidEnemies();
+        RemoveDestroyedEnemies();
 
-        return new List<Enemy>(
-            spawnedEnemies
-        );
+        List<Enemy> activeEnemies =
+            new List<Enemy>();
+
+        foreach (Enemy enemy in spawnedEnemies)
+        {
+            if (enemy == null)
+            {
+                continue;
+            }
+
+            if (!enemy.gameObject.activeSelf)
+            {
+                continue;
+            }
+
+            if (enemy.IsDeathProcessed)
+            {
+                continue;
+            }
+
+            if (enemy.CurrentHP <= 0)
+            {
+                continue;
+            }
+
+            activeEnemies.Add(enemy);
+        }
+
+        return activeEnemies;
     }
 
     /// <summary>
@@ -505,20 +554,19 @@ public class EnemySpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// 파괴되었거나 비활성화된 메인 적을
+    /// 이미 Destroy되어 참조가 사라진 적만
     /// 생성 목록에서 제거합니다.
+    ///
+    /// 비활성화된 사망 적은 전투 종료 시 Destroy해야 하므로
+    /// 목록에서 제거하지 않습니다.
     /// </summary>
-    private void RemoveInvalidEnemies()
+    private void RemoveDestroyedEnemies()
     {
         for (int i = spawnedEnemies.Count - 1;
              i >= 0;
              i--)
         {
-            Enemy enemy =
-                spawnedEnemies[i];
-
-            if (enemy == null ||
-                !enemy.gameObject.activeInHierarchy)
+            if (spawnedEnemies[i] == null)
             {
                 spawnedEnemies.RemoveAt(i);
             }

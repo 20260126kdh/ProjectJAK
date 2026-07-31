@@ -948,6 +948,11 @@ public class BattleManager : MonoBehaviour
         ClearSelectedCard();
         ClearAllCrews();
 
+        if (enemySpawner != null)
+        {
+            enemySpawner.ClearEnemies();
+        }
+
         Debug.Log(
             "[BattleManager] 전투 종료 - 모든 적 처치"
         );

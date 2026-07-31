@@ -233,7 +233,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
                 return;
             }
 
-            rewardPanelUI.SelectRewardCard(cardData);
+            rewardPanelUI.SelectRewardCard(this);
 
             return;
         }
@@ -401,6 +401,18 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     {
         isUpgradeSelected = selected;
 
+        if (upgradeSelectionOutline != null)
+        {
+            upgradeSelectionOutline.enabled = selected;
+        }
+    }
+
+    /// <summary>
+    /// 리워드 패널에서 카드 선택 테두리를 표시하거나 숨깁니다.
+    /// 카드의 위치와 크기는 변경하지 않습니다.
+    /// </summary>
+    public void SetRewardSelected(bool selected)
+    {
         if (upgradeSelectionOutline != null)
         {
             upgradeSelectionOutline.enabled = selected;

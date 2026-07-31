@@ -935,7 +935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c705a73697fc06458eb6b73831c3bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyId: Short-finnedSandfish
+  enemyId: ShortfinnedSandfish
   currentPatternTurn: 1
   patternLength: 0
   csvLoader: {fileID: 0}
