@@ -50,6 +50,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     private RewardPanelUI rewardPanelUI;
     private bool isRewardCard;
 
+    private UpgradePanelUI upgradePanelUI;
+    private bool isUpgradeCard;
+
     [Header("Jinx 사용 불가 표시")]
     [SerializeField]
     private GameObject jinxBlockMark;
@@ -97,7 +100,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     {
         cardData = newCardData;
 
-        cardNameText.text = cardData.cardName;
+        cardNameText.text = cardData.GetDisplayName();
         descriptionText.text = cardData.description;
         cardTypeText.text = cardData.cardType.ToString();
         cardRarityText.text = cardData.cardRarity.ToString();
@@ -115,7 +118,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
-    /// 카드 클릭 시 HandManager에게 선택 요청을 보냅니다.
+    /// 카드가 사용되는 UI 종류에 따라
+    /// 손패, 리워드, 강화 패널에 클릭을 전달합니다.
     /// </summary>
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -123,7 +127,10 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         {
             if (rewardPanelUI == null)
             {
-                Debug.LogWarning("[CardUI] RewardPanelUI가 연결되지 않았습니다.");
+                Debug.LogWarning(
+                    "[CardUI] RewardPanelUI가 연결되지 않았습니다."
+                );
+
                 return;
             }
 
@@ -131,9 +138,27 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             return;
         }
 
+        if (isUpgradeCard)
+        {
+            if (upgradePanelUI == null)
+            {
+                Debug.LogWarning(
+                    "[CardUI] UpgradePanelUI가 연결되지 않았습니다."
+                );
+
+                return;
+            }
+
+            upgradePanelUI.SelectUpgradeCard(this);
+            return;
+        }
+
         if (handManager == null)
         {
-            Debug.LogWarning("[CardUI] HandManager가 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "[CardUI] HandManager가 연결되지 않았습니다."
+            );
+
             return;
         }
 
@@ -192,6 +217,33 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         rewardPanelUI = ownerRewardPanelUI;
         handManager = null;
         isRewardCard = true;
+
+        rectTransform = GetComponent<RectTransform>();
+
+        defaultPosition = rectTransform.anchoredPosition;
+        defaultRotation = rectTransform.localRotation;
+        defaultScale = rectTransform.localScale;
+
+        SetCard(cardData);
+        SetJinxed(false);
+    }
+
+    /// <summary>
+    /// 강화 패널에서 표시되는 카드 UI로 초기화합니다.
+    /// 클릭 시 UpgradePanelUI에 선택을 요청합니다.
+    /// </summary>
+    public void InitializeAsUpgrade(
+        CardData newCardData,
+        UpgradePanelUI ownerUpgradePanelUI)
+    {
+        cardData = newCardData;
+        upgradePanelUI = ownerUpgradePanelUI;
+
+        handManager = null;
+        rewardPanelUI = null;
+
+        isRewardCard = false;
+        isUpgradeCard = true;
 
         rectTransform = GetComponent<RectTransform>();
 

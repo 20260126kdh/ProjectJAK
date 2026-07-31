@@ -48,27 +48,55 @@ public class DeckManager : MonoBehaviour
 
     private void CreateStartingDeck()
     {
-        currentDeck.Clear();
+        ClearCurrentDeck();
 
-        PlayerClass playerClass = GameManager.Instance.PlayerData.PlayerClass;
+        if (GameManager.Instance == null ||
+            GameManager.Instance.PlayerData == null)
+        {
+            Debug.LogError(
+                "[DeckManager] PlayerData를 찾지 못했습니다."
+            );
 
-        foreach (StartingDeckEntry entry in startingDeckDatabase.entries)
+            return;
+        }
+
+        PlayerClass playerClass =
+            GameManager.Instance.PlayerData.PlayerClass;
+
+        foreach (StartingDeckEntry entry
+                 in startingDeckDatabase.entries)
         {
             if (entry.ownerClass != playerClass)
+            {
                 continue;
+            }
 
-            CardData card = cardDatabase.GetCardByID(entry.cardID);
+            CardData originalCard =
+                cardDatabase.GetCardByID(entry.cardID);
 
-            if (card == null)
+            if (originalCard == null)
+            {
+                Debug.LogWarning(
+                    $"[DeckManager] 카드를 찾지 못했습니다: " +
+                    $"{entry.cardID}"
+                );
+
                 continue;
+            }
 
             for (int i = 0; i < entry.count; i++)
             {
-                currentDeck.Add(card);
+                CardData runtimeCard =
+                    CreateRuntimeCard(originalCard);
+
+                currentDeck.Add(runtimeCard);
             }
         }
 
-        Debug.Log($"시작 덱 생성 완료 : {currentDeck.Count}장");
+        Debug.Log(
+            $"[DeckManager] 시작 덱 생성 완료 : " +
+            $"{currentDeck.Count}장"
+        );
     }
 
     private void SortCurrentDeckByCardName()
@@ -169,14 +197,25 @@ public class DeckManager : MonoBehaviour
     {
         if (cardData == null)
         {
-            Debug.LogWarning("[DeckManager] 덱에 추가할 카드 데이터가 없습니다.");
+            Debug.LogWarning(
+                "[DeckManager] 덱에 추가할 카드 데이터가 없습니다."
+            );
+
             return;
         }
 
-        currentDeck.Add(cardData);
+        CardData runtimeCard =
+            CreateRuntimeCard(cardData);
+
+        currentDeck.Add(runtimeCard);
+
         SortCurrentDeckByCardName();
 
-        Debug.Log($"[DeckManager] 카드 덱 추가 : {cardData.cardName} / 현재 덱 {currentDeck.Count}장");
+        Debug.Log(
+            $"[DeckManager] 카드 덱 추가 : " +
+            $"{runtimeCard.cardName} / " +
+            $"현재 덱 {currentDeck.Count}장"
+        );
     }
 
     public bool IsStartingDeckCard(CardData cardData)
@@ -206,5 +245,58 @@ public class DeckManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 원본 카드 데이터로부터
+    /// 현재 게임에서 사용할 독립적인 카드 한 장을 생성합니다.
+    /// </summary>
+    private CardData CreateRuntimeCard(
+        CardData originalCard)
+    {
+        if (originalCard == null)
+        {
+            return null;
+        }
+
+        CardData runtimeCard =
+            Instantiate(originalCard);
+
+        runtimeCard.name =
+            $"{originalCard.name}_Runtime";
+
+        runtimeCard.ResetUpgradeState();
+
+        return runtimeCard;
+    }
+
+    /// <summary>
+    /// 기존 런타임 카드들을 제거하고
+    /// 현재 덱 목록을 초기화합니다.
+    /// </summary>
+    private void ClearCurrentDeck()
+    {
+        for (int i = currentDeck.Count - 1;
+             i >= 0;
+             i--)
+        {
+            CardData card = currentDeck[i];
+
+            if (card == null)
+            {
+                continue;
+            }
+
+            /*
+             * Project 에셋 원본이 아니라
+             * 실행 중 생성한 복사본만 제거합니다.
+             */
+            if (card.name.EndsWith("_Runtime"))
+            {
+                Destroy(card);
+            }
+        }
+
+        currentDeck.Clear();
     }
 }

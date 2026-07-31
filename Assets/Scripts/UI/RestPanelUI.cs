@@ -19,6 +19,10 @@ public class RestPanelUI : MonoBehaviour
     [SerializeField]
     private BattleManager battleManager;
 
+    [Header("Upgrade Panel UI")]
+    [SerializeField]
+    private UpgradePanelUI upgradePanelUI;
+
     [Header("휴식 버튼")]
     [SerializeField]
     private Button restButton;
@@ -39,6 +43,9 @@ public class RestPanelUI : MonoBehaviour
     [Header("현재 휴식 상태")]
     [SerializeField]
     private bool hasRested;
+
+    [SerializeField]
+    private bool hasUpgraded;
 
     [SerializeField]
     private bool isMovingToNextBattle;
@@ -64,6 +71,7 @@ public class RestPanelUI : MonoBehaviour
         }
 
         hasRested = false;
+        hasUpgraded = false;
         isMovingToNextBattle = false;
 
         if (restButton != null)
@@ -97,6 +105,59 @@ public class RestPanelUI : MonoBehaviour
         }
 
         restPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// 강화 패널에서 휴식 패널로 돌아옵니다.
+    /// 기존 회복 및 강화 사용 상태는 초기화하지 않습니다.
+    /// </summary>
+    public void ReturnToRestPanel()
+    {
+        if (restPanel == null)
+        {
+            Debug.LogError(
+                "[RestPanelUI] Rest Panel이 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        restPanel.SetActive(true);
+
+        if (restButton != null)
+        {
+            restButton.interactable = !hasRested;
+        }
+
+        if (upgradeButton != null)
+        {
+            upgradeButton.interactable = !hasUpgraded;
+        }
+
+        if (nextBattleButton != null)
+        {
+            nextBattleButton.interactable =
+                !isMovingToNextBattle;
+        }
+
+        Debug.Log("[RestPanelUI] 휴식 패널 복귀");
+    }
+
+    /// <summary>
+    /// 이번 휴식 단계에서 카드 강화를 완료 처리합니다.
+    /// </summary>
+    public void CompleteUpgrade()
+    {
+        hasUpgraded = true;
+
+        if (upgradeButton != null)
+        {
+            upgradeButton.interactable = false;
+        }
+
+        ReturnToRestPanel();
+
+        Debug.Log("[RestPanelUI] 카드 강화 완료");
     }
 
     /// <summary>
@@ -151,15 +212,24 @@ public class RestPanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 강화 버튼에서 호출합니다.
-    /// 다음 단계에서 카드 강화 패널을 여는 기능을 연결합니다.
+    /// 강화 패널을 표시하고 휴식 패널을 숨깁니다.
     /// </summary>
     public void OnClickUpgrade()
     {
-        Debug.Log(
-            "[RestPanelUI] 강화 버튼 클릭 - " +
-            "다음 단계에서 강화 덱 패널을 연결합니다."
-        );
+        if (upgradePanelUI == null)
+        {
+            Debug.LogError(
+                "[RestPanelUI] UpgradePanelUI가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        HideRestPanel();
+
+        upgradePanelUI.ShowPanel();
+
+        Debug.Log("[RestPanelUI] 카드 강화 패널 열기");
     }
 
     /// <summary>
