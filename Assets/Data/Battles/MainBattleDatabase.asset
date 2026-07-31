@@ -27,7 +27,7 @@ MonoBehaviour:
     battleData: {fileID: 11400000, guid: 00f094f226146654ab252537c167b7cf, type: 2}
   - stage: 1
     battleCount: 5
-    battleData: {fileID: 0}
+    battleData: {fileID: 11400000, guid: d969a02cdb58ff54891c47041aed2353, type: 2}
   - stage: 2
     battleCount: 1
     battleData: {fileID: 11400000, guid: 40340ee47138cee40917597399b3b84f, type: 2}
@@ -36,7 +36,7 @@ MonoBehaviour:
     battleData: {fileID: 11400000, guid: 5445e5ba7c78834448d502c9f81d98d1, type: 2}
   - stage: 2
     battleCount: 3
-    battleData: {fileID: 0}
+    battleData: {fileID: 11400000, guid: 403994382202a2d489006d1f3544f3bd, type: 2}
   - stage: 2
     battleCount: 4
     battleData: {fileID: 11400000, guid: 320b585c39df6064aa5c3d94169596c7, type: 2}
@@ -48,16 +48,16 @@ MonoBehaviour:
     battleData: {fileID: 11400000, guid: 8539a63f36e9c814696f77c096f5676f, type: 2}
   - stage: 3
     battleCount: 2
-    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+    battleData: {fileID: 11400000, guid: 079e7c367c1ab414cae46b80b9f3db90, type: 2}
   - stage: 3
     battleCount: 3
-    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+    battleData: {fileID: 11400000, guid: 27d9f9ffc6735bc4b8d0b312a229f6ed, type: 2}
   - stage: 3
     battleCount: 4
-    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+    battleData: {fileID: 11400000, guid: 49dceac53d048344ead9a513861cf7c7, type: 2}
   - stage: 3
     battleCount: 5
-    battleData: {fileID: 11400000, guid: 5400328a29814034ab4ac0194e66497d, type: 2}
+    battleData: {fileID: 11400000, guid: 4fdec5d8a57103449bf23529a6bc2306, type: 2}
   bossBattleEntries:
   - stage: 1
     bossSequence: 0

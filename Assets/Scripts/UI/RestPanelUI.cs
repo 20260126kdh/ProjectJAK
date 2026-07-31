@@ -1,8 +1,13 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
-/// 휴식 단계에서 표시되는 임시 Rest 패널입니다.
-/// 현재는 표시/숨김만 담당합니다.
+/// 휴식 단계에서 표시되는 Rest 패널을 관리합니다.
+///
+/// 기능:
+/// - 최대 체력의 20% 회복
+/// - 카드 강화 패널 진입
+/// - 휴식 완료 후 보스 전투 시작
 /// </summary>
 public class RestPanelUI : MonoBehaviour
 {
@@ -10,17 +15,70 @@ public class RestPanelUI : MonoBehaviour
     [SerializeField]
     private GameObject restPanel;
 
+    [Header("Battle Manager")]
+    [SerializeField]
+    private BattleManager battleManager;
+
+    [Header("휴식 버튼")]
+    [SerializeField]
+    private Button restButton;
+
+    [Header("강화 버튼")]
+    [SerializeField]
+    private Button upgradeButton;
+
+    [Header("다음 전투 버튼")]
+    [SerializeField]
+    private Button nextBattleButton;
+
+    [Header("휴식 설정")]
+    [Range(0f, 1f)]
+    [SerializeField]
+    private float healRate = 0.2f;
+
+    [Header("현재 휴식 상태")]
+    [SerializeField]
+    private bool hasRested;
+
+    [SerializeField]
+    private bool isMovingToNextBattle;
+
     private void Awake()
     {
         HideRestPanel();
     }
 
+    /// <summary>
+    /// 휴식 패널을 표시하고
+    /// 이번 휴식 단계의 버튼 상태를 초기화합니다.
+    /// </summary>
     public void ShowRestPanel()
     {
         if (restPanel == null)
         {
-            Debug.LogError("[RestPanelUI] Rest Panel이 연결되지 않았습니다.");
+            Debug.LogError(
+                "[RestPanelUI] Rest Panel이 연결되지 않았습니다."
+            );
+
             return;
+        }
+
+        hasRested = false;
+        isMovingToNextBattle = false;
+
+        if (restButton != null)
+        {
+            restButton.interactable = true;
+        }
+
+        if (upgradeButton != null)
+        {
+            upgradeButton.interactable = true;
+        }
+
+        if (nextBattleButton != null)
+        {
+            nextBattleButton.interactable = true;
         }
 
         restPanel.SetActive(true);
@@ -28,11 +86,151 @@ public class RestPanelUI : MonoBehaviour
         Debug.Log("[RestPanelUI] 휴식 패널 표시");
     }
 
+    /// <summary>
+    /// 휴식 패널을 숨깁니다.
+    /// </summary>
     public void HideRestPanel()
     {
         if (restPanel == null)
+        {
             return;
+        }
 
         restPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// 휴식 버튼에서 호출합니다.
+    /// 플레이어 최대 체력의 20%를 회복하고
+    /// 휴식 버튼을 비활성화합니다.
+    /// </summary>
+    public void OnClickRest()
+    {
+        if (hasRested)
+        {
+            Debug.LogWarning(
+                "[RestPanelUI] 이번 휴식 단계에서 이미 회복했습니다."
+            );
+
+            return;
+        }
+
+        if (GameManager.Instance == null ||
+            GameManager.Instance.PlayerData == null)
+        {
+            Debug.LogError(
+                "[RestPanelUI] PlayerData를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        PlayerData playerData =
+            GameManager.Instance.PlayerData;
+
+        int healAmount =
+            Mathf.FloorToInt(
+                playerData.MaxHP * healRate
+            );
+
+        playerData.Heal(healAmount);
+
+        hasRested = true;
+
+        if (restButton != null)
+        {
+            restButton.interactable = false;
+        }
+
+        Debug.Log(
+            $"[RestPanelUI] 휴식 완료 / " +
+            $"최대 체력의 {healRate * 100f}% 회복 / " +
+            $"회복 시도량: {healAmount} / " +
+            $"현재 체력: {playerData.CurrentHP}/{playerData.MaxHP}"
+        );
+    }
+
+    /// <summary>
+    /// 강화 버튼에서 호출합니다.
+    /// 다음 단계에서 카드 강화 패널을 여는 기능을 연결합니다.
+    /// </summary>
+    public void OnClickUpgrade()
+    {
+        Debug.Log(
+            "[RestPanelUI] 강화 버튼 클릭 - " +
+            "다음 단계에서 강화 덱 패널을 연결합니다."
+        );
+    }
+
+    /// <summary>
+    /// 다음 전투 버튼에서 호출합니다.
+    /// 휴식 단계를 완료하고 보스 전투를 시작합니다.
+    /// </summary>
+    public void OnClickNextBattle()
+    {
+        if (isMovingToNextBattle)
+        {
+            return;
+        }
+
+        if (battleManager == null)
+        {
+            Debug.LogError(
+                "[RestPanelUI] BattleManager가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        if (StageManager.Instance == null)
+        {
+            Debug.LogError(
+                "[RestPanelUI] StageManager.Instance가 없습니다."
+            );
+
+            return;
+        }
+
+        if (StageManager.Instance.CurrentPhase !=
+            StagePhase.Rest)
+        {
+            Debug.LogWarning(
+                $"[RestPanelUI] 현재 휴식 단계가 아닙니다. " +
+                $"현재 단계: {StageManager.Instance.CurrentPhase}"
+            );
+
+            return;
+        }
+
+        isMovingToNextBattle = true;
+
+        if (restButton != null)
+        {
+            restButton.interactable = false;
+        }
+
+        if (upgradeButton != null)
+        {
+            upgradeButton.interactable = false;
+        }
+
+        if (nextBattleButton != null)
+        {
+            nextBattleButton.interactable = false;
+        }
+
+        /*
+         * 먼저 StageManager를 보스 전투 단계로 변경해야
+         * BattleManager가 보스 전투 데이터를 가져올 수 있습니다.
+         */
+        StageManager.Instance.RestComplete();
+
+        HideRestPanel();
+
+        battleManager.StartNextBattle();
+
+        Debug.Log(
+            "[RestPanelUI] 휴식 완료 - 보스 전투 시작"
+        );
     }
 }

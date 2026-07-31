@@ -762,7 +762,7 @@ GameObject:
   - component: {fileID: 7019716964852693619}
   - component: {fileID: -7914235778943540538}
   m_Layer: 0
-  m_Name: Short-finnedSandfish
+  m_Name: ShortFinnedSandfish
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
