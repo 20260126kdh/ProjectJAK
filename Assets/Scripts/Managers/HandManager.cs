@@ -3,7 +3,8 @@ using UnityEngine;
 
 /// <summary>
 /// 전투 중 플레이어의 손패를 관리하는 클래스입니다.
-/// 손패 카드 목록 저장, 드로우, 손패 UI 표시, 보존 카드 선택을 담당합니다.
+/// 손패 카드 목록 저장, 드로우, 손패 UI 표시, 카드 선택,
+/// 보존 카드 선택을 담당합니다.
 /// </summary>
 public class HandManager : MonoBehaviour
 {
@@ -18,6 +19,10 @@ public class HandManager : MonoBehaviour
     [Header("현재 손패")]
     [SerializeField]
     private List<CardData> handCards = new List<CardData>();
+
+    [Header("현재 생성된 손패 카드 UI")]
+    [SerializeField]
+    private List<CardUI> handCardUIs = new List<CardUI>();
 
     [Header("보존된 카드")]
     [SerializeField]
@@ -51,21 +56,44 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private TurnManager turnManager;
 
+    /// <summary>
+    /// 현재 손패의 카드 데이터 목록입니다.
+    /// </summary>
     public List<CardData> HandCards => handCards;
+
+    /// <summary>
+    /// 현재 생성된 손패 카드 UI 목록입니다.
+    /// </summary>
+    public IReadOnlyList<CardUI> HandCardUIs => handCardUIs;
+
+    /// <summary>
+    /// 현재 보존된 카드입니다.
+    /// </summary>
     public CardData PreservedCard => preservedCard;
+
+    /// <summary>
+    /// 현재 보존 카드 선택 모드인지 반환합니다.
+    /// </summary>
     public bool IsPreserveMode => isPreserveMode;
 
+    /// <summary>
+    /// 지정한 수만큼 카드를 드로우합니다.
+    /// </summary>
     public void DrawCards(int drawCount)
     {
         if (deckManager == null)
         {
-            Debug.LogError("[HandManager] DeckManager가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[HandManager] DeckManager가 연결되지 않았습니다."
+            );
+
             return;
         }
 
         for (int i = 0; i < drawCount; i++)
         {
-            CardData drawnCard = deckManager.DrawOneCard();
+            CardData drawnCard =
+                deckManager.DrawOneCard();
 
             if (drawnCard == null)
             {
@@ -74,31 +102,48 @@ public class HandManager : MonoBehaviour
 
             handCards.Add(drawnCard);
 
-            Debug.Log($"[HandManager] 카드 드로우: {drawnCard.cardName}");
+            Debug.Log(
+                $"[HandManager] 카드 드로우: " +
+                $"{drawnCard.cardName}"
+            );
         }
 
         RefreshHandUI();
 
-        Debug.Log($"[HandManager] 현재 손패: {handCards.Count}장");
+        Debug.Log(
+            $"[HandManager] 현재 손패: " +
+            $"{handCards.Count}장"
+        );
     }
 
+    /// <summary>
+    /// 현재 손패 데이터에 맞춰 카드 UI를 다시 생성합니다.
+    /// 생성된 CardUI는 손패 순서대로 handCardUIs에 저장됩니다.
+    /// </summary>
     public void RefreshHandUI()
     {
         ClearHandUI();
 
         if (handCardParent == null)
         {
-            Debug.LogError("[HandManager] HandCardParent가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[HandManager] HandCardParent가 연결되지 않았습니다."
+            );
+
             return;
         }
 
         if (cardPrefab == null)
         {
-            Debug.LogError("[HandManager] CardPrefab이 연결되지 않았습니다.");
+            Debug.LogError(
+                "[HandManager] CardPrefab이 연결되지 않았습니다."
+            );
+
             return;
         }
 
-        int cardCount = handCards.Count;
+        int cardCount =
+            handCards.Count;
 
         float cardSpacing = 180f;
         float rotationSpacing = 8f;
@@ -106,25 +151,115 @@ public class HandManager : MonoBehaviour
 
         for (int i = 0; i < cardCount; i++)
         {
-            CardUI cardUI = Instantiate(cardPrefab, handCardParent);
+            CardUI cardUI =
+                Instantiate(
+                    cardPrefab,
+                    handCardParent
+                );
 
-            RectTransform rect = cardUI.GetComponent<RectTransform>();
+            if (cardUI == null)
+            {
+                Debug.LogError(
+                    $"[HandManager] {i + 1}번째 카드 UI 생성에 실패했습니다."
+                );
 
-            float centerIndex = (cardCount - 1) / 2f;
-            float offset = i - centerIndex;
+                continue;
+            }
 
-            float x = offset * cardSpacing;
-            float y = -Mathf.Abs(offset) * curveHeight;
-            float zRotation = -offset * rotationSpacing;
+            RectTransform rect =
+                cardUI.GetComponent<RectTransform>();
 
-            rect.anchoredPosition = new Vector2(x, y);
-            rect.localRotation = Quaternion.Euler(0f, 0f, zRotation);
+            if (rect != null)
+            {
+                float centerIndex =
+                    (cardCount - 1) / 2f;
 
-            cardUI.Initialize(handCards[i], this);
-            cardUI.SetJinxed(i == jinxedHandIndex);
+                float offset =
+                    i - centerIndex;
+
+                float x =
+                    offset * cardSpacing;
+
+                float y =
+                    -Mathf.Abs(offset) * curveHeight;
+
+                float zRotation =
+                    -offset * rotationSpacing;
+
+                rect.anchoredPosition =
+                    new Vector2(x, y);
+
+                rect.localRotation =
+                    Quaternion.Euler(
+                        0f,
+                        0f,
+                        zRotation
+                    );
+            }
+
+            cardUI.Initialize(
+                handCards[i],
+                this
+            );
+
+            cardUI.SetJinxed(
+                i == jinxedHandIndex
+            );
+
+            /*
+             * 숫자키 선택을 위해 생성된 카드 UI를
+             * 손패 순서대로 저장합니다.
+             *
+             * handCardUIs[0] = 첫 번째 카드
+             * handCardUIs[1] = 두 번째 카드
+             */
+            handCardUIs.Add(cardUI);
         }
 
-        Debug.Log("[HandManager] 손패 UI 갱신 완료");
+        Debug.Log(
+            $"[HandManager] 손패 UI 갱신 완료 / " +
+            $"생성된 UI: {handCardUIs.Count}개"
+        );
+    }
+
+    /// <summary>
+    /// 손패 순서를 기준으로 카드를 선택합니다.
+    ///
+    /// index는 0부터 시작합니다.
+    /// 0 = 첫 번째 카드
+    /// 1 = 두 번째 카드
+    /// 2 = 세 번째 카드
+    /// 3 = 네 번째 카드
+    ///
+    /// 일반 전투에서는 BattleManager의 카드 선택을 사용하고,
+    /// 보존 모드에서는 보존 카드 선택을 사용합니다.
+    /// </summary>
+    /// <param name="index">선택할 손패 UI 인덱스</param>
+    public void SelectCardByIndex(int index)
+    {
+        if (index < 0 || index >= handCardUIs.Count)
+        {
+            Debug.Log(
+                $"[HandManager] 선택할 수 없는 손패 번호입니다: " +
+                $"{index + 1}"
+            );
+
+            return;
+        }
+
+        CardUI cardUI =
+            handCardUIs[index];
+
+        if (cardUI == null)
+        {
+            Debug.LogWarning(
+                $"[HandManager] {index + 1}번째 CardUI가 없습니다."
+            );
+
+            return;
+        }
+
+        RequestSelectCard(cardUI);
     }
 
     /// <summary>
@@ -158,8 +293,8 @@ public class HandManager : MonoBehaviour
         }
 
         if (!statusEffectHandler.HasStatusEffect(
-            StatusEffectType.Jinx
-        ))
+                StatusEffectType.Jinx
+            ))
         {
             return;
         }
@@ -174,7 +309,10 @@ public class HandManager : MonoBehaviour
         }
 
         jinxedHandIndex =
-            Random.Range(0, handCards.Count);
+            Random.Range(
+                0,
+                handCards.Count
+            );
 
         RefreshHandUI();
 
@@ -206,11 +344,18 @@ public class HandManager : MonoBehaviour
         jinxedHandIndex = -1;
     }
 
+    /// <summary>
+    /// 카드 선택 요청을 처리합니다.
+    /// 일반 전투와 보존 모드를 구분해 적절한 선택 로직을 호출합니다.
+    /// </summary>
     public void RequestSelectCard(CardUI cardUI)
     {
         if (cardUI == null)
         {
-            Debug.LogWarning("[HandManager] 선택 요청된 CardUI가 없습니다.");
+            Debug.LogWarning(
+                "[HandManager] 선택 요청된 CardUI가 없습니다."
+            );
+
             return;
         }
 
@@ -222,7 +367,10 @@ public class HandManager : MonoBehaviour
 
         if (battleManager == null)
         {
-            Debug.LogError("[HandManager] BattleManager가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[HandManager] BattleManager가 연결되지 않았습니다."
+            );
+
             return;
         }
 
@@ -249,7 +397,9 @@ public class HandManager : MonoBehaviour
 
         RefreshHandUI();
 
-        Debug.Log("[HandManager] 보존 모드 시작");
+        Debug.Log(
+            "[HandManager] 보존 모드 시작"
+        );
     }
 
     /// <summary>
@@ -258,17 +408,25 @@ public class HandManager : MonoBehaviour
     /// </summary>
     private void SelectPreserveCard(CardUI cardUI)
     {
-        CardData cardData = cardUI.GetCardData();
+        CardData cardData =
+            cardUI.GetCardData();
 
         if (cardData == null)
         {
-            Debug.LogWarning("[HandManager] 보존 선택할 카드 데이터가 없습니다.");
+            Debug.LogWarning(
+                "[HandManager] 보존 선택할 카드 데이터가 없습니다."
+            );
+
             return;
         }
 
         if (!handCards.Contains(cardData))
         {
-            Debug.LogWarning($"[HandManager] 손패에 없는 카드는 보존할 수 없습니다 : {cardData.cardName}");
+            Debug.LogWarning(
+                $"[HandManager] 손패에 없는 카드는 " +
+                $"보존할 수 없습니다: {cardData.cardName}"
+            );
+
             return;
         }
 
@@ -277,7 +435,10 @@ public class HandManager : MonoBehaviour
             selectedPreserveCardUI.SetDeselected();
             selectedPreserveCardUI = null;
 
-            Debug.Log("[HandManager] 보존 카드 선택 해제");
+            Debug.Log(
+                "[HandManager] 보존 카드 선택 해제"
+            );
+
             return;
         }
 
@@ -289,7 +450,10 @@ public class HandManager : MonoBehaviour
         selectedPreserveCardUI = cardUI;
         selectedPreserveCardUI.SetSelected();
 
-        Debug.Log($"[HandManager] 보존 카드 선택 : {cardData.cardName}");
+        Debug.Log(
+            $"[HandManager] 보존 카드 선택: " +
+            $"{cardData.cardName}"
+        );
     }
 
     /// <summary>
@@ -299,19 +463,30 @@ public class HandManager : MonoBehaviour
     {
         if (!isPreserveMode)
         {
-            Debug.LogWarning("[HandManager] 현재 보존 모드가 아닙니다.");
+            Debug.LogWarning(
+                "[HandManager] 현재 보존 모드가 아닙니다."
+            );
+
             return;
         }
 
         if (selectedPreserveCardUI != null)
         {
-            preservedCard = selectedPreserveCardUI.GetCardData();
-            Debug.Log($"[HandManager] 보존 카드 확정 : {preservedCard.cardName}");
+            preservedCard =
+                selectedPreserveCardUI.GetCardData();
+
+            Debug.Log(
+                $"[HandManager] 보존 카드 확정: " +
+                $"{preservedCard.cardName}"
+            );
         }
         else
         {
             preservedCard = null;
-            Debug.Log("[HandManager] 보존 카드 없이 진행");
+
+            Debug.Log(
+                "[HandManager] 보존 카드 없이 진행"
+            );
         }
 
         isPreserveMode = false;
@@ -332,7 +507,9 @@ public class HandManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("[HandManager] TurnManager가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[HandManager] TurnManager가 연결되지 않았습니다."
+            );
         }
     }
 
@@ -344,23 +521,33 @@ public class HandManager : MonoBehaviour
     {
         if (deckManager == null)
         {
-            Debug.LogError("[HandManager] DeckManager가 연결되지 않았습니다.");
+            Debug.LogError(
+                "[HandManager] DeckManager가 연결되지 않았습니다."
+            );
+
             return;
         }
 
-        List<CardData> newHandCards = new List<CardData>();
-        List<CardData> cardsToDiscard = new List<CardData>();
+        List<CardData> newHandCards =
+            new List<CardData>();
+
+        List<CardData> cardsToDiscard =
+            new List<CardData>();
 
         bool preservedCardKept = false;
 
         for (int i = 0; i < handCards.Count; i++)
         {
-            CardData card = handCards[i];
+            CardData card =
+                handCards[i];
 
-            if (!preservedCardKept && preservedCard != null && card == preservedCard)
+            if (!preservedCardKept &&
+                preservedCard != null &&
+                card == preservedCard)
             {
                 newHandCards.Add(card);
                 preservedCardKept = true;
+
                 continue;
             }
 
@@ -369,8 +556,14 @@ public class HandManager : MonoBehaviour
 
         for (int i = 0; i < cardsToDiscard.Count; i++)
         {
-            deckManager.AddToDiscardPile(cardsToDiscard[i]);
-            Debug.Log($"[HandManager] 턴 종료 버림 : {cardsToDiscard[i].cardName}");
+            deckManager.AddToDiscardPile(
+                cardsToDiscard[i]
+            );
+
+            Debug.Log(
+                $"[HandManager] 턴 종료 버림: " +
+                $"{cardsToDiscard[i].cardName}"
+            );
         }
 
         handCards.Clear();
@@ -378,36 +571,43 @@ public class HandManager : MonoBehaviour
 
         RefreshHandUI();
 
-        Debug.Log($"[HandManager] 보존 처리 완료. 현재 손패 : {handCards.Count}장");
+        Debug.Log(
+            $"[HandManager] 보존 처리 완료. " +
+            $"현재 손패: {handCards.Count}장"
+        );
     }
 
+    /// <summary>
+    /// 사용한 카드를 손패에서 제거하고,
+    /// 소멸 카드가 아니라면 버림 더미로 이동합니다.
+    /// </summary>
     public void DiscardUsedCard(CardData cardData)
     {
         if (cardData == null)
         {
-            Debug.LogWarning("[HandManager] 버릴 카드 데이터가 없습니다.");
+            Debug.LogWarning(
+                "[HandManager] 버릴 카드 데이터가 없습니다."
+            );
+
             return;
         }
 
         if (deckManager == null)
         {
-            Debug.LogError("[HandManager] DeckManager가 연결되지 않았습니다.");
-            return;
-        }
+            Debug.LogError(
+                "[HandManager] DeckManager가 연결되지 않았습니다."
+            );
 
-        if (!handCards.Contains(cardData))
-        {
-            Debug.LogWarning($"[HandManager] 손패에 해당 카드가 없습니다 : {cardData.cardName}");
             return;
         }
 
         int removedIndex =
-    handCards.IndexOf(cardData);
+            handCards.IndexOf(cardData);
 
         if (removedIndex < 0)
         {
             Debug.LogWarning(
-                $"[HandManager] 손패에 해당 카드가 없습니다 : " +
+                $"[HandManager] 손패에 해당 카드가 없습니다: " +
                 $"{cardData.cardName}"
             );
 
@@ -429,7 +629,12 @@ public class HandManager : MonoBehaviour
         if (ShouldExhaustCard(cardData))
         {
             RefreshHandUI();
-            Debug.Log($"[HandManager] 소멸 카드 사용 : {cardData.cardName} / 이번 전투에서 제외");
+
+            Debug.Log(
+                $"[HandManager] 소멸 카드 사용: " +
+                $"{cardData.cardName} / 이번 전투에서 제외"
+            );
+
             return;
         }
 
@@ -437,19 +642,29 @@ public class HandManager : MonoBehaviour
 
         RefreshHandUI();
 
-        Debug.Log($"[HandManager] 사용한 카드 버림 더미 이동 : {cardData.cardName}");
+        Debug.Log(
+            $"[HandManager] 사용한 카드 버림 더미 이동: " +
+            $"{cardData.cardName}"
+        );
     }
 
+    /// <summary>
+    /// 카드가 사용 후 소멸되는 카드인지 확인합니다.
+    /// </summary>
     private bool ShouldExhaustCard(CardData cardData)
     {
-        if (cardData == null || cardData.effects == null)
+        if (cardData == null ||
+            cardData.effects == null)
         {
             return false;
         }
 
-        for (int i = 0; i < cardData.effects.Count; i++)
+        for (int i = 0;
+             i < cardData.effects.Count;
+             i++)
         {
-            if (cardData.effects[i].statusEffectType == StatusEffectType.Exit)
+            if (cardData.effects[i].statusEffectType ==
+                StatusEffectType.Exit)
             {
                 return true;
             }
@@ -458,35 +673,66 @@ public class HandManager : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// 지정한 카드를 손패에서 제거합니다.
+    /// </summary>
     public void RemoveCardFromHand(CardData cardData)
     {
         if (cardData == null)
         {
-            Debug.LogWarning("[HandManager] 제거할 카드 데이터가 없습니다.");
+            Debug.LogWarning(
+                "[HandManager] 제거할 카드 데이터가 없습니다."
+            );
+
             return;
         }
 
-        if (handCards.Contains(cardData))
-        {
-            handCards.Remove(cardData);
-            RefreshHandUI();
+        int removedIndex =
+            handCards.IndexOf(cardData);
 
-            Debug.Log($"[HandManager] 손패에서 카드 제거 : {cardData.cardName}");
-        }
-        else
+        if (removedIndex < 0)
         {
-            Debug.LogWarning($"[HandManager] 손패에 해당 카드가 없습니다 : {cardData.cardName}");
+            Debug.LogWarning(
+                $"[HandManager] 손패에 해당 카드가 없습니다: " +
+                $"{cardData.cardName}"
+            );
+
+            return;
         }
+
+        handCards.RemoveAt(removedIndex);
+
+        if (jinxedHandIndex >= 0 &&
+            removedIndex < jinxedHandIndex)
+        {
+            jinxedHandIndex--;
+        }
+
+        RefreshHandUI();
+
+        Debug.Log(
+            $"[HandManager] 손패에서 카드 제거: " +
+            $"{cardData.cardName}"
+        );
     }
 
+    /// <summary>
+    /// 손패 데이터와 손패 UI를 모두 제거합니다.
+    /// </summary>
     public void ClearHand()
     {
         handCards.Clear();
+
         ClearHandUI();
 
-        Debug.Log("[HandManager] 손패 초기화 완료");
+        Debug.Log(
+            "[HandManager] 손패 초기화 완료"
+        );
     }
 
+    /// <summary>
+    /// 새로운 전투를 위해 손패 상태를 완전히 초기화합니다.
+    /// </summary>
     public void ResetHandForNewBattle()
     {
         handCards.Clear();
@@ -502,13 +748,23 @@ public class HandManager : MonoBehaviour
             endTurnButtonObject.SetActive(true);
         }
 
-        Debug.Log("[HandManager] 새 전투용 손패 완전 초기화");
+        Debug.Log(
+            "[HandManager] 새 전투용 손패 완전 초기화"
+        );
     }
 
+    /// <summary>
+    /// 현재 생성된 손패 UI를 제거하고
+    /// CardUI 참조 목록도 초기화합니다.
+    /// </summary>
     private void ClearHandUI()
     {
+        handCardUIs.Clear();
+
         if (handCardParent == null)
+        {
             return;
+        }
 
         foreach (Transform child in handCardParent)
         {

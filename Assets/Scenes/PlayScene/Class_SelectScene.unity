@@ -428,6 +428,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 276567364}
   m_CullTransparentMesh: 1
+--- !u!1 &301800044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 301800046}
+  - component: {fileID: 301800045}
+  m_Layer: 0
+  m_Name: ClassSelectShortcutController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &301800045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301800044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deb0b910ad24cd146825d461751ff8cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  classSelectManager: {fileID: 1978429809}
+--- !u!4 &301800046
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 301800044}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: -0.33026624}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &520786014
 GameObject:
   m_ObjectHideFlags: 0
@@ -2945,6 +2990,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 444cc98fce490d541b5383aceb7d30c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleSceneName: Main_TitleScene
+  battleSceneName: BattleScene
   classDetailPanel: {fileID: 533476692}
   classInfos:
   - playerClass: 2
@@ -3150,3 +3197,4 @@ SceneRoots:
   - {fileID: 128527141}
   - {fileID: 1712052839}
   - {fileID: 1545575771}
+  - {fileID: 301800046}

@@ -1112,6 +1112,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 230904369}
   m_CullTransparentMesh: 1
+--- !u!1 &300731132
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 300731133}
+  - component: {fileID: 300731134}
+  m_Layer: 0
+  m_Name: BattleShortcutController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &300731133
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300731132}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 966.0102, y: 540.10455, z: 9.617549}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 667682787}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &300731134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300731132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae112175cbc75b443a4229efbdb221e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handManager: {fileID: 612383021}
 --- !u!1 &312040569
 GameObject:
   m_ObjectHideFlags: 0
@@ -2049,6 +2094,7 @@ MonoBehaviour:
   deckManager: {fileID: 690890766}
   battleManager: {fileID: 1757670132}
   handCards: []
+  handCardUIs: []
   preservedCard: {fileID: 0}
   selectedPreserveCardUI: {fileID: 0}
   isPreserveMode: 0
@@ -2172,6 +2218,7 @@ Transform:
   - {fileID: 612383020}
   - {fileID: 414225711}
   - {fileID: 169748839}
+  - {fileID: 300731133}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &667865855
