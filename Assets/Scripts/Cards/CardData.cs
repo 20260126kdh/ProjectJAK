@@ -40,10 +40,31 @@ public class CardData : ScriptableObject
     [SerializeField]
     private bool isUpgraded;
 
+    [TextArea]
+    [SerializeField]
+    private string runtimeDescription;
+
     /// <summary>
     /// 현재 카드가 강화되었는지 반환합니다.
     /// </summary>
     public bool IsUpgraded => isUpgraded;
+
+    /// <summary>
+    /// 현재 화면에 표시할 카드 설명입니다.
+    /// 강화 설명이 존재하면 강화 설명을 반환합니다.
+    /// </summary>
+    public string DisplayDescription
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(runtimeDescription))
+            {
+                return runtimeDescription;
+            }
+
+            return description;
+        }
+    }
 
     /// <summary>
     /// 현재 카드를 강화 상태로 변경합니다.
@@ -54,11 +75,13 @@ public class CardData : ScriptableObject
     }
 
     /// <summary>
-    /// 런타임 카드 생성 시 강화 상태를 초기화합니다.
+    /// 런타임 카드 생성 시 강화 상태와
+    /// 강화 설명을 초기화합니다.
     /// </summary>
     public void ResetUpgradeState()
     {
         isUpgraded = false;
+        runtimeDescription = description;
     }
 
     /// <summary>
@@ -70,5 +93,14 @@ public class CardData : ScriptableObject
         return isUpgraded
             ? cardName + "+"
             : cardName;
+    }
+
+    /// <summary>
+    /// 강화된 카드 설명을 저장합니다.
+    /// 원본 CSV 설명은 변경하지 않습니다.
+    /// </summary>
+    public void SetRuntimeDescription(string newDescription)
+    {
+        runtimeDescription = newDescription;
     }
 }

@@ -39,6 +39,14 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private float selectedScale = 1.08f;
 
+    [Header("강화 카드 선택 테두리")]
+    [SerializeField]
+    private Outline upgradeSelectionOutline;
+
+    [Header("Jinx 사용 불가 표시")]
+    [SerializeField]
+    private GameObject jinxBlockMark;
+
     private CardData cardData;
     private HandManager handManager;
     private RectTransform rectTransform;
@@ -52,10 +60,8 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     private UpgradePanelUI upgradePanelUI;
     private bool isUpgradeCard;
-
-    [Header("Jinx 사용 불가 표시")]
-    [SerializeField]
-    private GameObject jinxBlockMark;
+    private bool isUpgradeSelected;
+    private bool isUpgradeSelectionLocked;
 
     private bool isJinxed;
 
@@ -64,30 +70,92 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public bool IsJinxed => isJinxed;
 
+    /// <summary>
+    /// 현재 UI에 연결된 카드 데이터를 반환합니다.
+    /// </summary>
+    public CardData CardData => cardData;
+
     private void Awake()
     {
+        rectTransform =
+            GetComponent<RectTransform>();
+
+        SaveDefaultTransform();
+
         if (jinxBlockMark != null)
         {
             jinxBlockMark.SetActive(false);
         }
 
+        if (upgradeSelectionOutline != null)
+        {
+            upgradeSelectionOutline.enabled = false;
+        }
+
         isJinxed = false;
+        isUpgradeSelected = false;
+        isUpgradeSelectionLocked = false;
     }
 
     /// <summary>
-    /// 카드 UI를 초기화합니다.
-    /// 카드 데이터와 소유 HandManager를 설정합니다.
+    /// 현재 카드의 기본 위치, 회전, 크기를 저장합니다.
     /// </summary>
-    public void Initialize(CardData newCardData, HandManager ownerHandManager)
+    private void SaveDefaultTransform()
     {
+        if (rectTransform == null)
+        {
+            rectTransform =
+                GetComponent<RectTransform>();
+        }
+
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        defaultPosition =
+            rectTransform.anchoredPosition;
+
+        defaultRotation =
+            rectTransform.localRotation;
+
+        defaultScale =
+            rectTransform.localScale;
+    }
+
+    /// <summary>
+    /// 카드가 사용되는 UI 종류를 초기화합니다.
+    /// </summary>
+    private void ResetCardUIType()
+    {
+        handManager = null;
+        rewardPanelUI = null;
+        upgradePanelUI = null;
+
+        isRewardCard = false;
+        isUpgradeCard = false;
+        isUpgradeSelected = false;
+        isUpgradeSelectionLocked = false;
+
+        if (upgradeSelectionOutline != null)
+        {
+            upgradeSelectionOutline.enabled = false;
+        }
+    }
+
+    /// <summary>
+    /// 카드 UI를 손패 카드로 초기화합니다.
+    /// </summary>
+    public void Initialize(
+        CardData newCardData,
+        HandManager ownerHandManager)
+    {
+        ResetCardUIType();
+
         cardData = newCardData;
         handManager = ownerHandManager;
 
-        rectTransform = GetComponent<RectTransform>();
-
-        defaultPosition = rectTransform.anchoredPosition;
-        defaultRotation = rectTransform.localRotation;
-        defaultScale = rectTransform.localScale;
+        SaveDefaultTransform();
 
         SetCard(cardData);
         SetJinxed(false);
@@ -100,14 +168,45 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     {
         cardData = newCardData;
 
-        cardNameText.text = cardData.GetDisplayName();
-        descriptionText.text = cardData.description;
-        cardTypeText.text = cardData.cardType.ToString();
-        cardRarityText.text = cardData.cardRarity.ToString();
-
-        if (artworkImage != null && cardData.artwork != null)
+        if (cardData == null)
         {
-            artworkImage.sprite = cardData.artwork;
+            Debug.LogWarning(
+                "[CardUI] 표시할 카드 데이터가 없습니다."
+            );
+
+            return;
+        }
+
+        if (cardNameText != null)
+        {
+            cardNameText.text =
+                cardData.GetDisplayName();
+        }
+
+        if (descriptionText != null)
+        {
+            descriptionText.text =
+                cardData.DisplayDescription;
+        }
+
+        if (cardTypeText != null)
+        {
+            cardTypeText.text =
+                cardData.cardType.ToString();
+        }
+
+        if (cardRarityText != null)
+        {
+            cardRarityText.text =
+                cardData.cardRarity.ToString();
+        }
+
+        if (artworkImage != null &&
+            cardData.artwork != null)
+        {
+            artworkImage.sprite =
+                cardData.artwork;
+
             artworkImage.gameObject.SetActive(true);
         }
         else if (artworkImage != null)
@@ -118,10 +217,10 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
-    /// 카드가 사용되는 UI 종류에 따라
-    /// 손패, 리워드, 강화 패널에 클릭을 전달합니다.
+    /// 카드 종류에 따라 클릭 요청을 전달합니다.
     /// </summary>
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerClick(
+        PointerEventData eventData)
     {
         if (isRewardCard)
         {
@@ -135,6 +234,7 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
             }
 
             rewardPanelUI.SelectRewardCard(cardData);
+
             return;
         }
 
@@ -149,7 +249,18 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
                 return;
             }
 
+            if (isUpgradeSelectionLocked &&
+                !isUpgradeSelected)
+            {
+                Debug.Log(
+                    "[CardUI] 다른 강화 카드가 이미 선택되어 있습니다."
+                );
+
+                return;
+            }
+
             upgradePanelUI.SelectUpgradeCard(this);
+
             return;
         }
 
@@ -166,23 +277,47 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
     }
 
     /// <summary>
-    /// 카드를 선택 상태로 표시합니다.
+    /// 손패 카드를 선택 상태로 표시합니다.
     /// </summary>
     public void SetSelected()
     {
-        rectTransform.anchoredPosition = defaultPosition + new Vector2(0f, selectedMoveY);
-        rectTransform.localRotation = defaultRotation;
-        rectTransform.localScale = defaultScale * selectedScale;
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        rectTransform.anchoredPosition =
+            defaultPosition +
+            new Vector2(
+                0f,
+                selectedMoveY
+            );
+
+        rectTransform.localRotation =
+            defaultRotation;
+
+        rectTransform.localScale =
+            defaultScale * selectedScale;
     }
 
     /// <summary>
-    /// 카드를 선택 해제 상태로 되돌립니다.
+    /// 손패 카드를 선택 해제 상태로 되돌립니다.
     /// </summary>
     public void SetDeselected()
     {
-        rectTransform.anchoredPosition = defaultPosition;
-        rectTransform.localRotation = defaultRotation;
-        rectTransform.localScale = defaultScale;
+        if (rectTransform == null)
+        {
+            return;
+        }
+
+        rectTransform.anchoredPosition =
+            defaultPosition;
+
+        rectTransform.localRotation =
+            defaultRotation;
+
+        rectTransform.localScale =
+            defaultScale;
     }
 
     /// <summary>
@@ -195,7 +330,6 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     /// <summary>
     /// 카드의 Jinx 사용 불가 상태와 표시를 설정합니다.
-    /// Jinx 상태여도 카드 선택과 보존은 가능합니다.
     /// </summary>
     public void SetJinxed(bool value)
     {
@@ -209,49 +343,91 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
 
     /// <summary>
     /// 리워드 카드 UI로 초기화합니다.
-    /// 클릭 시 RewardPanelUI에 선택을 요청합니다.
     /// </summary>
-    public void InitializeAsReward(CardData newCardData, RewardPanelUI ownerRewardPanelUI)
+    public void InitializeAsReward(
+        CardData newCardData,
+        RewardPanelUI ownerRewardPanelUI)
     {
+        ResetCardUIType();
+
         cardData = newCardData;
         rewardPanelUI = ownerRewardPanelUI;
-        handManager = null;
         isRewardCard = true;
 
-        rectTransform = GetComponent<RectTransform>();
-
-        defaultPosition = rectTransform.anchoredPosition;
-        defaultRotation = rectTransform.localRotation;
-        defaultScale = rectTransform.localScale;
+        SaveDefaultTransform();
 
         SetCard(cardData);
         SetJinxed(false);
     }
 
     /// <summary>
-    /// 강화 패널에서 표시되는 카드 UI로 초기화합니다.
-    /// 클릭 시 UpgradePanelUI에 선택을 요청합니다.
+    /// 강화 패널에 표시되는 카드로 초기화합니다.
+    /// 강화 패널의 카드는 GridLayoutGroup이 위치를 관리하므로
+    /// 위치, 회전, 크기를 코드에서 변경하지 않습니다.
     /// </summary>
     public void InitializeAsUpgrade(
         CardData newCardData,
-        UpgradePanelUI ownerUpgradePanelUI)
+        UpgradePanelUI newUpgradePanelUI)
     {
+        ResetCardUIType();
+
         cardData = newCardData;
-        upgradePanelUI = ownerUpgradePanelUI;
+        upgradePanelUI = newUpgradePanelUI;
 
-        handManager = null;
-        rewardPanelUI = null;
-
-        isRewardCard = false;
         isUpgradeCard = true;
+        isUpgradeSelected = false;
+        isUpgradeSelectionLocked = false;
 
-        rectTransform = GetComponent<RectTransform>();
+        /*
+         * 강화 패널의 카드 위치는 GridLayoutGroup이 관리합니다.
+         * SaveDefaultTransform()과 SetDeselected()를 호출하면
+         * 레이아웃 계산 전 위치로 이동할 수 있으므로 사용하지 않습니다.
+         */
 
-        defaultPosition = rectTransform.anchoredPosition;
-        defaultRotation = rectTransform.localRotation;
-        defaultScale = rectTransform.localScale;
+        if (upgradeSelectionOutline != null)
+        {
+            upgradeSelectionOutline.enabled = false;
+        }
 
         SetCard(cardData);
         SetJinxed(false);
+    }
+
+    /// <summary>
+    /// 강화 패널에서 선택 테두리를 표시하거나 숨깁니다.
+    /// GridLayoutGroup이 관리하는 카드 위치와 크기는 변경하지 않습니다.
+    /// </summary>
+    public void SetUpgradeSelected(bool selected)
+    {
+        isUpgradeSelected = selected;
+
+        if (upgradeSelectionOutline != null)
+        {
+            upgradeSelectionOutline.enabled = selected;
+        }
+    }
+
+    /// <summary>
+    /// 다른 강화 카드가 선택되었을 때
+    /// 현재 카드의 추가 선택을 막거나 해제합니다.
+    /// </summary>
+    public void SetUpgradeSelectionLocked(bool locked)
+    {
+        isUpgradeSelectionLocked = locked;
+    }
+
+    /// <summary>
+    /// 강화 카드의 선택 표시와 클릭 잠금 상태를 초기화합니다.
+    /// 카드 Transform은 변경하지 않습니다.
+    /// </summary>
+    public void ResetUpgradeSelection()
+    {
+        isUpgradeSelected = false;
+        isUpgradeSelectionLocked = false;
+
+        if (upgradeSelectionOutline != null)
+        {
+            upgradeSelectionOutline.enabled = false;
+        }
     }
 }

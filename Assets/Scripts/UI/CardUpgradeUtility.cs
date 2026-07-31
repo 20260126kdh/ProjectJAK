@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 /// <summary>
 /// 카드 강화 규칙을 처리하는 유틸리티 클래스입니다.
-/// 런타임 카드 한 장의 모든 강화 가능한 효과를 변경합니다.
+/// 카드 효과 수치와 화면에 표시되는 설명을 함께 변경합니다.
 /// </summary>
 public static class CardUpgradeUtility
 {
@@ -39,9 +41,38 @@ public static class CardUpgradeUtility
             return false;
         }
 
+        if (cardData.effects == null ||
+            cardData.effects.Count <= 0)
+        {
+            Debug.LogWarning(
+                $"[CardUpgradeUtility] 카드 효과가 없습니다: " +
+                $"{cardData.cardName}"
+            );
+
+            return false;
+        }
+
         bool changed = false;
 
-        foreach (CardEffectData effect in cardData.effects)
+        /*
+         * CSV에서 작성한 기존 문장을 유지하면서
+         * 강화된 효과에 해당하는 숫자만 순서대로 변경합니다.
+         */
+        string upgradedDescription =
+            cardData.description;
+
+        int descriptionSearchIndex = 0;
+
+        List<CardEffectData> orderedEffects =
+            new List<CardEffectData>(
+                cardData.effects
+            );
+
+        orderedEffects.Sort(
+            (a, b) => a.order.CompareTo(b.order)
+        );
+
+        foreach (CardEffectData effect in orderedEffects)
         {
             if (effect == null)
             {
@@ -51,34 +82,79 @@ public static class CardUpgradeUtility
             switch (effect.effectType)
             {
                 case CardEffectType.DealDamage:
-                    UpgradeDamage(effect);
+                    UpgradeDamage(
+                        effect,
+                        ref upgradedDescription,
+                        ref descriptionSearchIndex
+                    );
+
                     changed = true;
                     break;
 
                 case CardEffectType.GainBlock:
-                    effect.value += 4;
-                    changed = true;
-                    break;
+                    {
+                        int oldValue = effect.value;
+
+                        effect.value += 4;
+
+                        ReplaceNextNumber(
+                            ref upgradedDescription,
+                            oldValue,
+                            effect.value,
+                            ref descriptionSearchIndex,
+                            cardData.cardName
+                        );
+
+                        changed = true;
+                        break;
+                    }
 
                 case CardEffectType.ApplyStatus:
-                    if (IsBuff(effect.statusEffectType))
                     {
-                        effect.value += 2;
-                        changed = true;
-                    }
-                    else if (IsDebuff(effect.statusEffectType))
-                    {
-                        effect.value += 1;
-                        changed = true;
-                    }
+                        int increaseAmount =
+                            GetStatusUpgradeAmount(
+                                effect.statusEffectType
+                            );
 
-                    break;
+                        if (increaseAmount <= 0)
+                        {
+                            break;
+                        }
+
+                        int oldValue = effect.value;
+
+                        effect.value += increaseAmount;
+
+                        ReplaceNextNumber(
+                            ref upgradedDescription,
+                            oldValue,
+                            effect.value,
+                            ref descriptionSearchIndex,
+                            cardData.cardName
+                        );
+
+                        changed = true;
+                        break;
+                    }
 
                 case CardEffectType.ApplyHarpoon:
                 case CardEffectType.HarpoonerStack:
-                    effect.value += 2;
-                    changed = true;
-                    break;
+                    {
+                        int oldValue = effect.value;
+
+                        effect.value += 2;
+
+                        ReplaceNextNumber(
+                            ref upgradedDescription,
+                            oldValue,
+                            effect.value,
+                            ref descriptionSearchIndex,
+                            cardData.cardName
+                        );
+
+                        changed = true;
+                        break;
+                    }
             }
         }
 
@@ -87,33 +163,186 @@ public static class CardUpgradeUtility
             return false;
         }
 
+        cardData.SetRuntimeDescription(
+            upgradedDescription
+        );
+
         cardData.MarkAsUpgraded();
+
+        Debug.Log(
+            $"[CardUpgradeUtility] 카드 강화 완료: " +
+            $"{cardData.GetDisplayName()} / " +
+            $"{cardData.DisplayDescription}"
+        );
 
         return true;
     }
 
     /// <summary>
-    /// 공격 효과를 단일 공격과 다단히트로 구분하여 강화합니다.
+    /// 공격 효과를 단일 공격과 다단히트로 구분해 강화하고,
+    /// 기존 설명의 피해량과 타수를 함께 변경합니다.
     /// </summary>
     private static void UpgradeDamage(
-        CardEffectData effect)
+        CardEffectData effect,
+        ref string description,
+        ref int searchIndex)
     {
-        if (effect.repeatCount > 1)
+        int oldDamage = effect.value;
+        int oldRepeatCount =
+            Mathf.Max(1, effect.repeatCount);
+
+        if (oldRepeatCount > 1)
         {
             effect.value =
                 Mathf.FloorToInt(
-                    effect.value * 1.3f
+                    oldDamage * 1.3f
                 );
 
-            effect.repeatCount += 1;
+            effect.repeatCount =
+                oldRepeatCount + 1;
+
+            ReplaceNextNumber(
+                ref description,
+                oldDamage,
+                effect.value,
+                ref searchIndex,
+                "다단히트 피해량"
+            );
+
+            ReplaceNextNumber(
+                ref description,
+                oldRepeatCount,
+                effect.repeatCount,
+                ref searchIndex,
+                "다단히트 타수"
+            );
         }
         else
         {
             effect.value =
                 Mathf.FloorToInt(
-                    effect.value * 1.5f
+                    oldDamage * 1.5f
                 );
+
+            ReplaceNextNumber(
+                ref description,
+                oldDamage,
+                effect.value,
+                ref searchIndex,
+                "단일 공격 피해량"
+            );
         }
+    }
+
+    /// <summary>
+    /// 상태 효과에 적용할 강화 증가량을 반환합니다.
+    /// 버프는 +2, 디버프는 +1입니다.
+    /// </summary>
+    private static int GetStatusUpgradeAmount(
+        StatusEffectType statusEffectType)
+    {
+        if (IsBuff(statusEffectType))
+        {
+            return 2;
+        }
+
+        if (IsDebuff(statusEffectType))
+        {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /// <summary>
+    /// 설명에서 검색 위치 이후에 등장하는
+    /// 첫 번째 동일 숫자를 새로운 숫자로 변경합니다.
+    /// </summary>
+    private static void ReplaceNextNumber(
+        ref string source,
+        int oldValue,
+        int newValue,
+        ref int searchIndex,
+        string contextName)
+    {
+        if (string.IsNullOrEmpty(source))
+        {
+            return;
+        }
+
+        string pattern =
+            $@"(?<!\d){oldValue}(?!\d)";
+
+        Match match =
+            Regex.Match(
+                source.Substring(searchIndex),
+                pattern
+            );
+
+        if (!match.Success)
+        {
+            /*
+             * 효과 순서와 설명 순서가 다른 카드도 있을 수 있으므로
+             * 처음부터 한 번 더 검색합니다.
+             */
+            match = Regex.Match(
+                source,
+                pattern
+            );
+
+            if (!match.Success)
+            {
+                Debug.LogWarning(
+                    $"[CardUpgradeUtility] 설명에서 숫자를 찾지 못했습니다. " +
+                    $"대상: {contextName} / " +
+                    $"{oldValue} → {newValue} / " +
+                    $"설명: {source}"
+                );
+
+                return;
+            }
+
+            int absoluteIndex =
+                match.Index;
+
+            source =
+                source.Remove(
+                    absoluteIndex,
+                    match.Length
+                );
+
+            source =
+                source.Insert(
+                    absoluteIndex,
+                    newValue.ToString()
+                );
+
+            searchIndex =
+                absoluteIndex +
+                newValue.ToString().Length;
+
+            return;
+        }
+
+        int replacementIndex =
+            searchIndex +
+            match.Index;
+
+        source =
+            source.Remove(
+                replacementIndex,
+                match.Length
+            );
+
+        source =
+            source.Insert(
+                replacementIndex,
+                newValue.ToString()
+            );
+
+        searchIndex =
+            replacementIndex +
+            newValue.ToString().Length;
     }
 
     /// <summary>
@@ -139,7 +368,7 @@ public static class CardUpgradeUtility
 
     /// <summary>
     /// 강화 시 수치가 1 증가하는 디버프인지 확인합니다.
-    /// 작살은 별도 효과로 처리합니다.
+    /// 작살 스택은 별도로 처리합니다.
     /// </summary>
     private static bool IsDebuff(
         StatusEffectType statusEffectType)

@@ -4137,6 +4137,7 @@ MonoBehaviour:
   nextBattleButton: {fileID: 916360635}
   healRate: 0.2
   hasRested: 0
+  hasUpgraded: 0
   isMovingToNextBattle: 0
 --- !u!4 &1018173368
 Transform:
@@ -6185,6 +6186,7 @@ MonoBehaviour:
   deckManager: {fileID: 690890766}
   cardParent: {fileID: 1307728246}
   cardPrefab: {fileID: 5473703925399372580, guid: 93e4a0b158ea9c9428cf17fc8a4a9b7c, type: 3}
+  confirmButton: {fileID: 2104874852}
 --- !u!1 &1548169029
 GameObject:
   m_ObjectHideFlags: 0
@@ -7886,7 +7888,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2104874853}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1527095948}
+        m_TargetAssemblyTypeName: UpgradePanelUI, Assembly-CSharp
+        m_MethodName: OnClickConfirm
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2104874853
 MonoBehaviour:
   m_ObjectHideFlags: 0

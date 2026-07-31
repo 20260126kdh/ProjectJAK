@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 휴식 단계의 카드 강화 패널을 관리합니다.
 /// 현재 덱의 카드를 화면에 생성하고,
-/// 취소 시 휴식 패널로 돌아갑니다.
+/// 카드 한 장을 선택하여 강화합니다.
 /// </summary>
 public class UpgradePanelUI : MonoBehaviour
 {
@@ -45,7 +45,7 @@ public class UpgradePanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 강화 패널을 표시하고 현재 덱을 생성합니다.
+    /// 강화 패널을 표시하고 현재 덱의 카드를 생성합니다.
     /// </summary>
     public void ShowPanel()
     {
@@ -60,14 +60,7 @@ public class UpgradePanelUI : MonoBehaviour
 
         panel.SetActive(true);
 
-        selectedCardUI = null;
-        selectedCardData = null;
-
-        if (confirmButton != null)
-        {
-            confirmButton.interactable = false;
-        }
-
+        ResetSelection();
         RefreshCards();
 
         Debug.Log("[UpgradePanelUI] 강화 패널 표시");
@@ -128,7 +121,10 @@ public class UpgradePanelUI : MonoBehaviour
             }
 
             CardUI cardUI =
-                Instantiate(cardPrefab, cardParent);
+                Instantiate(
+                    cardPrefab,
+                    cardParent
+                );
 
             cardUI.InitializeAsUpgrade(
                 card,
@@ -149,14 +145,14 @@ public class UpgradePanelUI : MonoBehaviour
     /// </summary>
     private void ClearCards()
     {
-        selectedCardUI = null;
-        selectedCardData = null;
+        ResetSelection();
 
         for (int i = cardUIs.Count - 1;
              i >= 0;
              i--)
         {
-            CardUI cardUI = cardUIs[i];
+            CardUI cardUI =
+                cardUIs[i];
 
             if (cardUI != null)
             {
@@ -172,34 +168,89 @@ public class UpgradePanelUI : MonoBehaviour
         }
 
         /*
-         * Inspector에서 생성해둔 임시 카드가 있거나
-         * 목록에서 누락된 카드가 있을 경우 함께 제거합니다.
+         * Inspector에서 만들어둔 임시 카드나
+         * 목록에서 누락된 카드가 있다면 함께 제거합니다.
          */
         for (int i = cardParent.childCount - 1;
              i >= 0;
              i--)
         {
-            Destroy(cardParent.GetChild(i).gameObject);
+            Transform child =
+                cardParent.GetChild(i);
+
+            if (child != null)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 
     /// <summary>
-    /// 강화 패널에서 선택한 카드를 저장하고
-    /// 선택 상태를 화면에 표시합니다.
+    /// 현재 강화 카드 선택 상태를 초기화합니다.
+    /// </summary>
+    private void ResetSelection()
+    {
+        selectedCardUI = null;
+        selectedCardData = null;
+
+        if (confirmButton != null)
+        {
+            confirmButton.interactable = false;
+        }
+
+        foreach (CardUI cardUI in cardUIs)
+        {
+            if (cardUI == null)
+            {
+                continue;
+            }
+
+            cardUI.ResetUpgradeSelection();
+        }
+    }
+
+    /// <summary>
+    /// 강화할 카드 한 장을 선택합니다.
+    /// 선택된 카드를 다시 클릭하면 선택을 해제합니다.
+    /// 다른 카드가 선택된 상태에서는 다른 카드를 선택할 수 없습니다.
     /// </summary>
     public void SelectUpgradeCard(CardUI cardUI)
     {
         if (cardUI == null)
         {
-            Debug.LogWarning(
-                "[UpgradePanelUI] 선택한 CardUI가 없습니다."
+            return;
+        }
+
+        /*
+         * 현재 선택된 카드를 다시 클릭했다면
+         * 선택을 해제합니다.
+         */
+        if (selectedCardUI == cardUI)
+        {
+            DeselectUpgradeCard();
+
+            Debug.Log(
+                "[UpgradePanelUI] 강화 카드 선택 해제"
+            );
+
+            return;
+        }
+
+        /*
+         * 다른 카드가 이미 선택되어 있다면
+         * 현재 선택을 유지하고 클릭을 무시합니다.
+         */
+        if (selectedCardUI != null)
+        {
+            Debug.Log(
+                "[UpgradePanelUI] 다른 카드가 이미 선택되어 있습니다."
             );
 
             return;
         }
 
         CardData cardData =
-            cardUI.GetCardData();
+            cardUI.CardData;
 
         if (cardData == null)
         {
@@ -213,27 +264,34 @@ public class UpgradePanelUI : MonoBehaviour
         if (cardData.IsUpgraded)
         {
             Debug.LogWarning(
-                $"[UpgradePanelUI] 이미 강화된 카드입니다: " +
-                $"{cardData.GetDisplayName()}"
+                "[UpgradePanelUI] 이미 강화된 카드는 선택할 수 없습니다."
             );
 
             return;
         }
 
-        if (selectedCardUI == cardUI)
-        {
-            return;
-        }
-
-        if (selectedCardUI != null)
-        {
-            selectedCardUI.SetDeselected();
-        }
-
         selectedCardUI = cardUI;
         selectedCardData = cardData;
 
-        selectedCardUI.SetSelected();
+        selectedCardUI.SetUpgradeSelected(true);
+
+        /*
+         * 선택된 카드 외의 모든 카드 클릭을 잠급니다.
+         */
+        foreach (CardUI currentCardUI in cardUIs)
+        {
+            if (currentCardUI == null)
+            {
+                continue;
+            }
+
+            bool shouldLock =
+                currentCardUI != selectedCardUI;
+
+            currentCardUI.SetUpgradeSelectionLocked(
+                shouldLock
+            );
+        }
 
         if (confirmButton != null)
         {
@@ -242,12 +300,42 @@ public class UpgradePanelUI : MonoBehaviour
 
         Debug.Log(
             $"[UpgradePanelUI] 강화 카드 선택: " +
-            $"{selectedCardData.cardName}"
+            $"{selectedCardData.GetDisplayName()}"
         );
     }
 
     /// <summary>
-    /// 선택한 카드의 모든 강화 가능한 효과를 강화합니다.
+    /// 현재 선택된 강화 카드의 선택을 해제합니다.
+    /// 모든 카드의 클릭 잠금을 해제합니다.
+    /// </summary>
+    private void DeselectUpgradeCard()
+    {
+        if (selectedCardUI != null)
+        {
+            selectedCardUI.SetUpgradeSelected(false);
+        }
+
+        selectedCardUI = null;
+        selectedCardData = null;
+
+        foreach (CardUI cardUI in cardUIs)
+        {
+            if (cardUI == null)
+            {
+                continue;
+            }
+
+            cardUI.SetUpgradeSelectionLocked(false);
+        }
+
+        if (confirmButton != null)
+        {
+            confirmButton.interactable = false;
+        }
+    }
+
+    /// <summary>
+    /// 선택한 카드의 강화 가능한 효과를 강화합니다.
     /// 카드 한 장을 강화한 뒤 휴식 패널로 돌아갑니다.
     /// </summary>
     public void OnClickConfirm()
@@ -290,6 +378,11 @@ public class UpgradePanelUI : MonoBehaviour
             $"{selectedCardData.GetDisplayName()}"
         );
 
+        /*
+         * 강화가 완료되면 현재 카드들의
+         * 선택 표시와 잠금 상태를 해제합니다.
+         */
+        ResetSelection();
         HidePanel();
 
         if (restPanelUI == null)
@@ -306,10 +399,11 @@ public class UpgradePanelUI : MonoBehaviour
 
     /// <summary>
     /// 취소 버튼에서 호출합니다.
-    /// 강화 패널을 닫고 휴식 패널로 돌아갑니다.
+    /// 카드 선택 상태를 초기화하고 휴식 패널로 돌아갑니다.
     /// </summary>
     public void OnClickCancel()
     {
+        ResetSelection();
         HidePanel();
 
         if (restPanelUI == null)
@@ -323,6 +417,8 @@ public class UpgradePanelUI : MonoBehaviour
 
         restPanelUI.ReturnToRestPanel();
 
-        Debug.Log("[UpgradePanelUI] 강화 취소 - 휴식 패널 복귀");
+        Debug.Log(
+            "[UpgradePanelUI] 강화 취소 - 휴식 패널 복귀"
+        );
     }
 }
