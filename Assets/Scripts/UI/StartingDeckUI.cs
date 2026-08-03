@@ -10,6 +10,9 @@ using UnityEngine;
 /// - 현재 전체 덱 확인
 /// - 뽑을 패 더미 확인
 /// - 버림 패 더미 확인
+///
+/// 시작 덱 확인이 완료되면
+/// 첫 전투 시작 시점의 게임 진행을 자동 저장합니다.
 /// </summary>
 public class StartingDeckUI : MonoBehaviour
 {
@@ -60,7 +63,6 @@ public class StartingDeckUI : MonoBehaviour
 
     /// <summary>
     /// 현재 카드 목록 패널이 열려 있는지 반환합니다.
-    /// 이후 단축키 입력 차단 및 Esc 닫기에 사용합니다.
     /// </summary>
     public bool IsDeckViewOpen =>
         startingDeckPanel != null &&
@@ -68,7 +70,6 @@ public class StartingDeckUI : MonoBehaviour
 
     /// <summary>
     /// 현재 최초 시작 덱 확인 화면인지 반환합니다.
-    /// 최초 시작 덱 화면에서는 전투 중 단축키를 사용하지 않습니다.
     /// </summary>
     public bool IsStartingDeckConfirmation =>
         currentViewMode == DeckViewMode.StartingDeck;
@@ -77,7 +78,8 @@ public class StartingDeckUI : MonoBehaviour
     /// 게임 시작 시 시작 덱을 표시합니다.
     /// 이 화면에서 확인 버튼을 누르면 전투 준비가 진행됩니다.
     /// </summary>
-    public void ShowStartingDeck(List<CardData> deck)
+    public void ShowStartingDeck(
+        List<CardData> deck)
     {
         currentViewMode =
             DeckViewMode.StartingDeck;
@@ -124,9 +126,7 @@ public class StartingDeckUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 뽑을 패 더미에 남아 있는 카드들을 표시합니다.
-    /// 현재 리스트 순서대로 표시되며,
-    /// 첫 번째 카드가 다음에 뽑힐 카드입니다.
+    /// 현재 뽑을 패 더미에 남아 있는 카드를 표시합니다.
     /// </summary>
     public void ShowDrawPile()
     {
@@ -154,7 +154,7 @@ public class StartingDeckUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 버림 패 더미에 들어 있는 카드들을 표시합니다.
+    /// 현재 버림 패 더미에 들어 있는 카드를 표시합니다.
     /// </summary>
     public void ShowDiscardPile()
     {
@@ -184,8 +184,14 @@ public class StartingDeckUI : MonoBehaviour
     /// <summary>
     /// 확인 버튼 입력을 처리합니다.
     ///
-    /// 시작 덱 화면에서는 전투를 준비하고,
-    /// 전투 중 카드 목록 화면에서는 패널만 닫습니다.
+    /// 시작 덱 화면:
+    /// - 드로우 파일 생성
+    /// - 첫 손패 4장 드로우
+    /// - 전투 UI 표시
+    /// - 첫 전투 시작 시점 자동 저장
+    ///
+    /// 전투 중 카드 목록 화면:
+    /// - 카드 목록 패널 닫기
     /// </summary>
     public void ConfirmStartingDeck()
     {
@@ -219,13 +225,14 @@ public class StartingDeckUI : MonoBehaviour
         }
 
         /*
-         * 시작 덱을 기준으로 뽑을 패를 만들고 섞습니다.
+         * 현재 전체 덱을 기준으로
+         * 첫 전투용 드로우 파일을 만들고 섞습니다.
          */
         deckManager.PrepareDrawPileForBattle();
 
         /*
-         * 혹시 기존 손패가 남아 있다면 제거한 뒤
-         * 전투 시작 손패 4장을 드로우합니다.
+         * 기존 손패가 남아 있을 가능성에 대비해 초기화한 뒤
+         * 첫 손패 4장을 드로우합니다.
          */
         handManager.ClearHand();
         handManager.DrawCards(4);
@@ -245,8 +252,49 @@ public class StartingDeckUI : MonoBehaviour
             battlePanel.SetActive(true);
         }
 
+        /*
+         * 클래스, 체력, 현재 스테이지,
+         * 전투 진행도, 전체 덱과 강화 상태를 저장합니다.
+         *
+         * 손패와 드로우 순서는 저장하지 않으므로
+         * 이어하기 시 현재 전투를 처음부터 다시 시작합니다.
+         */
+        SaveCurrentProgress();
+
         Debug.Log(
             "[StartingDeckUI] 시작 덱 확인 완료"
+        );
+    }
+
+    /// <summary>
+    /// 현재 게임 진행을 이어하기 파일에 저장합니다.
+    /// </summary>
+    private void SaveCurrentProgress()
+    {
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogWarning(
+                "[StartingDeckUI] SaveManager.Instance가 없어 " +
+                "첫 전투 자동 저장을 처리하지 못했습니다."
+            );
+
+            return;
+        }
+
+        bool saveSucceeded =
+            SaveManager.Instance.SaveCurrentGame();
+
+        if (!saveSucceeded)
+        {
+            Debug.LogWarning(
+                "[StartingDeckUI] 첫 전투 시작 시점 자동 저장에 실패했습니다."
+            );
+
+            return;
+        }
+
+        Debug.Log(
+            "[StartingDeckUI] 첫 전투 시작 시점 자동 저장 완료"
         );
     }
 
@@ -344,7 +392,9 @@ public class StartingDeckUI : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < deck.Count; i++)
+        for (int i = 0;
+             i < deck.Count;
+             i++)
         {
             CardData card =
                 deck[i];
@@ -379,16 +429,20 @@ public class StartingDeckUI : MonoBehaviour
             return;
         }
 
-        foreach (Transform child in cardGridParent)
+        foreach (Transform child
+                 in cardGridParent)
         {
-            Destroy(child.gameObject);
+            Destroy(
+                child.gameObject
+            );
         }
     }
 
     /// <summary>
     /// 패널 제목을 변경합니다.
     /// </summary>
-    private void SetTitle(string title)
+    private void SetTitle(
+        string title)
     {
         if (titleText == null)
         {
@@ -399,7 +453,8 @@ public class StartingDeckUI : MonoBehaviour
             return;
         }
 
-        titleText.text = title;
+        titleText.text =
+            title;
     }
 
     /// <summary>
@@ -436,8 +491,8 @@ public class StartingDeckUI : MonoBehaviour
 #if UNITY_EDITOR
 
     /// <summary>
-    /// Inspector에서 참조가 비어 있으면
-    /// 현재 씬에서 자동으로 탐색합니다.
+    /// Inspector 참조가 비어 있으면
+    /// 현재 씬에서 자동 탐색합니다.
     /// </summary>
     private void OnValidate()
     {

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 환경 설정 패널의 UI 입력과 화면 표시를 관리합니다.
+/// 환경 설정 패널의 공통 설정 기능을 관리합니다.
 ///
 /// 담당 기능:
 /// - 전체 음량 슬라이더
@@ -11,11 +11,15 @@ using UnityEngine.UI;
 /// - SFX 음량 슬라이더
 /// - 음량 퍼센트 텍스트
 /// - 전체 화면 설정
-/// - 오디오 설정 초기화
-/// - 일시정지 메뉴로 복귀
+/// - 설정 기본값 초기화
 ///
-/// 실제 오디오 값의 저장과 AudioMixer 반영은
-/// AudioSettingsManager가 담당합니다.
+/// 설정 패널의 열기, 닫기, 뒤로 가기는 담당하지 않습니다.
+///
+/// BattleScene:
+/// BattleSettingsController가 화면 전환을 담당합니다.
+///
+/// TitleScene:
+/// TitleSettingsController가 화면 전환을 담당합니다.
 /// </summary>
 public class SettingsPanelUI : MonoBehaviour
 {
@@ -31,10 +35,6 @@ public class SettingsPanelUI : MonoBehaviour
     [Header("Audio Settings Manager")]
     [SerializeField]
     private AudioSettingsManager audioSettingsManager;
-
-    [Header("Pause Manager")]
-    [SerializeField]
-    private PauseManager pauseManager;
 
     [Header("Master Volume")]
 
@@ -90,14 +90,11 @@ public class SettingsPanelUI : MonoBehaviour
     /// 전체 음량 슬라이더 변경을 처리합니다.
     /// Slider의 On Value Changed에 연결합니다.
     /// </summary>
+    /// <param name="value">0~1 범위의 음량</param>
     public void OnMasterVolumeChanged(float value)
     {
-        if (audioSettingsManager == null)
+        if (!ValidateAudioSettingsManager())
         {
-            Debug.LogError(
-                "[SettingsPanelUI] AudioSettingsManager가 연결되지 않았습니다."
-            );
-
             return;
         }
 
@@ -112,14 +109,11 @@ public class SettingsPanelUI : MonoBehaviour
     /// <summary>
     /// BGM 음량 슬라이더 변경을 처리합니다.
     /// </summary>
+    /// <param name="value">0~1 범위의 음량</param>
     public void OnBGMVolumeChanged(float value)
     {
-        if (audioSettingsManager == null)
+        if (!ValidateAudioSettingsManager())
         {
-            Debug.LogError(
-                "[SettingsPanelUI] AudioSettingsManager가 연결되지 않았습니다."
-            );
-
             return;
         }
 
@@ -134,14 +128,11 @@ public class SettingsPanelUI : MonoBehaviour
     /// <summary>
     /// SFX 음량 슬라이더 변경을 처리합니다.
     /// </summary>
+    /// <param name="value">0~1 범위의 음량</param>
     public void OnSFXVolumeChanged(float value)
     {
-        if (audioSettingsManager == null)
+        if (!ValidateAudioSettingsManager())
         {
-            Debug.LogError(
-                "[SettingsPanelUI] AudioSettingsManager가 연결되지 않았습니다."
-            );
-
             return;
         }
 
@@ -154,11 +145,13 @@ public class SettingsPanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 전체 화면 Toggle 변경을 처리합니다.
+    /// 전체 화면 Toggle 변경을 처리하고 저장합니다.
     /// </summary>
+    /// <param name="isFullscreen">전체 화면 활성화 여부</param>
     public void OnFullscreenChanged(bool isFullscreen)
     {
-        Screen.fullScreen = isFullscreen;
+        Screen.fullScreen =
+            isFullscreen;
 
         PlayerPrefs.SetInt(
             FullscreenKey,
@@ -179,26 +172,22 @@ public class SettingsPanelUI : MonoBehaviour
     /// <summary>
     /// 환경 설정을 기본값으로 초기화합니다.
     ///
-    /// 오디오:
-    /// AudioSettingsManager의 Inspector 기본값 사용
+    /// 오디오 설정은 AudioSettingsManager의
+    /// Inspector 기본값을 사용합니다.
     ///
-    /// 전체 화면:
-    /// 전체 화면 활성화
+    /// 전체 화면은 활성화 상태로 초기화합니다.
     /// </summary>
     public void ResetSettings()
     {
-        if (audioSettingsManager == null)
+        if (!ValidateAudioSettingsManager())
         {
-            Debug.LogError(
-                "[SettingsPanelUI] AudioSettingsManager가 연결되지 않았습니다."
-            );
-
             return;
         }
 
         audioSettingsManager.ResetAudioSettings();
 
-        bool defaultFullscreen = true;
+        const bool defaultFullscreen =
+            true;
 
         Screen.fullScreen =
             defaultFullscreen;
@@ -218,37 +207,14 @@ public class SettingsPanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 환경 설정 패널을 닫고
-    /// 일시정지 메뉴로 돌아갑니다.
-    ///
-    /// 뒤로 버튼에서 호출합니다.
-    /// </summary>
-    public void BackToPauseMenu()
-    {
-        if (pauseManager == null)
-        {
-            Debug.LogError(
-                "[SettingsPanelUI] PauseManager가 연결되지 않았습니다."
-            );
-
-            return;
-        }
-
-        pauseManager.ReturnToPauseMenu();
-    }
-
-    /// <summary>
     /// 현재 설정값을 Slider, Text, Toggle에 반영합니다.
+    ///
+    /// Slider와 Toggle의 이벤트는 발생시키지 않습니다.
     /// </summary>
     public void RefreshUI()
     {
-        if (audioSettingsManager == null)
+        if (!ValidateAudioSettingsManager(false))
         {
-            Debug.LogWarning(
-                "[SettingsPanelUI] AudioSettingsManager가 연결되지 않아 " +
-                "오디오 UI를 갱신할 수 없습니다."
-            );
-
             return;
         }
 
@@ -304,8 +270,32 @@ public class SettingsPanelUI : MonoBehaviour
     #region Private Methods
 
     /// <summary>
-    /// Slider 이벤트를 발생시키지 않고
-    /// 현재 값을 설정합니다.
+    /// AudioSettingsManager 연결 상태를 확인합니다.
+    /// </summary>
+    /// <param name="logError">
+    /// 연결되지 않았을 때 오류 출력 여부
+    /// </param>
+    private bool ValidateAudioSettingsManager(
+        bool logError = true)
+    {
+        if (audioSettingsManager != null)
+        {
+            return true;
+        }
+
+        if (logError)
+        {
+            Debug.LogError(
+                "[SettingsPanelUI] " +
+                "AudioSettingsManager가 연결되지 않았습니다."
+            );
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Slider 이벤트를 발생시키지 않고 값을 설정합니다.
     /// </summary>
     private void SetSliderWithoutEvent(
         Slider slider,
@@ -322,7 +312,7 @@ public class SettingsPanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 0~1 값을 0~100 퍼센트 텍스트로 표시합니다.
+    /// 0~1 범위의 값을 0~100 퍼센트 텍스트로 표시합니다.
     /// </summary>
     private void UpdateVolumeText(
         TMP_Text valueText,
@@ -348,7 +338,7 @@ public class SettingsPanelUI : MonoBehaviour
 
     /// <summary>
     /// Inspector 참조가 비어 있으면
-    /// 현재 씬에서 자동 탐색합니다.
+    /// 현재 씬에서 AudioSettingsManager를 자동 탐색합니다.
     /// </summary>
     private void OnValidate()
     {
@@ -356,12 +346,6 @@ public class SettingsPanelUI : MonoBehaviour
         {
             audioSettingsManager =
                 FindFirstObjectByType<AudioSettingsManager>();
-        }
-
-        if (pauseManager == null)
-        {
-            pauseManager =
-                FindFirstObjectByType<PauseManager>();
         }
     }
 

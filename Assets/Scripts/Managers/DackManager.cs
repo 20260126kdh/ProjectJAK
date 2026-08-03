@@ -3,7 +3,14 @@ using UnityEngine;
 
 /// <summary>
 /// 플레이어 덱을 관리하는 클래스입니다.
-/// 시작 덱 생성, 정렬, 드로우 파일 생성, 셔플, 버림 더미 재사용을 담당합니다.
+///
+/// 담당 기능:
+/// - 시작 덱 생성
+/// - 현재 덱 정렬
+/// - 드로우 파일 생성 및 셔플
+/// - 버림 더미 재사용
+/// - 카드 획득
+/// - 저장 데이터 기반 덱 복원
 /// </summary>
 public class DeckManager : MonoBehaviour
 {
@@ -17,23 +24,40 @@ public class DeckManager : MonoBehaviour
 
     [Header("현재 보유 덱")]
     [SerializeField]
-    private List<CardData> currentDeck = new List<CardData>();
+    private List<CardData> currentDeck =
+        new List<CardData>();
 
     [Header("드로우 파일")]
     [SerializeField]
-    private List<CardData> drawPile = new List<CardData>();
+    private List<CardData> drawPile =
+        new List<CardData>();
 
     [Header("버린 카드 더미")]
     [SerializeField]
-    private List<CardData> discardPile = new List<CardData>();
+    private List<CardData> discardPile =
+        new List<CardData>();
 
     [Header("시작 덱 UI")]
     [SerializeField]
     private StartingDeckUI startingDeckUI;
 
-    public List<CardData> CurrentDeck => currentDeck;
-    public List<CardData> DrawPile => drawPile;
-    public List<CardData> DiscardPile => discardPile;
+    /// <summary>
+    /// 현재 보유한 전체 덱입니다.
+    /// </summary>
+    public List<CardData> CurrentDeck =>
+        currentDeck;
+
+    /// <summary>
+    /// 현재 뽑을 패 더미입니다.
+    /// </summary>
+    public List<CardData> DrawPile =>
+        drawPile;
+
+    /// <summary>
+    /// 현재 버림 패 더미입니다.
+    /// </summary>
+    public List<CardData> DiscardPile =>
+        discardPile;
 
     private void Start()
     {
@@ -42,10 +66,15 @@ public class DeckManager : MonoBehaviour
 
         if (startingDeckUI != null)
         {
-            startingDeckUI.ShowStartingDeck(currentDeck);
+            startingDeckUI.ShowStartingDeck(
+                currentDeck
+            );
         }
     }
 
+    /// <summary>
+    /// 선택한 클래스의 시작 덱을 생성합니다.
+    /// </summary>
     private void CreateStartingDeck()
     {
         ClearCurrentDeck();
@@ -60,19 +89,44 @@ public class DeckManager : MonoBehaviour
             return;
         }
 
+        if (startingDeckDatabase == null)
+        {
+            Debug.LogError(
+                "[DeckManager] StartingDeckDatabase가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        if (cardDatabase == null)
+        {
+            Debug.LogError(
+                "[DeckManager] CardDatabase가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
         PlayerClass playerClass =
             GameManager.Instance.PlayerData.PlayerClass;
 
         foreach (StartingDeckEntry entry
                  in startingDeckDatabase.entries)
         {
+            if (entry == null)
+            {
+                continue;
+            }
+
             if (entry.ownerClass != playerClass)
             {
                 continue;
             }
 
             CardData originalCard =
-                cardDatabase.GetCardByID(entry.cardID);
+                cardDatabase.GetCardByID(
+                    entry.cardID
+                );
 
             if (originalCard == null)
             {
@@ -84,60 +138,136 @@ public class DeckManager : MonoBehaviour
                 continue;
             }
 
-            for (int i = 0; i < entry.count; i++)
+            for (int i = 0;
+                 i < entry.count;
+                 i++)
             {
                 CardData runtimeCard =
-                    CreateRuntimeCard(originalCard);
+                    CreateRuntimeCard(
+                        originalCard
+                    );
 
-                currentDeck.Add(runtimeCard);
+                if (runtimeCard == null)
+                {
+                    continue;
+                }
+
+                currentDeck.Add(
+                    runtimeCard
+                );
             }
         }
 
         Debug.Log(
-            $"[DeckManager] 시작 덱 생성 완료 : " +
+            $"[DeckManager] 시작 덱 생성 완료: " +
             $"{currentDeck.Count}장"
         );
     }
 
+    /// <summary>
+    /// 현재 덱을 카드 이름순으로 정렬합니다.
+    /// </summary>
     private void SortCurrentDeckByCardName()
     {
-        currentDeck.Sort((a, b) => string.Compare(a.cardName, b.cardName));
+        currentDeck.Sort(
+            (a, b) =>
+            {
+                if (a == null && b == null)
+                {
+                    return 0;
+                }
+
+                if (a == null)
+                {
+                    return 1;
+                }
+
+                if (b == null)
+                {
+                    return -1;
+                }
+
+                return string.Compare(
+                    a.cardName,
+                    b.cardName,
+                    System.StringComparison.Ordinal
+                );
+            }
+        );
     }
 
+    /// <summary>
+    /// 현재 전체 덱을 기준으로 드로우 파일을 생성합니다.
+    /// 버림 더미는 초기화합니다.
+    /// </summary>
     private void CreateDrawPileFromCurrentDeck()
     {
         drawPile.Clear();
         discardPile.Clear();
 
-        for (int i = 0; i < currentDeck.Count; i++)
+        for (int i = 0;
+             i < currentDeck.Count;
+             i++)
         {
-            drawPile.Add(currentDeck[i]);
+            CardData card =
+                currentDeck[i];
+
+            if (card == null)
+            {
+                continue;
+            }
+
+            drawPile.Add(
+                card
+            );
         }
     }
 
+    /// <summary>
+    /// 현재 드로우 파일을 무작위로 섞습니다.
+    /// </summary>
     private void ShuffleDrawPile()
     {
-        for (int i = drawPile.Count - 1; i > 0; i--)
+        for (int i = drawPile.Count - 1;
+             i > 0;
+             i--)
         {
-            int randomIndex = Random.Range(0, i + 1);
+            int randomIndex =
+                Random.Range(
+                    0,
+                    i + 1
+                );
 
-            CardData temp = drawPile[i];
-            drawPile[i] = drawPile[randomIndex];
-            drawPile[randomIndex] = temp;
+            CardData temp =
+                drawPile[i];
+
+            drawPile[i] =
+                drawPile[randomIndex];
+
+            drawPile[randomIndex] =
+                temp;
         }
     }
 
+    /// <summary>
+    /// 현재 덱을 기준으로 전투용 드로우 파일을 생성하고 섞습니다.
+    /// </summary>
     public void PrepareDrawPileForBattle()
     {
         CreateDrawPileFromCurrentDeck();
         ShuffleDrawPile();
 
-        Debug.Log($"드로우 파일 생성 완료 : {drawPile.Count}장");
+        Debug.Log(
+            $"[DeckManager] 드로우 파일 생성 완료: " +
+            $"{drawPile.Count}장"
+        );
     }
 
     /// <summary>
-    /// 드로우 파일에서 카드 1장을 꺼내 반환합니다.
-    /// 드로우 파일이 비어 있으면 버림 더미를 섞어서 다시 드로우 파일로 사용합니다.
+    /// 드로우 파일에서 카드 한 장을 꺼내 반환합니다.
+    ///
+    /// 드로우 파일이 비어 있으면
+    /// 버림 더미를 섞어서 다시 사용합니다.
     /// </summary>
     public CardData DrawOneCard()
     {
@@ -148,52 +278,95 @@ public class DeckManager : MonoBehaviour
 
         if (drawPile.Count <= 0)
         {
-            Debug.LogWarning("[DeckManager] 드로우할 카드가 없습니다.");
+            Debug.LogWarning(
+                "[DeckManager] 드로우할 카드가 없습니다."
+            );
+
             return null;
         }
 
-        CardData card = drawPile[0];
+        CardData card =
+            drawPile[0];
+
         drawPile.RemoveAt(0);
 
         return card;
     }
 
     /// <summary>
-    /// 버림 더미의 카드를 드로우 파일로 옮기고 셔플합니다.
+    /// 버림 더미의 카드를 드로우 파일로 옮기고 섞습니다.
     /// </summary>
     private void RefillDrawPileFromDiscardPile()
     {
         if (discardPile.Count <= 0)
         {
-            Debug.LogWarning("[DeckManager] 버림 더미도 비어 있어 드로우 파일을 재생성할 수 없습니다.");
+            Debug.LogWarning(
+                "[DeckManager] 버림 더미도 비어 있어 " +
+                "드로우 파일을 재생성할 수 없습니다."
+            );
+
             return;
         }
 
-        for (int i = 0; i < discardPile.Count; i++)
+        for (int i = 0;
+             i < discardPile.Count;
+             i++)
         {
-            drawPile.Add(discardPile[i]);
+            CardData card =
+                discardPile[i];
+
+            if (card == null)
+            {
+                continue;
+            }
+
+            drawPile.Add(
+                card
+            );
         }
 
         discardPile.Clear();
+
         ShuffleDrawPile();
 
-        Debug.Log($"[DeckManager] 버림 더미를 섞어 드로우 파일 재생성 : {drawPile.Count}장");
+        Debug.Log(
+            $"[DeckManager] 버림 더미를 섞어 " +
+            $"드로우 파일 재생성: {drawPile.Count}장"
+        );
     }
 
-    public void AddToDiscardPile(CardData cardData)
+    /// <summary>
+    /// 카드를 버림 더미에 추가합니다.
+    /// </summary>
+    public void AddToDiscardPile(
+        CardData cardData)
     {
         if (cardData == null)
         {
-            Debug.LogWarning("[DeckManager] 버린 카드 더미에 추가할 카드 데이터가 없습니다.");
+            Debug.LogWarning(
+                "[DeckManager] 버린 카드 더미에 추가할 " +
+                "카드 데이터가 없습니다."
+            );
+
             return;
         }
 
-        discardPile.Add(cardData);
+        discardPile.Add(
+            cardData
+        );
 
-        Debug.Log($"[DeckManager] 버린 카드 더미 추가 : {cardData.cardName}");
+        Debug.Log(
+            $"[DeckManager] 버린 카드 더미 추가: " +
+            $"{cardData.cardName}"
+        );
     }
 
-    public void AddCardToDeck(CardData cardData)
+    /// <summary>
+    /// 원본 카드 데이터를 복사해
+    /// 현재 보유 덱에 새 카드 한 장을 추가합니다.
+    /// </summary>
+    public void AddCardToDeck(
+        CardData cardData)
     {
         if (cardData == null)
         {
@@ -205,20 +378,198 @@ public class DeckManager : MonoBehaviour
         }
 
         CardData runtimeCard =
-            CreateRuntimeCard(cardData);
+            CreateRuntimeCard(
+                cardData
+            );
 
-        currentDeck.Add(runtimeCard);
+        if (runtimeCard == null)
+        {
+            Debug.LogError(
+                "[DeckManager] 런타임 카드 생성에 실패했습니다."
+            );
+
+            return;
+        }
+
+        currentDeck.Add(
+            runtimeCard
+        );
 
         SortCurrentDeckByCardName();
 
         Debug.Log(
-            $"[DeckManager] 카드 덱 추가 : " +
+            $"[DeckManager] 카드 덱 추가: " +
             $"{runtimeCard.cardName} / " +
             $"현재 덱 {currentDeck.Count}장"
         );
     }
 
-    public bool IsStartingDeckCard(CardData cardData)
+    /// <summary>
+    /// 전달받은 저장 카드 목록을 기준으로
+    /// 현재 보유 덱을 복원합니다.
+    ///
+    /// 카드 한 장이라도 복원에 실패하면
+    /// 기존 덱은 유지하고 전체 복원을 취소합니다.
+    /// </summary>
+    /// <param name="savedCards">
+    /// 저장된 카드 ID와 강화 상태 목록
+    /// </param>
+    /// <returns>덱 복원 성공 여부</returns>
+    public bool RestoreDeck(
+        List<SavedCardData> savedCards)
+    {
+        if (savedCards == null ||
+            savedCards.Count <= 0)
+        {
+            Debug.LogError(
+                "[DeckManager] 복원할 카드 저장 목록이 비어 있습니다."
+            );
+
+            return false;
+        }
+
+        if (cardDatabase == null)
+        {
+            Debug.LogError(
+                "[DeckManager] CardDatabase가 연결되지 않아 " +
+                "덱을 복원할 수 없습니다."
+            );
+
+            return false;
+        }
+
+        /*
+         * 기존 덱을 바로 제거하지 않고,
+         * 임시 목록에 모든 카드 복원을 먼저 시도합니다.
+         *
+         * 중간에 실패하면 임시 카드만 제거하고
+         * 기존 덱은 그대로 유지합니다.
+         */
+        List<CardData> restoredCards =
+            new List<CardData>();
+
+        for (int i = 0;
+             i < savedCards.Count;
+             i++)
+        {
+            SavedCardData savedCard =
+                savedCards[i];
+
+            if (savedCard == null ||
+                string.IsNullOrWhiteSpace(
+                    savedCard.cardID))
+            {
+                Debug.LogError(
+                    $"[DeckManager] {i}번 저장 카드 정보가 " +
+                    "올바르지 않습니다."
+                );
+
+                DestroyRuntimeCardList(
+                    restoredCards
+                );
+
+                return false;
+            }
+
+            CardData originalCard =
+                cardDatabase.GetCardByID(
+                    savedCard.cardID
+                );
+
+            if (originalCard == null)
+            {
+                Debug.LogError(
+                    $"[DeckManager] 저장 카드 원본을 찾지 못했습니다: " +
+                    $"{savedCard.cardID}"
+                );
+
+                DestroyRuntimeCardList(
+                    restoredCards
+                );
+
+                return false;
+            }
+
+            CardData runtimeCard =
+                CreateRuntimeCard(
+                    originalCard
+                );
+
+            if (runtimeCard == null)
+            {
+                Debug.LogError(
+                    $"[DeckManager] 런타임 카드 생성 실패: " +
+                    $"{savedCard.cardID}"
+                );
+
+                DestroyRuntimeCardList(
+                    restoredCards
+                );
+
+                return false;
+            }
+
+            if (savedCard.isUpgraded)
+            {
+                bool upgradeSucceeded =
+                    CardUpgradeUtility.UpgradeCard(
+                        runtimeCard
+                    );
+
+                if (!upgradeSucceeded)
+                {
+                    Debug.LogError(
+                        $"[DeckManager] 강화 상태 복원 실패: " +
+                        $"{savedCard.cardID}"
+                    );
+
+                    Destroy(
+                        runtimeCard
+                    );
+
+                    DestroyRuntimeCardList(
+                        restoredCards
+                    );
+
+                    return false;
+                }
+            }
+
+            restoredCards.Add(
+                runtimeCard
+            );
+        }
+
+        /*
+         * 모든 카드 복원이 성공한 이후에만
+         * 기존 런타임 덱을 제거하고 새 덱으로 교체합니다.
+         */
+        ClearCurrentDeck();
+
+        currentDeck.AddRange(
+            restoredCards
+        );
+
+        drawPile.Clear();
+        discardPile.Clear();
+
+        SortCurrentDeckByCardName();
+
+        Debug.Log(
+            $"[DeckManager] 저장 덱 복원 완료: " +
+            $"{currentDeck.Count}장 / " +
+            $"강화 카드: {CountUpgradedCards()}장"
+        );
+
+        return true;
+    }
+
+    /// <summary>
+    /// 전달받은 카드가 현재 클래스의
+    /// 시작 덱 카드인지 확인합니다.
+    /// </summary>
+    public bool IsStartingDeckCard(
+        CardData cardData)
     {
         if (cardData == null)
         {
@@ -227,18 +578,41 @@ public class DeckManager : MonoBehaviour
 
         if (startingDeckDatabase == null)
         {
-            Debug.LogWarning("[DeckManager] StartingDeckDatabase가 연결되지 않았습니다.");
+            Debug.LogWarning(
+                "[DeckManager] StartingDeckDatabase가 연결되지 않았습니다."
+            );
+
             return false;
         }
 
-        PlayerClass playerClass = GameManager.Instance.PlayerData.PlayerClass;
-
-        foreach (StartingDeckEntry entry in startingDeckDatabase.entries)
+        if (GameManager.Instance == null ||
+            GameManager.Instance.PlayerData == null)
         {
-            if (entry.ownerClass != playerClass)
-                continue;
+            Debug.LogWarning(
+                "[DeckManager] PlayerData를 찾지 못했습니다."
+            );
 
-            if (entry.cardID == cardData.cardID)
+            return false;
+        }
+
+        PlayerClass playerClass =
+            GameManager.Instance.PlayerData.PlayerClass;
+
+        foreach (StartingDeckEntry entry
+                 in startingDeckDatabase.entries)
+        {
+            if (entry == null)
+            {
+                continue;
+            }
+
+            if (entry.ownerClass != playerClass)
+            {
+                continue;
+            }
+
+            if (entry.cardID ==
+                cardData.cardID)
             {
                 return true;
             }
@@ -260,7 +634,9 @@ public class DeckManager : MonoBehaviour
         }
 
         CardData runtimeCard =
-            Instantiate(originalCard);
+            Instantiate(
+                originalCard
+            );
 
         runtimeCard.name =
             $"{originalCard.name}_Runtime";
@@ -271,32 +647,78 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 기존 런타임 카드들을 제거하고
-    /// 현재 덱 목록을 초기화합니다.
+    /// 현재 덱에 있는 런타임 카드들을 제거하고
+    /// 모든 카드 더미를 초기화합니다.
     /// </summary>
     private void ClearCurrentDeck()
     {
-        for (int i = currentDeck.Count - 1;
+        DestroyRuntimeCardList(
+            currentDeck
+        );
+
+        currentDeck.Clear();
+        drawPile.Clear();
+        discardPile.Clear();
+    }
+
+    /// <summary>
+    /// 전달받은 목록의 런타임 카드들을 제거합니다.
+    ///
+    /// Project의 원본 ScriptableObject는 제거하지 않고,
+    /// 이름이 _Runtime으로 끝나는 실행 중 복사본만 제거합니다.
+    /// </summary>
+    private void DestroyRuntimeCardList(
+        List<CardData> cards)
+    {
+        if (cards == null)
+        {
+            return;
+        }
+
+        for (int i = cards.Count - 1;
              i >= 0;
              i--)
         {
-            CardData card = currentDeck[i];
+            CardData card =
+                cards[i];
 
             if (card == null)
             {
                 continue;
             }
 
-            /*
-             * Project 에셋 원본이 아니라
-             * 실행 중 생성한 복사본만 제거합니다.
-             */
-            if (card.name.EndsWith("_Runtime"))
+            if (card.name.EndsWith(
+                    "_Runtime",
+                    System.StringComparison.Ordinal))
             {
-                Destroy(card);
+                Destroy(
+                    card
+                );
+            }
+        }
+    }
+
+    /// <summary>
+    /// 현재 덱의 강화 카드 수를 반환합니다.
+    /// </summary>
+    private int CountUpgradedCards()
+    {
+        int upgradedCount = 0;
+
+        for (int i = 0;
+             i < currentDeck.Count;
+             i++)
+        {
+            CardData card =
+                currentDeck[i];
+
+            if (card != null &&
+                card.IsUpgraded)
+            {
+                upgradedCount++;
             }
         }
 
-        currentDeck.Clear();
+        return upgradedCount;
     }
 }

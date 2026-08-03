@@ -133,12 +133,7 @@ public class StageManager : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
-        currentStage = 1;
-        currentBattleCount = 0;
-        currentPhase = StagePhase.NormalBattle;
-
-        currentBossSequence = 0;
-        isGameClear = false;
+        ResetProgress();
 
         PrintState("게임 시작");
 
@@ -146,6 +141,164 @@ public class StageManager : MonoBehaviour
         {
             BGMManager.Instance.RefreshBGM();
         }
+    }
+
+    /// <summary>
+    /// 저장 데이터에서 스테이지 진행 상태를 복원합니다.
+    ///
+    /// 저장된 스테이지, 전투 횟수, 진행 단계,
+    /// 보스 순서, 게임 클리어 상태를 그대로 적용합니다.
+    /// 씬 이동과 전투 시작은 처리하지 않습니다.
+    /// </summary>
+    /// <param name="savedStage">복원할 현재 스테이지</param>
+    /// <param name="savedBattleCount">복원할 일반 전투 완료 횟수</param>
+    /// <param name="savedPhase">복원할 진행 단계</param>
+    /// <param name="savedBossSequence">복원할 Stage 3 보스 순서</param>
+    /// <param name="savedIsGameClear">복원할 게임 클리어 여부</param>
+    /// <returns>복원 성공 여부</returns>
+    public bool RestoreProgress(
+        int savedStage,
+        int savedBattleCount,
+        StagePhase savedPhase,
+        int savedBossSequence,
+        bool savedIsGameClear)
+    {
+        if (savedStage < 1 ||
+            savedStage > maxStage)
+        {
+            Debug.LogError(
+                $"[StageManager] 복원할 스테이지가 올바르지 않습니다: " +
+                $"{savedStage}"
+            );
+
+            return false;
+        }
+
+        if (savedBattleCount < 0 ||
+            savedBattleCount > maxBattleCount)
+        {
+            Debug.LogError(
+                $"[StageManager] 복원할 전투 횟수가 올바르지 않습니다: " +
+                $"{savedBattleCount}"
+            );
+
+            return false;
+        }
+
+        if (!System.Enum.IsDefined(
+                typeof(StagePhase),
+                savedPhase))
+        {
+            Debug.LogError(
+                $"[StageManager] 복원할 StagePhase가 올바르지 않습니다: " +
+                $"{savedPhase}"
+            );
+
+            return false;
+        }
+
+        if (savedBossSequence < 0 ||
+            savedBossSequence > 1)
+        {
+            Debug.LogError(
+                $"[StageManager] 복원할 보스 순서가 올바르지 않습니다: " +
+                $"{savedBossSequence}"
+            );
+
+            return false;
+        }
+
+        /*
+         * 일반 전투 단계에서는 완료 전투 횟수가
+         * 스테이지 최대 전투 횟수보다 작아야 합니다.
+         *
+         * 최대 횟수에 도달하면 Rest 단계여야 합니다.
+         */
+        if (savedPhase == StagePhase.NormalBattle &&
+            savedBattleCount >= maxBattleCount)
+        {
+            Debug.LogError(
+                "[StageManager] 일반 전투 단계인데 " +
+                "일반 전투 완료 횟수가 최대치 이상입니다."
+            );
+
+            return false;
+        }
+
+        /*
+         * Stage 1, 2에서는 보스 순서 0만 사용합니다.
+         */
+        if (savedStage < 3 &&
+            savedBossSequence != 0)
+        {
+            Debug.LogError(
+                $"[StageManager] Stage {savedStage}에서는 " +
+                $"Boss Sequence {savedBossSequence}을 사용할 수 없습니다."
+            );
+
+            return false;
+        }
+
+        /*
+         * 아리엘 진행 상태는
+         * Stage 3 보스 전투에서만 사용할 수 있습니다.
+         */
+        if (savedBossSequence == 1 &&
+            (savedStage != 3 ||
+             savedPhase != StagePhase.BossBattle))
+        {
+            Debug.LogError(
+                "[StageManager] 아리엘 보스 순서는 " +
+                "Stage 3 보스 전투에서만 복원할 수 있습니다."
+            );
+
+            return false;
+        }
+
+        currentStage =
+            savedStage;
+
+        currentBattleCount =
+            savedBattleCount;
+
+        currentPhase =
+            savedPhase;
+
+        currentBossSequence =
+            savedBossSequence;
+
+        isGameClear =
+            savedIsGameClear;
+
+        PrintState(
+            "저장 진행도 복원"
+        );
+
+        if (BGMManager.Instance != null)
+        {
+            BGMManager.Instance.RefreshBGM();
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 현재 게임의 스테이지 진행 데이터를
+    /// 최초 상태로 초기화합니다.
+    ///
+    /// 씬 이동이나 BGM 변경은 처리하지 않습니다.
+    /// 새 게임 시작, 전투 포기, 게임 오버 초기화에서 공통으로 사용합니다.
+    /// </summary>
+    public void ResetProgress()
+    {
+        currentStage = 1;
+        currentBattleCount = 0;
+        currentPhase = StagePhase.NormalBattle;
+
+        currentBossSequence = 0;
+        isGameClear = false;
+
+        PrintState("진행 데이터 초기화");
     }
 
     /// <summary>

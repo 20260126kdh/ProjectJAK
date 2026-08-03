@@ -79,6 +79,43 @@ public class PlayerData : MonoBehaviour
     }
 
     /// <summary>
+    /// 저장 데이터에서 플레이어 체력을 복원합니다.
+    ///
+    /// 최대 체력과 현재 체력을 각각 설정하며,
+    /// 현재 체력은 0부터 최대 체력 범위로 제한합니다.
+    /// </summary>
+    /// <param name="savedCurrentHP">복원할 현재 체력</param>
+    /// <param name="savedMaxHP">복원할 최대 체력</param>
+    public void RestoreHP(
+        int savedCurrentHP,
+        int savedMaxHP)
+    {
+        if (savedMaxHP <= 0)
+        {
+            Debug.LogError(
+                $"[PlayerData] 복원할 최대 체력이 올바르지 않습니다: " +
+                $"{savedMaxHP}"
+            );
+
+            return;
+        }
+
+        maxHP = savedMaxHP;
+
+        currentHP =
+            Mathf.Clamp(
+                savedCurrentHP,
+                0,
+                maxHP
+            );
+
+        Debug.Log(
+            $"[PlayerData] 체력 복원 완료: " +
+            $"{currentHP}/{maxHP}"
+        );
+    }
+
+    /// <summary>
     /// 피해를 받는다.
     /// </summary>
     public void TakeDamage(int damage)
