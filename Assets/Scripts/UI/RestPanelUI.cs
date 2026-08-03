@@ -290,10 +290,19 @@ public class RestPanelUI : MonoBehaviour
         }
 
         /*
-         * 먼저 StageManager를 보스 전투 단계로 변경해야
-         * BattleManager가 보스 전투 데이터를 가져올 수 있습니다.
-         */
+        * 먼저 StageManager를 보스 전투 단계로 변경해야
+        * BattleManager가 보스 전투 데이터를 가져올 수 있습니다.
+        */
         StageManager.Instance.RestComplete();
+
+        /*
+         * 휴식에서 적용한 회복과 카드 강화 상태,
+         * 그리고 BossBattle로 변경된 진행도를 저장합니다.
+         *
+         * 이어하기 시 휴식 화면이 아니라
+         * 보스 전투 시작 지점부터 다시 시작합니다.
+         */
+        SaveProgressBeforeBossBattle();
 
         HideRestPanel();
 
@@ -301,6 +310,39 @@ public class RestPanelUI : MonoBehaviour
 
         Debug.Log(
             "[RestPanelUI] 휴식 완료 - 보스 전투 시작"
+        );
+    }
+
+    /// <summary>
+    /// 휴식 완료 후 보스 전투를 시작하기 전에
+    /// 현재 플레이어 체력, 강화된 덱, 스테이지 진행도를 저장합니다.
+    /// </summary>
+    private void SaveProgressBeforeBossBattle()
+    {
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogWarning(
+                "[RestPanelUI] SaveManager.Instance가 없어 " +
+                "보스 전투 시작 전 자동 저장을 처리하지 못했습니다."
+            );
+
+            return;
+        }
+
+        bool saveSucceeded =
+            SaveManager.Instance.SaveCurrentGame();
+
+        if (!saveSucceeded)
+        {
+            Debug.LogWarning(
+                "[RestPanelUI] 보스 전투 시작 전 자동 저장에 실패했습니다."
+            );
+
+            return;
+        }
+
+        Debug.Log(
+            "[RestPanelUI] 보스 전투 시작 전 자동 저장 완료"
         );
     }
 }

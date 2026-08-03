@@ -59,17 +59,123 @@ public class DeckManager : MonoBehaviour
     public List<CardData> DiscardPile =>
         discardPile;
 
+    /// <summary>
+    /// BattleScene 진입 시 새 게임과 이어하기를 구분하여
+    /// 현재 덱을 준비합니다.
+    /// </summary>
     private void Start()
+    {
+        if (ContinueLoadContext.HasPendingSaveData)
+        {
+            RestoreContinueDeck();
+            return;
+        }
+
+        PrepareNewGameDeck();
+    }
+
+    /// <summary>
+    /// 새 게임용 시작 덱을 생성하고
+    /// 시작 덱 확인 화면을 표시합니다.
+    /// </summary>
+    private void PrepareNewGameDeck()
     {
         CreateStartingDeck();
         SortCurrentDeckByCardName();
 
-        if (startingDeckUI != null)
+        if (startingDeckUI == null)
         {
-            startingDeckUI.ShowStartingDeck(
-                currentDeck
+            Debug.LogError(
+                "[DeckManager] StartingDeckUI가 연결되지 않았습니다."
             );
+
+            return;
         }
+
+        startingDeckUI.ShowStartingDeck(
+            currentDeck
+        );
+
+        Debug.Log(
+            "[DeckManager] 새 게임 시작 덱 준비 완료"
+        );
+    }
+
+    /// <summary>
+    /// ContinueLoadContext에 보관된 저장 데이터를 사용해
+    /// 현재 보유 덱을 복원합니다.
+    ///
+    /// 복원 성공 시 시작 덱 확인창을 생략하고
+    /// 바로 전투용 손패를 준비합니다.
+    /// </summary>
+    private void RestoreContinueDeck()
+    {
+        if (!ContinueLoadContext.TryGetPendingSaveData(
+                out GameSaveData saveData))
+        {
+            Debug.LogError(
+                "[DeckManager] 이어하기 저장 데이터를 가져오지 못했습니다."
+            );
+
+            PrepareNewGameDeck();
+            return;
+        }
+
+        bool restoreSucceeded =
+            RestoreDeck(
+                saveData.cards
+            );
+
+        if (!restoreSucceeded)
+        {
+            Debug.LogError(
+                "[DeckManager] 저장 덱 복원에 실패했습니다. " +
+                "이어하기를 중단하고 임시 데이터를 제거합니다."
+            );
+
+            ContinueLoadContext.Clear();
+
+            /*
+             * 복원 실패 후 임의의 시작 덱으로 계속 진행하면
+             * 플레이어와 Stage 진행도는 저장 상태인데
+             * 덱만 시작 덱이 되는 불일치가 생깁니다.
+             *
+             * 따라서 시작 덱 확인창으로 자동 전환하지 않고
+             * 오류 상태로 남겨 원인을 확인하도록 합니다.
+             */
+            return;
+        }
+
+        if (startingDeckUI == null)
+        {
+            Debug.LogError(
+                "[DeckManager] StartingDeckUI가 연결되지 않아 " +
+                "이어하기 전투 준비를 완료할 수 없습니다."
+            );
+
+            ContinueLoadContext.Clear();
+            return;
+        }
+
+        bool battlePrepareSucceeded =
+            startingDeckUI.PrepareBattleAfterContinue();
+
+        if (!battlePrepareSucceeded)
+        {
+            Debug.LogError(
+                "[DeckManager] 이어하기 손패 준비에 실패했습니다."
+            );
+
+            ContinueLoadContext.Clear();
+            return;
+        }
+
+        ContinueLoadContext.Clear();
+
+        Debug.Log(
+            $"[DeckManager] 이어하기 덱 복원 및 전투 준비 완료: " +
+            $"{currentDeck.Count}장"
+        );
     }
 
     /// <summary>

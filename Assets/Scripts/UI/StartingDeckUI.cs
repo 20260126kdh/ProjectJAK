@@ -267,6 +267,94 @@ public class StartingDeckUI : MonoBehaviour
     }
 
     /// <summary>
+    /// 이어하기로 BattleScene에 들어왔을 때
+    /// 시작 덱 확인창을 생략하고 전투를 준비합니다.
+    ///
+    /// 처리 내용:
+    /// - 복원된 현재 덱으로 드로우 파일 생성
+    /// - 기존 손패 초기화
+    /// - 첫 손패 4장 드로우
+    /// - 카드 목록 패널 닫기
+    /// - 전투 UI 표시
+    ///
+    /// 저장 데이터는 현재 전투의 시작 상태를 나타내므로
+    /// 이어하기 직후 다시 저장하지 않습니다.
+    /// </summary>
+    /// <returns>전투 준비 성공 여부</returns>
+    public bool PrepareBattleAfterContinue()
+    {
+        if (deckManager == null)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] DeckManager가 연결되지 않았습니다."
+            );
+
+            return false;
+        }
+
+        if (handManager == null)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] HandManager가 연결되지 않았습니다."
+            );
+
+            return false;
+        }
+
+        if (deckManager.CurrentDeck == null ||
+            deckManager.CurrentDeck.Count <= 0)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] 복원된 현재 덱이 비어 있습니다."
+            );
+
+            return false;
+        }
+
+        /*
+         * 복원된 전체 덱을 기준으로
+         * 새로운 전투용 드로우 파일을 만들고 섞습니다.
+         */
+        deckManager.PrepareDrawPileForBattle();
+
+        /*
+         * 저장 파일에는 손패와 드로우 순서를 저장하지 않으므로
+         * 현재 전투를 처음부터 시작하는 첫 손패를 생성합니다.
+         */
+        handManager.ClearHand();
+        handManager.DrawCards(4);
+
+        currentViewMode =
+            DeckViewMode.None;
+
+        ClearCards();
+
+        if (startingDeckPanel != null)
+        {
+            startingDeckPanel.SetActive(false);
+        }
+
+        if (battlePanel != null)
+        {
+            battlePanel.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[StartingDeckUI] BattlePanel이 연결되지 않았습니다."
+            );
+        }
+
+        Debug.Log(
+            $"[StartingDeckUI] 이어하기 전투 준비 완료 / " +
+            $"현재 덱: {deckManager.CurrentDeck.Count}장 / " +
+            $"첫 손패: 4장"
+        );
+
+        return true;
+    }
+
+    /// <summary>
     /// 현재 게임 진행을 이어하기 파일에 저장합니다.
     /// </summary>
     private void SaveCurrentProgress()
