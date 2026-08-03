@@ -70,10 +70,6 @@ public class BGMManager : MonoBehaviour
 
     [Header("Audio Settings")]
 
-    [Range(0f, 1f)]
-    [SerializeField]
-    private float bgmVolume = 0.5f;
-
     [SerializeField]
     private bool debugMode = true;
 
@@ -101,7 +97,7 @@ public class BGMManager : MonoBehaviour
 
         audioSource.playOnAwake = false;
         audioSource.loop = true;
-        audioSource.volume = bgmVolume;
+        audioSource.volume = 1f;
 
         DontDestroyOnLoad(gameObject);
     }
@@ -156,17 +152,17 @@ public class BGMManager : MonoBehaviour
     }
 
     /// <summary>
-    /// BGM 볼륨을 변경합니다.
-    /// 입력 범위는 0부터 1까지입니다.
+    /// AudioMixer에서 볼륨을 관리하므로
+    /// AudioSource는 항상 최대 볼륨을 유지합니다.
     /// </summary>
     public void SetVolume(float volume)
     {
-        bgmVolume = Mathf.Clamp01(volume);
-
-        if (audioSource != null)
+        if (audioSource == null)
         {
-            audioSource.volume = bgmVolume;
+            return;
         }
+
+        audioSource.volume = 1f;
     }
 
     /// <summary>
@@ -335,7 +331,7 @@ public class BGMManager : MonoBehaviour
         audioSource.Stop();
         audioSource.clip = targetClip;
         audioSource.loop = true;
-        audioSource.volume = bgmVolume;
+        audioSource.volume = 1f;
         audioSource.Play();
 
         if (debugMode)
