@@ -293,21 +293,58 @@ public class BattleManager : MonoBehaviour
         ClearSelectedCard();
         ClearAllCrews();
 
-        if (handManager != null)
+        if (deckManager == null)
         {
-            handManager.ResetHandForNewBattle();
+            Debug.LogError(
+                "[BattleManager] DeckManager가 연결되지 않아 " +
+                "다음 전투의 드로우 파일을 준비할 수 없습니다."
+            );
+
+            return;
         }
 
-        if (deckManager != null)
+        if (handManager == null)
         {
-            deckManager.PrepareDrawPileForBattle();
-        }
-        else
-        {
-            Debug.LogWarning(
-                "[BattleManager] DeckManager가 연결되지 않았습니다."
+            Debug.LogError(
+                "[BattleManager] HandManager가 연결되지 않아 " +
+                "다음 전투의 첫 손패를 준비할 수 없습니다."
             );
+
+            return;
         }
+
+        /*
+         * 다음 전투에서는 기존 손패와 보존 상태를 완전히 초기화한 뒤,
+         * 현재 전체 덱을 기준으로 드로우 파일을 새로 생성합니다.
+         */
+        handManager.ResetHandForNewBattle();
+        deckManager.PrepareDrawPileForBattle();
+
+        /*
+         * TurnManager의 턴 시작 드로우에만 의존하지 않고
+         * 다음 전투 첫 손패 4장을 여기서 명시적으로 생성합니다.
+         *
+         * 이후 StartPlayerTurn()이 호출되어도 손패가 이미 4장이므로
+         * 추가 드로우는 발생하지 않습니다.
+         */
+        handManager.DrawCards(4);
+
+        if (handManager.HandCards.Count <= 0)
+        {
+            Debug.LogError(
+                "[BattleManager] 다음 전투 첫 손패 생성에 실패했습니다. " +
+                $"현재 덱: {deckManager.CurrentDeck.Count}장 / " +
+                $"드로우 파일: {deckManager.DrawPile.Count}장"
+            );
+
+            return;
+        }
+
+        Debug.Log(
+            $"[BattleManager] 다음 전투 첫 손패 준비 완료 / " +
+            $"손패: {handManager.HandCards.Count}장 / " +
+            $"남은 드로우 파일: {deckManager.DrawPile.Count}장"
+        );
 
         PlayerCombat playerCombat =
             FindFirstObjectByType<PlayerCombat>();
