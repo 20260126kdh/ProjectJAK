@@ -17,6 +17,11 @@ public class CardEffectExecutor : MonoBehaviour
     private PlayerAnimationController playerAnimationController;
 
     /// <summary>
+    /// 클래스 기본 패시브를 관리합니다.
+    /// </summary>
+    private ClassPassiveController classPassiveController;
+
+    /// <summary>
     /// 현재 실행 중인 카드가 희생한
     /// 선원들의 현재 체력 합계입니다.
     /// 카드 실행이 시작될 때마다 0으로 초기화됩니다.
@@ -695,6 +700,53 @@ public class CardEffectExecutor : MonoBehaviour
     }
 
     /// <summary>
+    /// 캡틴 패시브에 의해
+    /// 선원 공격 시 작살 스택 2를 부여합니다.
+    /// </summary>
+    private void ApplyCaptainCrewPassive(
+        Enemy targetEnemy)
+    {
+        if (!IsEnemyAlive(targetEnemy))
+        {
+            return;
+        }
+
+        if (classPassiveController == null)
+        {
+            classPassiveController =
+                FindFirstObjectByType<ClassPassiveController>();
+        }
+
+        if (classPassiveController == null)
+        {
+            return;
+        }
+
+        if (!classPassiveController.IsCaptain())
+        {
+            return;
+        }
+
+        HarpoonStackController harpoonController =
+            targetEnemy.GetComponent<HarpoonStackController>();
+
+        if (harpoonController == null)
+        {
+            return;
+        }
+
+        int addedAmount =
+            harpoonController.AddHarpoonStack(2);
+
+        Debug.Log(
+            $"[CardEffectExecutor] 캡틴 패시브 발동 : " +
+            $"{targetEnemy.name} / " +
+            $"작살 +{addedAmount}",
+            targetEnemy
+        );
+    }
+
+    /// <summary>
     /// 현재 활성화되어 있고
     /// 체력이 남아 있는 적 목록을 반환합니다.
     /// </summary>
@@ -1015,6 +1067,10 @@ public class CardEffectExecutor : MonoBehaviour
         int actualDamage =
             targetEnemy.TakeDamage(finalDamage);
 
+        ApplyCaptainCrewPassive(
+            targetEnemy
+        );
+
         Debug.Log(
             $"[CardEffectExecutor] 선원 공격 : " +
             $"기본 피해 {finalDamage} / " +
@@ -1106,6 +1162,10 @@ public class CardEffectExecutor : MonoBehaviour
                     damagePerCrew
                 );
 
+            ApplyCaptainCrewPassive(
+                randomEnemy
+            );
+
             attackCount++;
 
             Debug.Log(
@@ -1194,6 +1254,10 @@ public class CardEffectExecutor : MonoBehaviour
                         enemy.TakeDamage(
                             damagePerHit
                         );
+
+                    ApplyCaptainCrewPassive(
+                        enemy
+                    );
 
                     totalAttackCount++;
 

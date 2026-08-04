@@ -52,6 +52,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private HRevelationPanelUI hRevelationPanelUI;
 
+    [Header("Class Passive Controller")]
+    [SerializeField]
+    private ClassPassiveController classPassiveController;
+
     private CardUI selectedCardUI;
 
     public CardData SelectedCardData => selectedCardData;
@@ -140,6 +144,27 @@ public class BattleManager : MonoBehaviour
         {
             Debug.LogWarning(
                 "[BattleManager] TurnManager가 연결되지 않았습니다."
+            );
+
+            return false;
+        }
+
+        /*
+         * 첫 플레이어 턴 준비가 완료된 후
+         * 클래스의 전투 시작 패시브를 실행합니다.
+         *
+         * 캡틴 선원은 이 순서로 소환해야
+         * 첫 턴에 즉시 성장하지 않고 12/12로 시작합니다.
+         */
+        if (classPassiveController != null)
+        {
+            classPassiveController.OnBattleStarted();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[BattleManager] ClassPassiveController가 연결되지 않아 " +
+                "전투 시작 패시브를 실행하지 못했습니다."
             );
         }
 
@@ -353,14 +378,19 @@ public class BattleManager : MonoBehaviour
 
         StartBattle();
 
-        if (turnManager != null)
+        /*
+        * 다음 전투의 첫 플레이어 턴 준비가 끝난 뒤
+        * 현재 클래스의 전투 시작 패시브를 실행합니다.
+        */
+        if (classPassiveController != null)
         {
-            turnManager.StartPlayerTurn();
+            classPassiveController.OnBattleStarted();
         }
         else
         {
             Debug.LogWarning(
-                "[BattleManager] TurnManager가 연결되지 않았습니다."
+                "[BattleManager] ClassPassiveController가 연결되지 않아 " +
+                "다음 전투 시작 패시브를 실행하지 못했습니다."
             );
         }
 
@@ -990,7 +1020,29 @@ public class BattleManager : MonoBehaviour
             "[BattleManager] 전투 종료 - 모든 적 처치"
         );
 
+        /*
+        * 모든 클래스가 공통으로 받는
+        * 전투 종료 후 최대 체력 15% 회복입니다.
+        */
         HealPlayerAfterBattle();
+
+        /*
+         * 공통 회복 처리 후
+         * 현재 클래스의 전투 종료 패시브를 실행합니다.
+         *
+         * 피지크는 이 시점에 체력을 추가로 7 회복합니다.
+         */
+        if (classPassiveController != null)
+        {
+            classPassiveController.OnBattleEnded();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[BattleManager] ClassPassiveController가 연결되지 않아 " +
+                "클래스 전투 종료 패시브를 실행하지 못했습니다."
+            );
+        }
 
         StageManager stageManager =
             StageManager.Instance;

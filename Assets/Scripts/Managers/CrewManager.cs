@@ -51,10 +51,24 @@ public class CrewManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 비어 있는 다음 소환 위치에 선원을 생성합니다.
-    /// 소환에 성공하면 true를 반환합니다.
+    /// 비어 있는 다음 소환 위치에
+    /// 기본 체력 1의 선원을 생성합니다.
     /// </summary>
+    /// <returns>소환 성공 여부</returns>
     public bool SummonCrew()
+    {
+        return SummonCrewWithHealth(1);
+    }
+
+    /// <summary>
+    /// 비어 있는 다음 소환 위치에 선원을 생성하고
+    /// 지정한 수치로 현재 체력과 최대 체력을 설정합니다.
+    /// </summary>
+    /// <param name="initialHealth">
+    /// 소환 직후 적용할 현재 체력과 최대 체력
+    /// </param>
+    /// <returns>소환 성공 여부</returns>
+    public bool SummonCrewWithHealth(int initialHealth)
     {
         RemoveNullCrews();
 
@@ -67,7 +81,8 @@ public class CrewManager : MonoBehaviour
             return false;
         }
 
-        if (spawnPoints == null || spawnPoints.Length == 0)
+        if (spawnPoints == null ||
+            spawnPoints.Length == 0)
         {
             Debug.LogError(
                 "[CrewManager] 소환 위치가 연결되지 않았습니다."
@@ -86,8 +101,21 @@ public class CrewManager : MonoBehaviour
             return false;
         }
 
-        int spawnIndex = crews.Count;
-        Transform spawnPoint = spawnPoints[spawnIndex];
+        if (initialHealth <= 0)
+        {
+            Debug.LogWarning(
+                $"[CrewManager] 소환 체력이 올바르지 않습니다: " +
+                $"{initialHealth}"
+            );
+
+            return false;
+        }
+
+        int spawnIndex =
+            crews.Count;
+
+        Transform spawnPoint =
+            spawnPoints[spawnIndex];
 
         if (spawnPoint == null)
         {
@@ -98,18 +126,39 @@ public class CrewManager : MonoBehaviour
             return false;
         }
 
-        Crew newCrew = Instantiate(
-            crewPrefab,
-            spawnPoint.position,
-            spawnPoint.rotation,
-            transform
+        Crew newCrew =
+            Instantiate(
+                crewPrefab,
+                spawnPoint.position,
+                spawnPoint.rotation,
+                transform
+            );
+
+        if (newCrew == null)
+        {
+            Debug.LogError(
+                "[CrewManager] 선원 오브젝트 생성에 실패했습니다."
+            );
+
+            return false;
+        }
+
+        /*
+         * 먼저 CrewManager 참조를 연결한 뒤,
+         * 캡틴 패시브 등에서 요구하는 초기 체력으로 변경합니다.
+         */
+        newCrew.Initialize(this);
+
+        newCrew.SetHealth(
+            initialHealth,
+            initialHealth
         );
 
-        newCrew.Initialize(this);
         crews.Add(newCrew);
 
         Debug.Log(
             $"[CrewManager] 선원 소환 완료 : " +
+            $"{newCrew.CurrentHP}/{newCrew.MaxHP} / " +
             $"{crews.Count}/{maxCrewCount}"
         );
 
