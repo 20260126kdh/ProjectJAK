@@ -671,6 +671,102 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 저장된 CurrentDeck 인덱스 순서대로
+    /// 드로우 파일을 복원합니다.
+    ///
+    /// 이어하기에서는 이 순서를 그대로 사용하며
+    /// 다시 셔플하지 않습니다.
+    /// </summary>
+    /// <param name="savedDrawPileIndices">
+    /// CurrentDeck 기준 드로우 파일 카드 인덱스
+    /// </param>
+    /// <returns>드로우 파일 복원 성공 여부</returns>
+    public bool RestoreDrawPile(
+        List<int> savedDrawPileIndices)
+    {
+        if (savedDrawPileIndices == null)
+        {
+            Debug.LogError(
+                "[DeckManager] 복원할 드로우 파일 인덱스가 없습니다."
+            );
+
+            return false;
+        }
+
+        if (currentDeck == null ||
+            currentDeck.Count <= 0)
+        {
+            Debug.LogError(
+                "[DeckManager] CurrentDeck이 비어 있어 " +
+                "드로우 파일을 복원할 수 없습니다."
+            );
+
+            return false;
+        }
+
+        List<CardData> restoredDrawPile =
+            new List<CardData>();
+
+        HashSet<int> usedIndices =
+            new HashSet<int>();
+
+        for (int i = 0;
+             i < savedDrawPileIndices.Count;
+             i++)
+        {
+            int deckIndex =
+                savedDrawPileIndices[i];
+
+            if (deckIndex < 0 ||
+                deckIndex >= currentDeck.Count)
+            {
+                Debug.LogError(
+                    $"[DeckManager] 잘못된 드로우 파일 카드 인덱스입니다: " +
+                    $"{deckIndex}"
+                );
+
+                return false;
+            }
+
+            if (!usedIndices.Add(deckIndex))
+            {
+                Debug.LogError(
+                    $"[DeckManager] 드로우 파일 카드 인덱스가 " +
+                    $"중복되었습니다: {deckIndex}"
+                );
+
+                return false;
+            }
+
+            CardData card =
+                currentDeck[deckIndex];
+
+            if (card == null)
+            {
+                Debug.LogError(
+                    $"[DeckManager] CurrentDeck의 {deckIndex}번 카드가 null입니다."
+                );
+
+                return false;
+            }
+
+            restoredDrawPile.Add(card);
+        }
+
+        drawPile.Clear();
+        drawPile.AddRange(restoredDrawPile);
+
+        discardPile.Clear();
+
+        Debug.Log(
+            $"[DeckManager] 이어하기 드로우 파일 복원 완료: " +
+            $"{drawPile.Count}장"
+        );
+
+        return true;
+    }
+
+    /// <summary>
     /// 전달받은 카드가 현재 클래스의
     /// 시작 덱 카드인지 확인합니다.
     /// </summary>

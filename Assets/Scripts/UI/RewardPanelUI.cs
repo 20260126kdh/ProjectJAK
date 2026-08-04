@@ -498,25 +498,6 @@ public class RewardPanelUI : MonoBehaviour
             $"{selectedRewardCardData.cardName}"
         );
 
-        /*
-        * 리워드 카드가 실제 덱에 추가된 직후
-        * 현재 진행 상황을 자동 저장합니다.
-        */
-        if (SaveManager.Instance != null)
-        {
-            SaveManager.Instance.SaveCurrentGame();
-
-            Debug.Log(
-                "[RewardPanelUI] 리워드 획득 후 자동 저장 완료"
-            );
-        }
-        else
-        {
-            Debug.LogWarning(
-                "[RewardPanelUI] SaveManager가 없어 자동 저장하지 못했습니다."
-            );
-        }
-
         HideRewardPanel();
 
         if (battleManager == null)

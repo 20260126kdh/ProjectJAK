@@ -411,6 +411,16 @@ public class PauseManager : MonoBehaviour
             SFXManager.Instance.StopAllSFX();
         }
 
+        /*
+        * 전투 포기는 이어하기를 남기지 않습니다.
+        * 메모리 스냅샷과 저장 파일을 모두 제거합니다.
+        */
+        if (SaveManager.Instance != null)
+        {
+            SaveManager.Instance.ClearCapturedBattleSnapshot();
+            SaveManager.Instance.DeleteSaveData();
+        }
+
         Debug.Log(
             "[PauseManager] 전투 포기 - 진행 초기화 후 타이틀 이동"
         );
@@ -519,13 +529,55 @@ public class PauseManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 저장 후 종료 버튼에서 호출합니다.
-    /// 저장 시스템 구현 후 실제 기능을 연결합니다.
+    /// 현재 전투 시작 스냅샷을 저장한 뒤
+    /// 타이틀 화면으로 이동합니다.
     /// </summary>
     public void SaveAndQuit()
     {
+        if (!isPaused)
+        {
+            Debug.LogWarning(
+                "[PauseManager] 일시정지 상태가 아닙니다."
+            );
+
+            return;
+        }
+
+        if (SaveManager.Instance == null)
+        {
+            Debug.LogError(
+                "[PauseManager] SaveManager가 없습니다."
+            );
+
+            return;
+        }
+
+        bool saveSucceeded =
+            SaveManager.Instance.SaveCapturedBattleSnapshot();
+
+        if (!saveSucceeded)
+        {
+            Debug.LogError(
+                "[PauseManager] 저장 후 종료에 실패했습니다."
+            );
+
+            return;
+        }
+
+        Time.timeScale = 1f;
+        isPaused = false;
+
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.StopAllSFX();
+        }
+
         Debug.Log(
-            "[PauseManager] 저장 후 종료 기능은 아직 연결되지 않았습니다."
+            "[PauseManager] 저장 후 종료"
+        );
+
+        SceneManager.LoadScene(
+            titleSceneName
         );
     }
 

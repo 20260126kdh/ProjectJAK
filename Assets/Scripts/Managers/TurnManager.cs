@@ -62,7 +62,6 @@ public class TurnManager : MonoBehaviour
     private void Start()
     {
         TryFindEnemySpawner();
-        StartPlayerTurn();
     }
 
     /// <summary>

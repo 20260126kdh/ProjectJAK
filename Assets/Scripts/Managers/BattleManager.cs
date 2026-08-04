@@ -6,8 +6,10 @@ using UnityEngine;
 /// </summary>
 public class BattleManager : MonoBehaviour
 {
-    [Header("현재 전투 상태")]
-    [SerializeField]
+    /// <summary>
+    /// 현재 전투가 시작된 상태인지 나타냅니다.
+    /// 씬 진입 시 항상 false로 초기화됩니다.
+    /// </summary>
     private bool isBattleStarted;
 
     [Header("Hand Manager")]
@@ -55,24 +57,39 @@ public class BattleManager : MonoBehaviour
     public CardData SelectedCardData => selectedCardData;
     public CardUI SelectedCardUI => selectedCardUI;
 
-    private void Start()
+    private void Awake()
     {
-        StartInitialBattle();
+        isBattleStarted = false;
+        selectedCardData = null;
+        selectedCardUI = null;
     }
 
     /// <summary>
-    /// 게임 시작 후 첫 전투의 적을 생성하고
-    /// 전투를 시작합니다.
+    /// 현재 StageManager 진행도에 맞는 적을 생성하고
+    /// 첫 전투를 시작합니다.
+    ///
+    /// DeckManager의 덱 준비와 HandManager의 첫 손패 생성이
+    /// 완료된 이후 호출해야 합니다.
     /// </summary>
-    private void StartInitialBattle()
+    /// <returns>전투 시작 성공 여부</returns>
+    public bool StartInitialBattle()
     {
+        if (isBattleStarted)
+        {
+            Debug.LogWarning(
+                "[BattleManager] 이미 전투가 시작되어 있습니다."
+            );
+
+            return false;
+        }
+
         if (enemySpawner == null)
         {
             Debug.LogError(
                 "[BattleManager] EnemySpawner가 연결되지 않았습니다."
             );
 
-            return;
+            return false;
         }
 
         if (battleDatabase == null)
@@ -81,25 +98,20 @@ public class BattleManager : MonoBehaviour
                 "[BattleManager] BattleDatabase가 연결되지 않았습니다."
             );
 
-            return;
+            return false;
         }
 
-        /*
-         * 현재 단계에서는 첫 전투를
-         * Stage 1 / Battle 1로 고정해서 불러옵니다.
-         *
-         * 다음 단계에서 StageManager의 실제 진행도와 연결합니다.
-         */
         EnemyBattleData battleData =
-        GetCurrentEnemyBattleData();
+            GetCurrentEnemyBattleData();
 
         if (battleData == null)
         {
             Debug.LogError(
-                "[BattleManager] 첫 전투 데이터를 가져오지 못했습니다."
+                "[BattleManager] 현재 진행도에 해당하는 " +
+                "전투 데이터를 가져오지 못했습니다."
             );
 
-            return;
+            return false;
         }
 
         enemySpawner.SetBattleData(
@@ -115,7 +127,7 @@ public class BattleManager : MonoBehaviour
                 "[BattleManager] 첫 전투 적 생성에 실패했습니다."
             );
 
-            return;
+            return false;
         }
 
         StartBattle();
@@ -134,6 +146,8 @@ public class BattleManager : MonoBehaviour
         Debug.Log(
             "[BattleManager] 첫 전투 시작 완료"
         );
+
+        return true;
     }
 
     /// <summary>
@@ -350,7 +364,26 @@ public class BattleManager : MonoBehaviour
             );
         }
 
-        Debug.Log("[BattleManager] 다음 전투 시작 완료");
+        /*
+         * 플레이어 첫 턴 준비가 끝난 뒤
+         * 현재 전투 시작 상태를 메모리 스냅샷으로 저장합니다.
+         */
+        if (SaveManager.Instance != null)
+        {
+            bool captureSucceeded =
+                SaveManager.Instance.CaptureBattleStartSnapshot();
+
+            if (!captureSucceeded)
+            {
+                Debug.LogWarning(
+                    "[BattleManager] 전투 시작 스냅샷 생성 실패"
+                );
+            }
+        }
+
+        Debug.Log(
+            "[BattleManager] 다음 전투 시작 완료"
+        );
     }
 
     /// <summary>

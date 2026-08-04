@@ -731,6 +731,117 @@ public class HandManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 저장된 CurrentDeck 인덱스 목록을 사용해
+    /// 이어하기 첫 손패를 복원합니다.
+    ///
+    /// 저장된 순서대로 손패에 배치합니다.
+    /// </summary>
+    /// <param name="currentDeck">
+    /// 복원 완료된 현재 전체 덱
+    /// </param>
+    /// <param name="savedHandIndices">
+    /// CurrentDeck 기준 첫 손패 카드 인덱스
+    /// </param>
+    /// <returns>첫 손패 복원 성공 여부</returns>
+    public bool RestoreOpeningHand(
+        List<CardData> currentDeck,
+        List<int> savedHandIndices)
+    {
+        if (currentDeck == null ||
+            currentDeck.Count <= 0)
+        {
+            Debug.LogError(
+                "[HandManager] CurrentDeck이 비어 있어 " +
+                "첫 손패를 복원할 수 없습니다."
+            );
+
+            return false;
+        }
+
+        if (savedHandIndices == null ||
+            savedHandIndices.Count <= 0)
+        {
+            Debug.LogError(
+                "[HandManager] 복원할 첫 손패 인덱스가 없습니다."
+            );
+
+            return false;
+        }
+
+        if (savedHandIndices.Count > 4)
+        {
+            Debug.LogError(
+                $"[HandManager] 저장된 첫 손패가 4장을 초과합니다: " +
+                $"{savedHandIndices.Count}장"
+            );
+
+            return false;
+        }
+
+        List<CardData> restoredHand =
+            new List<CardData>();
+
+        HashSet<int> usedIndices =
+            new HashSet<int>();
+
+        for (int i = 0;
+             i < savedHandIndices.Count;
+             i++)
+        {
+            int deckIndex =
+                savedHandIndices[i];
+
+            if (deckIndex < 0 ||
+                deckIndex >= currentDeck.Count)
+            {
+                Debug.LogError(
+                    $"[HandManager] 잘못된 첫 손패 카드 인덱스입니다: " +
+                    $"{deckIndex}"
+                );
+
+                return false;
+            }
+
+            if (!usedIndices.Add(deckIndex))
+            {
+                Debug.LogError(
+                    $"[HandManager] 첫 손패 카드 인덱스가 " +
+                    $"중복되었습니다: {deckIndex}"
+                );
+
+                return false;
+            }
+
+            CardData card =
+                currentDeck[deckIndex];
+
+            if (card == null)
+            {
+                Debug.LogError(
+                    $"[HandManager] CurrentDeck의 {deckIndex}번 카드가 null입니다."
+                );
+
+                return false;
+            }
+
+            restoredHand.Add(card);
+        }
+
+        ResetHandForNewBattle();
+
+        handCards.AddRange(restoredHand);
+
+        RefreshHandUI();
+
+        Debug.Log(
+            $"[HandManager] 이어하기 첫 손패 복원 완료: " +
+            $"{handCards.Count}장"
+        );
+
+        return true;
+    }
+
+    /// <summary>
     /// 새로운 전투를 위해 손패 상태를 완전히 초기화합니다.
     /// </summary>
     public void ResetHandForNewBattle()

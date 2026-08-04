@@ -36,6 +36,10 @@ public class StartingDeckUI : MonoBehaviour
     [SerializeField]
     private HandManager handManager;
 
+    [Header("Battle Manager")]
+    [SerializeField]
+    private BattleManager battleManager;
+
     [Header("덱 보기 패널")]
     [SerializeField]
     private GameObject startingDeckPanel;
@@ -252,6 +256,14 @@ public class StartingDeckUI : MonoBehaviour
             battlePanel.SetActive(true);
         }
 
+        bool battleStartSucceeded =
+            StartPreparedBattle();
+
+        if (!battleStartSucceeded)
+        {
+            return;
+        }
+
         /*
          * 클래스, 체력, 현재 스테이지,
          * 전투 진행도, 전체 덱과 강화 상태를 저장합니다.
@@ -259,7 +271,7 @@ public class StartingDeckUI : MonoBehaviour
          * 손패와 드로우 순서는 저장하지 않으므로
          * 이어하기 시 현재 전투를 처음부터 다시 시작합니다.
          */
-        SaveCurrentProgress();
+        SaveManager.Instance.CaptureBattleStartSnapshot();
 
         Debug.Log(
             "[StartingDeckUI] 시작 덱 확인 완료"
@@ -268,17 +280,16 @@ public class StartingDeckUI : MonoBehaviour
 
     /// <summary>
     /// 이어하기로 BattleScene에 들어왔을 때
-    /// 시작 덱 확인창을 생략하고 전투를 준비합니다.
+    /// 저장된 첫 손패와 드로우 파일 순서를 복원합니다.
     ///
     /// 처리 내용:
-    /// - 복원된 현재 덱으로 드로우 파일 생성
-    /// - 기존 손패 초기화
-    /// - 첫 손패 4장 드로우
-    /// - 카드 목록 패널 닫기
+    /// - 저장된 CurrentDeck은 DeckManager에서 먼저 복원
+    /// - 저장된 인덱스로 첫 손패 복원
+    /// - 저장된 인덱스로 남은 드로우 파일 복원
+    /// - 버림 더미 초기화
+    /// - 시작 덱 확인창 생략
     /// - 전투 UI 표시
-    ///
-    /// 저장 데이터는 현재 전투의 시작 상태를 나타내므로
-    /// 이어하기 직후 다시 저장하지 않습니다.
+    /// - 저장된 전투를 처음부터 시작
     /// </summary>
     /// <returns>전투 준비 성공 여부</returns>
     public bool PrepareBattleAfterContinue()
@@ -301,6 +312,16 @@ public class StartingDeckUI : MonoBehaviour
             return false;
         }
 
+        if (!ContinueLoadContext.TryGetPendingSaveData(
+                out GameSaveData saveData))
+        {
+            Debug.LogError(
+                "[StartingDeckUI] 이어하기 저장 데이터를 가져오지 못했습니다."
+            );
+
+            return false;
+        }
+
         if (deckManager.CurrentDeck == null ||
             deckManager.CurrentDeck.Count <= 0)
         {
@@ -311,18 +332,34 @@ public class StartingDeckUI : MonoBehaviour
             return false;
         }
 
-        /*
-         * 복원된 전체 덱을 기준으로
-         * 새로운 전투용 드로우 파일을 만들고 섞습니다.
-         */
-        deckManager.PrepareDrawPileForBattle();
+        bool handRestoreSucceeded =
+            handManager.RestoreOpeningHand(
+                deckManager.CurrentDeck,
+                saveData.openingHandCardIndices
+            );
 
-        /*
-         * 저장 파일에는 손패와 드로우 순서를 저장하지 않으므로
-         * 현재 전투를 처음부터 시작하는 첫 손패를 생성합니다.
-         */
-        handManager.ClearHand();
-        handManager.DrawCards(4);
+        if (!handRestoreSucceeded)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] 첫 손패 복원에 실패했습니다."
+            );
+
+            return false;
+        }
+
+        bool drawPileRestoreSucceeded =
+            deckManager.RestoreDrawPile(
+                saveData.remainingDrawPileCardIndices
+            );
+
+        if (!drawPileRestoreSucceeded)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] 드로우 파일 복원에 실패했습니다."
+            );
+
+            return false;
+        }
 
         currentViewMode =
             DeckViewMode.None;
@@ -345,11 +382,72 @@ public class StartingDeckUI : MonoBehaviour
             );
         }
 
+        bool battleStartSucceeded =
+            StartPreparedBattle();
+
+        if (!battleStartSucceeded)
+        {
+            return false;
+        }
+
+        /*
+         * 이어하기로 복원된 전투 시작 상태를
+         * 다시 메모리 스냅샷으로 등록합니다.
+         *
+         * 이후 플레이어가 다시 저장 후 종료를 누르면
+         * 같은 전투 시작 상태를 저장할 수 있습니다.
+         */
+        if (SaveManager.Instance != null)
+        {
+            bool captureSucceeded =
+                SaveManager.Instance.CaptureBattleStartSnapshot();
+
+            if (!captureSucceeded)
+            {
+                Debug.LogWarning(
+                    "[StartingDeckUI] 이어하기 후 전투 시작 " +
+                    "스냅샷 재생성에 실패했습니다."
+                );
+            }
+        }
+
         Debug.Log(
             $"[StartingDeckUI] 이어하기 전투 준비 완료 / " +
             $"현재 덱: {deckManager.CurrentDeck.Count}장 / " +
-            $"첫 손패: 4장"
+            $"첫 손패: {handManager.HandCards.Count}장 / " +
+            $"드로우 파일: {deckManager.DrawPile.Count}장"
         );
+
+        return true;
+    }
+
+    /// <summary>
+    /// 덱과 첫 손패 준비가 끝난 이후
+    /// BattleManager에 첫 전투 시작을 요청합니다.
+    /// </summary>
+    /// <returns>전투 시작 성공 여부</returns>
+    private bool StartPreparedBattle()
+    {
+        if (battleManager == null)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] BattleManager가 연결되지 않았습니다."
+            );
+
+            return false;
+        }
+
+        bool battleStartSucceeded =
+            battleManager.StartInitialBattle();
+
+        if (!battleStartSucceeded)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] 첫 전투 시작에 실패했습니다."
+            );
+
+            return false;
+        }
 
         return true;
     }
@@ -594,6 +692,12 @@ public class StartingDeckUI : MonoBehaviour
         {
             handManager =
                 FindFirstObjectByType<HandManager>();
+        }
+
+        if (battleManager == null)
+        {
+            battleManager =
+                FindFirstObjectByType<BattleManager>();
         }
     }
 

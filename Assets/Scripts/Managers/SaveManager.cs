@@ -28,8 +28,11 @@ public class SaveManager : MonoBehaviour
 
     /// <summary>
     /// 현재 지원하는 저장 데이터 버전입니다.
+    ///
+    /// 버전 2부터 첫 손패와
+    /// 남은 드로우 파일 순서를 저장합니다.
     /// </summary>
-    private const int CurrentSaveVersion = 1;
+    private const int CurrentSaveVersion = 2;
 
     #endregion
 
@@ -45,6 +48,19 @@ public class SaveManager : MonoBehaviour
 
     [SerializeField]
     private bool debugMode = true;
+
+    #endregion
+
+    #region Runtime Snapshot
+
+    /// <summary>
+    /// 현재 전투 시작 시점의 저장 데이터를
+    /// 메모리에만 임시 보관합니다.
+    ///
+    /// 실제 저장 파일은
+    /// 저장 후 종료를 눌렀을 때만 생성됩니다.
+    /// </summary>
+    private GameSaveData capturedBattleSnapshot;
 
     #endregion
 
@@ -91,6 +107,75 @@ public class SaveManager : MonoBehaviour
     #endregion
 
     #region Current Game Save
+
+    /// <summary>
+    /// 현재 전투 시작 시점의 데이터를
+    /// 메모리에만 저장합니다.
+    ///
+    /// 실제 JSON 파일은 생성하지 않습니다.
+    /// </summary>
+    /// <returns>스냅샷 생성 성공 여부</returns>
+    public bool CaptureBattleStartSnapshot()
+    {
+        if (!TryCreateCurrentSaveData(
+                out GameSaveData saveData))
+        {
+            Debug.LogError(
+                "[SaveManager] 전투 시작 스냅샷 생성 실패"
+            );
+
+            return false;
+        }
+
+        capturedBattleSnapshot =
+            saveData;
+
+        if (debugMode)
+        {
+            Debug.Log(
+                "[SaveManager] 전투 시작 스냅샷 생성 완료"
+            );
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 메모리에 보관된 전투 시작 스냅샷을
+    /// 실제 저장 파일로 생성합니다.
+    /// </summary>
+    /// <returns>저장 성공 여부</returns>
+    public bool SaveCapturedBattleSnapshot()
+    {
+        if (capturedBattleSnapshot == null)
+        {
+            Debug.LogWarning(
+                "[SaveManager] 저장할 전투 시작 스냅샷이 없습니다."
+            );
+
+            return false;
+        }
+
+        return SaveGame(
+            capturedBattleSnapshot
+        );
+    }
+
+    /// <summary>
+    /// 메모리에 저장된 전투 시작 스냅샷을 제거합니다.
+    /// </summary>
+    public void ClearCapturedBattleSnapshot()
+    {
+        capturedBattleSnapshot =
+            null;
+
+        if (debugMode)
+        {
+            Debug.Log(
+                "[SaveManager] 전투 시작 스냅샷 제거 완료"
+            );
+        }
+    }
 
     /// <summary>
     /// 현재 게임의 플레이어, 스테이지, 덱 데이터를 수집하여 저장합니다.
@@ -178,10 +263,23 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
+        HandManager handManager =
+            FindFirstObjectByType<HandManager>();
+
+        if (handManager == null)
+        {
+            Debug.LogError(
+                "[SaveManager] HandManager를 찾지 못했습니다."
+            );
+
+            return false;
+        }
+
         if (!ValidateCurrentGameForSave(
                 playerData,
                 stageManager,
-                deckManager))
+                deckManager,
+                handManager))
         {
             return false;
         }
@@ -268,6 +366,83 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
+        /*
+ * 첫 손패 카드들을 CurrentDeck 인덱스로 변환합니다.
+ *
+ * 같은 cardID가 여러 장이거나 일부만 강화되어 있어도
+ * 런타임 카드 참조를 기준으로 정확히 구분합니다.
+ */
+        bool handCollectSucceeded =
+            TryCollectCardIndices(
+                deckManager.CurrentDeck,
+                handManager.HandCards,
+                saveData.openingHandCardIndices,
+                "첫 손패"
+            );
+
+        if (!handCollectSucceeded)
+        {
+            saveData = null;
+            return false;
+        }
+
+        /*
+         * 첫 손패를 뽑고 남은 드로우 파일 순서를
+         * CurrentDeck 인덱스로 변환합니다.
+         */
+        bool drawPileCollectSucceeded =
+            TryCollectCardIndices(
+                deckManager.CurrentDeck,
+                deckManager.DrawPile,
+                saveData.remainingDrawPileCardIndices,
+                "남은 드로우 파일"
+            );
+
+        if (!drawPileCollectSucceeded)
+        {
+            saveData = null;
+            return false;
+        }
+
+        /*
+         * 전투 시작 스냅샷에서는 모든 카드가
+         * 첫 손패 또는 드로우 파일에 존재해야 합니다.
+         *
+         * 버림 더미는 비어 있어야 하므로,
+         * 두 목록의 합이 전체 덱 장수와 같아야 합니다.
+         */
+        int savedBattleCardCount =
+            saveData.openingHandCardIndices.Count +
+            saveData.remainingDrawPileCardIndices.Count;
+
+        if (savedBattleCardCount !=
+            saveData.cards.Count)
+        {
+            Debug.LogError(
+                $"[SaveManager] 전투 시작 카드 구성과 전체 덱 장수가 " +
+                $"일치하지 않습니다. " +
+                $"전체 덱: {saveData.cards.Count} / " +
+                $"첫 손패: {saveData.openingHandCardIndices.Count} / " +
+                $"드로우 파일: " +
+                $"{saveData.remainingDrawPileCardIndices.Count}"
+            );
+
+            saveData = null;
+            return false;
+        }
+
+        if (deckManager.DiscardPile.Count > 0)
+        {
+            Debug.LogError(
+                $"[SaveManager] 전투 시작 스냅샷 생성 시 " +
+                $"버림 더미가 비어 있지 않습니다: " +
+                $"{deckManager.DiscardPile.Count}장"
+            );
+
+            saveData = null;
+            return false;
+        }
+
         if (debugMode)
         {
             int upgradedCardCount = 0;
@@ -290,8 +465,12 @@ public class SaveManager : MonoBehaviour
                 $"Battle: {saveData.currentBattleCount} / " +
                 $"Phase: {(StagePhase)saveData.currentPhase} / " +
                 $"Cards: {saveData.cards.Count} / " +
-                $"Upgraded: {upgradedCardCount}"
-            );
+                $"Upgraded: {upgradedCardCount} / " +
+                $"Opening Hand: " +
+                $"{saveData.openingHandCardIndices.Count} / " +
+                $"Draw Pile: " +
+                $"{saveData.remainingDrawPileCardIndices.Count}"
+);
         }
 
         return true;
@@ -303,7 +482,8 @@ public class SaveManager : MonoBehaviour
     private bool ValidateCurrentGameForSave(
         PlayerData playerData,
         StageManager stageManager,
-        DeckManager deckManager)
+        DeckManager deckManager,
+        HandManager handManager)
     {
         if (playerData.PlayerClass ==
                 PlayerClass.None ||
@@ -349,6 +529,161 @@ public class SaveManager : MonoBehaviour
             );
 
             return false;
+        }
+
+        if (handManager == null)
+        {
+            Debug.LogWarning(
+                "[SaveManager] HandManager가 없어 " +
+                "첫 손패를 저장할 수 없습니다."
+            );
+
+            return false;
+        }
+
+        if (handManager.HandCards == null ||
+            handManager.HandCards.Count <= 0)
+        {
+            Debug.LogWarning(
+                "[SaveManager] 첫 손패가 준비되지 않아 " +
+                "전투 시작 스냅샷을 생성할 수 없습니다."
+            );
+
+            return false;
+        }
+
+        if (handManager.HandCards.Count > 4)
+        {
+            Debug.LogWarning(
+                $"[SaveManager] 전투 시작 손패가 4장을 초과합니다: " +
+                $"{handManager.HandCards.Count}장"
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 전달받은 카드 목록을 CurrentDeck 기준 인덱스 목록으로 변환합니다.
+    ///
+    /// cardID가 아닌 런타임 객체 참조를 기준으로 찾기 때문에
+    /// 같은 카드가 여러 장이거나 강화 상태가 달라도 구분할 수 있습니다.
+    /// </summary>
+    /// <param name="currentDeck">현재 보유한 전체 덱</param>
+    /// <param name="sourceCards">손패 또는 드로우 파일</param>
+    /// <param name="resultIndices">저장할 인덱스 목록</param>
+    /// <param name="contextName">오류 로그에 표시할 목록 이름</param>
+    /// <returns>변환 성공 여부</returns>
+    private bool TryCollectCardIndices(
+        System.Collections.Generic.List<CardData> currentDeck,
+        System.Collections.Generic.List<CardData> sourceCards,
+        System.Collections.Generic.List<int> resultIndices,
+        string contextName)
+    {
+        if (currentDeck == null ||
+            currentDeck.Count <= 0)
+        {
+            Debug.LogError(
+                $"[SaveManager] {contextName} 인덱스 변환을 위한 " +
+                "CurrentDeck이 비어 있습니다."
+            );
+
+            return false;
+        }
+
+        if (sourceCards == null)
+        {
+            Debug.LogError(
+                $"[SaveManager] {contextName} 카드 목록이 없습니다."
+            );
+
+            return false;
+        }
+
+        if (resultIndices == null)
+        {
+            Debug.LogError(
+                $"[SaveManager] {contextName} 인덱스 저장 목록이 없습니다."
+            );
+
+            return false;
+        }
+
+        resultIndices.Clear();
+
+        for (int sourceIndex = 0;
+             sourceIndex < sourceCards.Count;
+             sourceIndex++)
+        {
+            CardData sourceCard =
+                sourceCards[sourceIndex];
+
+            if (sourceCard == null)
+            {
+                Debug.LogError(
+                    $"[SaveManager] {contextName}의 " +
+                    $"{sourceIndex}번 카드가 null입니다."
+                );
+
+                resultIndices.Clear();
+                return false;
+            }
+
+            int deckIndex = -1;
+
+            /*
+             * 동일한 cardID가 여러 장일 수 있으므로
+             * 문자열이 아니라 실제 객체 참조로 찾습니다.
+             */
+            for (int currentDeckIndex = 0;
+                 currentDeckIndex < currentDeck.Count;
+                 currentDeckIndex++)
+            {
+                if (ReferenceEquals(
+                        currentDeck[currentDeckIndex],
+                        sourceCard))
+                {
+                    deckIndex =
+                        currentDeckIndex;
+
+                    break;
+                }
+            }
+
+            if (deckIndex < 0)
+            {
+                Debug.LogError(
+                    $"[SaveManager] {contextName} 카드가 " +
+                    $"CurrentDeck에 존재하지 않습니다: " +
+                    $"{sourceCard.cardName}"
+                );
+
+                resultIndices.Clear();
+                return false;
+            }
+
+            /*
+             * 같은 런타임 카드 한 장이 손패나 드로우 파일에
+             * 중복 등록되어 있으면 잘못된 상태입니다.
+             */
+            if (resultIndices.Contains(deckIndex))
+            {
+                Debug.LogError(
+                    $"[SaveManager] {contextName}에 같은 카드가 " +
+                    $"중복되어 있습니다. " +
+                    $"Deck Index: {deckIndex} / " +
+                    $"Card: {sourceCard.cardName}"
+                );
+
+                resultIndices.Clear();
+                return false;
+            }
+
+            resultIndices.Add(
+                deckIndex
+            );
         }
 
         return true;
@@ -827,6 +1162,109 @@ public class SaveManager : MonoBehaviour
 
                 return false;
             }
+        }
+
+        if (saveData.openingHandCardIndices == null ||
+    saveData.openingHandCardIndices.Count <= 0)
+        {
+            if (logMessage)
+            {
+                Debug.LogWarning(
+                    "[SaveManager] 저장된 첫 손패 정보가 없습니다."
+                );
+            }
+
+            return false;
+        }
+
+        if (saveData.openingHandCardIndices.Count > 4)
+        {
+            if (logMessage)
+            {
+                Debug.LogWarning(
+                    $"[SaveManager] 저장된 첫 손패가 4장을 초과합니다: " +
+                    $"{saveData.openingHandCardIndices.Count}장"
+                );
+            }
+
+            return false;
+        }
+
+        if (saveData.remainingDrawPileCardIndices == null)
+        {
+            if (logMessage)
+            {
+                Debug.LogWarning(
+                    "[SaveManager] 저장된 드로우 파일 정보가 없습니다."
+                );
+            }
+
+            return false;
+        }
+
+        System.Collections.Generic.HashSet<int> usedCardIndices =
+            new System.Collections.Generic.HashSet<int>();
+
+        for (int i = 0;
+             i < saveData.openingHandCardIndices.Count;
+             i++)
+        {
+            int cardIndex =
+                saveData.openingHandCardIndices[i];
+
+            if (cardIndex < 0 ||
+                cardIndex >= saveData.cards.Count ||
+                !usedCardIndices.Add(cardIndex))
+            {
+                if (logMessage)
+                {
+                    Debug.LogWarning(
+                        $"[SaveManager] 잘못되었거나 중복된 " +
+                        $"첫 손패 카드 인덱스입니다: {cardIndex}"
+                    );
+                }
+
+                return false;
+            }
+        }
+
+        for (int i = 0;
+             i < saveData.remainingDrawPileCardIndices.Count;
+             i++)
+        {
+            int cardIndex =
+                saveData.remainingDrawPileCardIndices[i];
+
+            if (cardIndex < 0 ||
+                cardIndex >= saveData.cards.Count ||
+                !usedCardIndices.Add(cardIndex))
+            {
+                if (logMessage)
+                {
+                    Debug.LogWarning(
+                        $"[SaveManager] 잘못되었거나 중복된 " +
+                        $"드로우 파일 카드 인덱스입니다: {cardIndex}"
+                    );
+                }
+
+                return false;
+            }
+        }
+
+        if (usedCardIndices.Count !=
+            saveData.cards.Count)
+        {
+            if (logMessage)
+            {
+                Debug.LogWarning(
+                    $"[SaveManager] 첫 손패와 드로우 파일에 저장된 " +
+                    $"카드 수가 전체 덱과 일치하지 않습니다. " +
+                    $"전체 덱: {saveData.cards.Count} / " +
+                    $"저장된 카드: {usedCardIndices.Count}"
+                );
+            }
+
+            return false;
         }
 
         return true;
