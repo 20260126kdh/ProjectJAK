@@ -56,6 +56,10 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private ClassPassiveController classPassiveController;
 
+    [Header("Stage Background Controller")]
+    [SerializeField]
+    private StageBackgroundController stageBackgroundController;
+
     private CardUI selectedCardUI;
 
     public CardData SelectedCardData => selectedCardData;
@@ -228,10 +232,98 @@ public class BattleManager : MonoBehaviour
                 }
 
             case StagePhase.BossBattle:
-                return battleDatabase.GetBossBattleData(
-                    stageManager.CurrentStage,
-                    stageManager.CurrentBossSequence
-                );
+                {
+                    /*
+                     * Stage 3은 모르바엘 → 아리엘 순서가 고정이므로
+                     * 기존 Boss Sequence 방식으로 가져옵니다.
+                     */
+                    if (stageManager.CurrentStage == 3)
+                    {
+                        return battleDatabase.GetBossBattleData(
+                            stageManager.CurrentStage,
+                            stageManager.CurrentBossSequence
+                        );
+                    }
+
+                    /*
+                     * Stage 1, 2에서 이미 선택된 보스 ID가 있다면
+                     * 이어하기 또는 동일 전투 재시작 상태이므로
+                     * 랜덤 선택하지 않고 저장된 보스를 반환합니다.
+                     */
+                    if (!string.IsNullOrWhiteSpace(
+                            stageManager.SelectedBossBattleID))
+                    {
+                        EnemyBattleData savedBossBattleData =
+                            battleDatabase.GetBossBattleDataByID(
+                                stageManager.SelectedBossBattleID
+                            );
+
+                        if (savedBossBattleData != null)
+                        {
+                            Debug.Log(
+                                $"[BattleManager] 저장된 보스 전투 데이터 사용 / " +
+                                $"Stage: {stageManager.CurrentStage} / " +
+                                $"Battle ID: {stageManager.SelectedBossBattleID}"
+                            );
+
+                            return savedBossBattleData;
+                        }
+
+                        Debug.LogWarning(
+                            $"[BattleManager] 저장된 보스 ID와 일치하는 " +
+                            $"전투 데이터를 찾지 못했습니다. " +
+                            $"새 보스를 다시 선택합니다. / " +
+                            $"Battle ID: {stageManager.SelectedBossBattleID}"
+                        );
+
+                        stageManager.ClearSelectedBossBattleID();
+                    }
+
+                    /*
+                     * 아직 보스가 선택되지 않은 경우에만
+                     * 해당 스테이지 보스 후보 중 하나를 무작위로 결정합니다.
+                     */
+                    EnemyBattleData selectedBossBattleData =
+                        battleDatabase.GetBossBattleData(
+                            stageManager.CurrentStage,
+                            stageManager.CurrentBossSequence
+                        );
+
+                    if (selectedBossBattleData == null)
+                    {
+                        Debug.LogError(
+                            $"[BattleManager] Stage {stageManager.CurrentStage}의 " +
+                            "보스 전투 데이터를 선택하지 못했습니다."
+                        );
+
+                        return null;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(
+                            selectedBossBattleData.BattleId))
+                    {
+                        Debug.LogError(
+                            $"[BattleManager] 선택된 보스 전투 데이터의 " +
+                            $"Battle ID가 비어 있습니다: " +
+                            $"{selectedBossBattleData.name}"
+                        );
+
+                        return null;
+                    }
+
+                    stageManager.SetSelectedBossBattleID(
+                        selectedBossBattleData.BattleId
+                    );
+
+                    Debug.Log(
+                        $"[BattleManager] 새로운 보스 무작위 선택 및 저장 / " +
+                        $"Stage: {stageManager.CurrentStage} / " +
+                        $"Battle ID: {selectedBossBattleData.BattleId} / " +
+                        $"Data: {selectedBossBattleData.name}"
+                    );
+
+                    return selectedBossBattleData;
+                }
 
             case StagePhase.Rest:
                 Debug.LogWarning(
@@ -292,6 +384,28 @@ public class BattleManager : MonoBehaviour
 
         ClearSelectedCard();
         ClearAllCrews();
+
+        /*
+        * 같은 BattleScene 안에서 다음 스테이지로 넘어갈 수 있으므로
+        * 현재 StageManager의 스테이지에 맞게 배경을 다시 적용합니다.
+        */
+        if (stageBackgroundController == null)
+        {
+            stageBackgroundController =
+                FindFirstObjectByType<StageBackgroundController>();
+        }
+
+        if (stageBackgroundController != null)
+        {
+            stageBackgroundController.ApplyCurrentStageBackground();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[BattleManager] StageBackgroundController를 찾지 못해 " +
+                "스테이지 배경을 갱신하지 못했습니다."
+            );
+        }
 
         if (deckManager == null)
         {

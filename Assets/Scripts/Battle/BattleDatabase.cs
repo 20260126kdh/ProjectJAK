@@ -212,6 +212,65 @@ public class BattleDatabase : ScriptableObject
         return selectedBattleData;
     }
 
+    /// <summary>
+    /// 저장된 Battle ID와 일치하는 보스 전투 데이터를 반환합니다.
+    ///
+    /// 이어하기 시 Stage 1·2 보스를 다시 무작위로 선택하지 않고,
+    /// 저장 당시 선택된 동일한 보스를 복원하는 데 사용합니다.
+    /// </summary>
+    /// <param name="battleId">복원할 보스 전투 ID</param>
+    /// <returns>일치하는 EnemyBattleData, 없으면 null</returns>
+    public EnemyBattleData GetBossBattleDataByID(
+        string battleId)
+    {
+        if (string.IsNullOrWhiteSpace(battleId))
+        {
+            Debug.LogWarning(
+                "[BattleDatabase] 찾을 보스 Battle ID가 비어 있습니다.",
+                this
+            );
+
+            return null;
+        }
+
+        for (int i = 0;
+             i < bossBattleEntries.Count;
+             i++)
+        {
+            BossBattleEntry entry =
+                bossBattleEntries[i];
+
+            if (entry == null ||
+                entry.BattleData == null)
+            {
+                continue;
+            }
+
+            if (entry.BattleData.BattleId !=
+                battleId)
+            {
+                continue;
+            }
+
+            Debug.Log(
+                $"[BattleDatabase] 저장된 보스 데이터 찾기 완료 / " +
+                $"Battle ID: {battleId} / " +
+                $"선택: {entry.BattleData.name}",
+                entry.BattleData
+            );
+
+            return entry.BattleData;
+        }
+
+        Debug.LogWarning(
+            $"[BattleDatabase] Battle ID와 일치하는 " +
+            $"보스 전투 데이터를 찾지 못했습니다: {battleId}",
+            this
+        );
+
+        return null;
+    }
+
 #if UNITY_EDITOR
     private void OnValidate()
     {

@@ -202,6 +202,7 @@ public class TitleContinueController : MonoBehaviour
                 saveData.currentBattleCount,
                 savedPhase,
                 saveData.currentBossSequence,
+                saveData.selectedBossBattleID,
                 saveData.isGameClear
             );
 

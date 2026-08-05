@@ -73,6 +73,12 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private int currentBossSequence = 0;
 
+    [Header("Selected Boss")]
+
+    [Tooltip("Stage 1, 2에서 선택된 보스 Battle ID")]
+    [SerializeField]
+    private string selectedBossBattleID;
+
     [Header("Game Clear")]
 
     [Tooltip("최종 보스 처치 여부")]
@@ -87,6 +93,12 @@ public class StageManager : MonoBehaviour
     #endregion
 
     #region Property
+
+    /// <summary>
+    /// Stage 1, 2에서 선택된 보스 Battle ID입니다.
+    /// </summary>
+    public string SelectedBossBattleID =>
+        selectedBossBattleID;
 
     public int CurrentStage => currentStage;
 
@@ -161,6 +173,7 @@ public class StageManager : MonoBehaviour
         int savedBattleCount,
         StagePhase savedPhase,
         int savedBossSequence,
+        string savedBossBattleID,
         bool savedIsGameClear)
     {
         if (savedStage < 1 ||
@@ -267,6 +280,9 @@ public class StageManager : MonoBehaviour
         currentBossSequence =
             savedBossSequence;
 
+        selectedBossBattleID =
+            savedBossBattleID ?? string.Empty;
+
         isGameClear =
             savedIsGameClear;
 
@@ -294,6 +310,9 @@ public class StageManager : MonoBehaviour
         currentStage = 1;
         currentBattleCount = 0;
         currentPhase = StagePhase.NormalBattle;
+
+        selectedBossBattleID =
+            string.Empty;
 
         currentBossSequence = 0;
         isGameClear = false;
@@ -502,6 +521,9 @@ public class StageManager : MonoBehaviour
          */
         currentStage++;
 
+        selectedBossBattleID =
+            string.Empty;
+
         if (currentStage > maxStage)
         {
             isGameClear = true;
@@ -527,6 +549,29 @@ public class StageManager : MonoBehaviour
     public void BossWin()
     {
         BossBattleWin();
+    }
+
+    /// <summary>
+    /// 현재 선택된 보스 Battle ID를 저장합니다.
+    /// </summary>
+    public void SetSelectedBossBattleID(
+        string battleID)
+    {
+        selectedBossBattleID =
+            battleID;
+
+        Debug.Log(
+            $"[StageManager] 선택된 보스 저장 : {battleID}"
+        );
+    }
+
+    /// <summary>
+    /// 저장된 보스 Battle ID를 초기화합니다.
+    /// </summary>
+    public void ClearSelectedBossBattleID()
+    {
+        selectedBossBattleID =
+            string.Empty;
     }
 
     #endregion

@@ -32,7 +32,7 @@ public class SaveManager : MonoBehaviour
     /// 버전 2부터 첫 손패와
     /// 남은 드로우 파일 순서를 저장합니다.
     /// </summary>
-    private const int CurrentSaveVersion = 2;
+    private const int CurrentSaveVersion = 3;
 
     #endregion
 
@@ -311,6 +311,9 @@ public class SaveManager : MonoBehaviour
                 currentBossSequence =
                     stageManager.CurrentBossSequence,
 
+                selectedBossBattleID =
+                    stageManager.SelectedBossBattleID,
+
                 isGameClear =
                     stageManager.IsGameClear
             };
@@ -367,11 +370,11 @@ public class SaveManager : MonoBehaviour
         }
 
         /*
- * 첫 손패 카드들을 CurrentDeck 인덱스로 변환합니다.
- *
- * 같은 cardID가 여러 장이거나 일부만 강화되어 있어도
- * 런타임 카드 참조를 기준으로 정확히 구분합니다.
- */
+        * 첫 손패 카드들을 CurrentDeck 인덱스로 변환합니다.
+        *
+        * 같은 cardID가 여러 장이거나 일부만 강화되어 있어도
+        * 런타임 카드 참조를 기준으로 정확히 구분합니다.
+        */
         bool handCollectSucceeded =
             TryCollectCardIndices(
                 deckManager.CurrentDeck,
@@ -464,6 +467,7 @@ public class SaveManager : MonoBehaviour
                 $"Stage: {saveData.currentStage} / " +
                 $"Battle: {saveData.currentBattleCount} / " +
                 $"Phase: {(StagePhase)saveData.currentPhase} / " +
+                $"Boss ID: {saveData.selectedBossBattleID} / " +
                 $"Cards: {saveData.cards.Count} / " +
                 $"Upgraded: {upgradedCardCount} / " +
                 $"Opening Hand: " +
@@ -995,14 +999,14 @@ public class SaveManager : MonoBehaviour
             return false;
         }
 
-        if (saveData.saveVersion <= 0 ||
-            saveData.saveVersion >
-            CurrentSaveVersion)
+        if (saveData.saveVersion !=
+        CurrentSaveVersion)
         {
             if (logMessage)
             {
                 Debug.LogWarning(
-                    $"[SaveManager] 지원하지 않는 저장 버전입니다. " +
+                    $"[SaveManager] 현재 버전과 일치하지 않는 " +
+                    $"저장 데이터입니다. " +
                     $"저장 버전: {saveData.saveVersion} / " +
                     $"지원 버전: {CurrentSaveVersion}"
                 );
@@ -1122,6 +1126,30 @@ public class SaveManager : MonoBehaviour
                 Debug.LogWarning(
                     "[SaveManager] 게임 클리어 저장 데이터는 " +
                     "이어하기에 사용할 수 없습니다."
+                );
+            }
+
+            return false;
+        }
+
+        /*
+        * Stage 1, 2 보스 전투 저장 데이터에는
+        * 선택된 보스 Battle ID가 반드시 있어야 합니다.
+        */
+        bool requiresSelectedBossBattleID =
+            saveData.currentStage < 3 &&
+            (StagePhase)saveData.currentPhase ==
+                StagePhase.BossBattle;
+
+        if (requiresSelectedBossBattleID &&
+            string.IsNullOrWhiteSpace(
+                saveData.selectedBossBattleID))
+        {
+            if (logMessage)
+            {
+                Debug.LogWarning(
+                    "[SaveManager] Stage 1, 2 보스 전투 저장 데이터에 " +
+                    "선택된 보스 Battle ID가 없습니다."
                 );
             }
 

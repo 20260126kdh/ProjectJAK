@@ -21,7 +21,7 @@ public class GameSaveData
     /// 버전 2부터 첫 손패와
     /// 남은 드로우 파일 순서를 저장합니다.
     /// </summary>
-    public int saveVersion = 2;
+    public int saveVersion = 3;
 
     /// <summary>
     /// 저장 생성 시각입니다.
@@ -76,6 +76,18 @@ public class GameSaveData
     /// 1: 아리엘
     /// </summary>
     public int currentBossSequence;
+
+    /// <summary>
+    /// Stage 1, 2에서 무작위로 선택된
+    /// 보스 전투의 Battle ID입니다.
+    ///
+    /// 이어하기 시 보스를 다시 무작위로 선택하지 않고
+    /// 저장 당시 선택된 동일한 보스를 복원하는 데 사용합니다.
+    ///
+    /// Stage 3에서는 currentBossSequence를 사용하므로
+    /// 비어 있어도 됩니다.
+    /// </summary>
+    public string selectedBossBattleID;
 
     /// <summary>
     /// 게임 클리어 여부입니다.
