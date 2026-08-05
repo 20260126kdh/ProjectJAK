@@ -63,7 +63,11 @@ public class UpgradePanelUI : MonoBehaviour
         ResetSelection();
         RefreshCards();
 
-        Debug.Log("[UpgradePanelUI] 강화 패널 표시");
+        Debug.Log(
+            $"[UpgradePanelUI] 강화 패널 표시 / " +
+            $"ActiveSelf: {panel.activeSelf} / " +
+            $"ActiveInHierarchy: {panel.activeInHierarchy}"
+        );
     }
 
     /// <summary>

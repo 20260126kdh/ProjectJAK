@@ -184,6 +184,7 @@ Transform:
   - {fileID: 1018173368}
   - {fileID: 834958926}
   - {fileID: 1394341547}
+  - {fileID: 1093629280}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &38236401
@@ -7674,7 +7675,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   restPanel: {fileID: 69276178}
   battleManager: {fileID: 1757670132}
-  upgradePanelUI: {fileID: 1527095948}
+  upgradePanelUI: {fileID: 1093629281}
   restButton: {fileID: 379370664}
   upgradeButton: {fileID: 2087595275}
   nextBattleButton: {fileID: 916360635}
@@ -8480,6 +8481,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1088441193}
   m_CullTransparentMesh: 1
+--- !u!1 &1093629279
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1093629280}
+  - component: {fileID: 1093629281}
+  m_Layer: 0
+  m_Name: UpgradePanelUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1093629280
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093629279}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 38236400}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1093629281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093629279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d8e18b8a08ec0246956f6b507f279e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 1527095944}
+  restPanelUI: {fileID: 1018173367}
+  deckManager: {fileID: 690890766}
+  cardParent: {fileID: 1307728246}
+  cardPrefab: {fileID: 5473703925399372580, guid: 93e4a0b158ea9c9428cf17fc8a4a9b7c, type: 3}
+  confirmButton: {fileID: 2104874852}
 --- !u!1 &1095444282
 GameObject:
   m_ObjectHideFlags: 0
@@ -10089,7 +10140,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1527095948}
+      - m_Target: {fileID: 1093629281}
         m_TargetAssemblyTypeName: UpgradePanelUI, Assembly-CSharp
         m_MethodName: OnClickCancel
         m_Mode: 1
@@ -11469,7 +11520,6 @@ GameObject:
   - component: {fileID: 1527095945}
   - component: {fileID: 1527095947}
   - component: {fileID: 1527095946}
-  - component: {fileID: 1527095948}
   m_Layer: 5
   m_Name: UpgradePanel
   m_TagString: Untagged
@@ -11538,24 +11588,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1527095944}
   m_CullTransparentMesh: 1
---- !u!114 &1527095948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1527095944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d8e18b8a08ec0246956f6b507f279e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  panel: {fileID: 1527095944}
-  restPanelUI: {fileID: 1018173367}
-  deckManager: {fileID: 690890766}
-  cardParent: {fileID: 1307728246}
-  cardPrefab: {fileID: 5473703925399372580, guid: 93e4a0b158ea9c9428cf17fc8a4a9b7c, type: 3}
-  confirmButton: {fileID: 2104874852}
 --- !u!1 &1548169029
 GameObject:
   m_ObjectHideFlags: 0
@@ -14949,7 +14981,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1527095948}
+      - m_Target: {fileID: 1093629281}
         m_TargetAssemblyTypeName: UpgradePanelUI, Assembly-CSharp
         m_MethodName: OnClickConfirm
         m_Mode: 1

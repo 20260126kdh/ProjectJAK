@@ -91,7 +91,11 @@ public class RestPanelUI : MonoBehaviour
 
         restPanel.SetActive(true);
 
-        Debug.Log("[RestPanelUI] 휴식 패널 표시");
+        Debug.Log(
+            $"[RestPanelUI] 휴식 패널 표시 / " +
+            $"ActiveSelf: {restPanel.activeSelf} / " +
+            $"ActiveInHierarchy: {restPanel.activeInHierarchy}"
+        );
     }
 
     /// <summary>
@@ -212,7 +216,8 @@ public class RestPanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 강화 패널을 표시하고 휴식 패널을 숨깁니다.
+    /// 강화 패널을 표시한 뒤 휴식 패널을 숨깁니다.
+    /// 두 패널은 Hierarchy에서 형제 오브젝트여야 합니다.
     /// </summary>
     public void OnClickUpgrade()
     {
@@ -225,11 +230,17 @@ public class RestPanelUI : MonoBehaviour
             return;
         }
 
-        HideRestPanel();
-
+        /*
+         * 강화 패널을 먼저 활성화한 뒤
+         * 휴식 패널을 숨깁니다.
+         */
         upgradePanelUI.ShowPanel();
 
-        Debug.Log("[RestPanelUI] 카드 강화 패널 열기");
+        HideRestPanel();
+
+        Debug.Log(
+            "[RestPanelUI] 카드 강화 패널 열기"
+        );
     }
 
     /// <summary>
@@ -295,54 +306,12 @@ public class RestPanelUI : MonoBehaviour
         */
         StageManager.Instance.RestComplete();
 
-        /*
-         * 휴식에서 적용한 회복과 카드 강화 상태,
-         * 그리고 BossBattle로 변경된 진행도를 저장합니다.
-         *
-         * 이어하기 시 휴식 화면이 아니라
-         * 보스 전투 시작 지점부터 다시 시작합니다.
-         */
-        SaveProgressBeforeBossBattle();
-
         HideRestPanel();
 
         battleManager.StartNextBattle();
 
         Debug.Log(
             "[RestPanelUI] 휴식 완료 - 보스 전투 시작"
-        );
-    }
-
-    /// <summary>
-    /// 휴식 완료 후 보스 전투를 시작하기 전에
-    /// 현재 플레이어 체력, 강화된 덱, 스테이지 진행도를 저장합니다.
-    /// </summary>
-    private void SaveProgressBeforeBossBattle()
-    {
-        if (SaveManager.Instance == null)
-        {
-            Debug.LogWarning(
-                "[RestPanelUI] SaveManager.Instance가 없어 " +
-                "보스 전투 시작 전 자동 저장을 처리하지 못했습니다."
-            );
-
-            return;
-        }
-
-        bool saveSucceeded =
-            SaveManager.Instance.SaveCurrentGame();
-
-        if (!saveSucceeded)
-        {
-            Debug.LogWarning(
-                "[RestPanelUI] 보스 전투 시작 전 자동 저장에 실패했습니다."
-            );
-
-            return;
-        }
-
-        Debug.Log(
-            "[RestPanelUI] 보스 전투 시작 전 자동 저장 완료"
         );
     }
 }

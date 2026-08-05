@@ -415,10 +415,23 @@ public class BattleManager : MonoBehaviour
 
         StartBattle();
 
+        if (turnManager != null)
+        {
+            turnManager.StartPlayerTurn();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[BattleManager] TurnManager가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
         /*
-        * 다음 전투의 첫 플레이어 턴 준비가 끝난 뒤
-        * 현재 클래스의 전투 시작 패시브를 실행합니다.
-        */
+         * 첫 플레이어 턴 준비가 완료된 뒤
+         * 클래스의 전투 시작 패시브를 실행합니다.
+         */
         if (classPassiveController != null)
         {
             classPassiveController.OnBattleStarted();
