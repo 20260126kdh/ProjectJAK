@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -48,6 +49,24 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private RectTransform discardPileTarget;
 
+    [Header("버림 도착 VFX")]
+    [SerializeField]
+    private ParticleSystem discardArrivalVfxPrefab;
+
+    private ParticleSystem activeDiscardArrivalVfx;
+
+    [Header("버림 카드 이동 테스트")]
+    [SerializeField]
+    private float discardMoveDuration = 1f;
+
+    [SerializeField]
+    private float discardArrivalHoldDuration = 0.2f;
+
+    [SerializeField]
+    private float discardCardMoveInterval = 0.5f;
+
+    private Coroutine discardMoveTestCoroutine;
+
     [Header("카드 UI 프리팹")]
     [SerializeField]
     private CardUI cardPrefab;
@@ -79,6 +98,291 @@ public class HandManager : MonoBehaviour
     /// 현재 보존 카드 선택 모드인지 반환합니다.
     /// </summary>
     public bool IsPreserveMode => isPreserveMode;
+
+    /// <summary>
+    /// 버림 더미 UI 위치를 월드 좌표로 변환하여 도착 VFX를 한 번 재생합니다.
+    /// 카드 이동 및 버림 데이터는 변경하지 않습니다.
+    /// </summary>
+    [ContextMenu("버림 도착 VFX 테스트")]
+    public void PlayDiscardArrivalVfxTest()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning(
+                "[HandManager] 버림 도착 VFX 테스트는 Play Mode에서만 실행할 수 있습니다."
+            );
+
+            return;
+        }
+
+        PlayDiscardArrivalVfx(true);
+    }
+
+    /// <summary>
+    /// 버림 더미 UI 위치에 도착 VFX를 생성하고 재생 종료 후 제거합니다.
+    /// </summary>
+    private void PlayDiscardArrivalVfx(bool replaceActiveVfx)
+    {
+        if (discardPileTarget == null)
+        {
+            Debug.LogError(
+                "[HandManager] 버림 더미 도착 위치가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        if (discardArrivalVfxPrefab == null)
+        {
+            Debug.LogError(
+                "[HandManager] 버림 도착 VFX 프리팹이 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        Camera mainCamera = Camera.main;
+
+        if (mainCamera == null)
+        {
+            Debug.LogError(
+                "[HandManager] MainCamera 태그가 지정된 카메라를 찾을 수 없습니다."
+            );
+
+            return;
+        }
+
+        Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(
+            null,
+            discardPileTarget.position
+        );
+
+        Ray screenRay = mainCamera.ScreenPointToRay(screenPosition);
+        Plane vfxPlane = new Plane(Vector3.forward, Vector3.zero);
+
+        if (!vfxPlane.Raycast(screenRay, out float enter))
+        {
+            Debug.LogError(
+                "[HandManager] 버림 더미 화면 위치를 VFX 월드 위치로 변환하지 못했습니다."
+            );
+
+            return;
+        }
+
+        if (replaceActiveVfx && activeDiscardArrivalVfx != null)
+        {
+            Destroy(activeDiscardArrivalVfx.gameObject);
+        }
+
+        Vector3 worldPosition = screenRay.GetPoint(enter);
+        ParticleSystem spawnedVfx = Instantiate(
+            discardArrivalVfxPrefab,
+            worldPosition,
+            Quaternion.identity
+        );
+
+        if (replaceActiveVfx)
+        {
+            activeDiscardArrivalVfx = spawnedVfx;
+        }
+
+        float cleanupDelay = 0f;
+        ParticleSystem[] particleSystems =
+            spawnedVfx.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem particleSystem in particleSystems)
+        {
+            ParticleSystem.MainModule main = particleSystem.main;
+            float playbackDuration =
+                main.startDelay.constantMax +
+                main.duration +
+                main.startLifetime.constantMax;
+
+            cleanupDelay = Mathf.Max(cleanupDelay, playbackDuration);
+        }
+
+        Destroy(spawnedVfx.gameObject, cleanupDelay);
+    }
+
+    /// <summary>
+    /// 현재 손패 카드 UI를 일정한 간격으로 버림 더미 위치까지 이동한 뒤 복원합니다.
+    /// 카드 데이터와 버림 더미 데이터는 변경하지 않습니다.
+    /// </summary>
+    [ContextMenu("버림 더미 카드 이동 테스트")]
+    public void PlayDiscardCardMoveTest()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning(
+                "[HandManager] 버림 카드 이동 테스트는 Play Mode에서만 실행할 수 있습니다."
+            );
+
+            return;
+        }
+
+        if (discardMoveTestCoroutine != null)
+        {
+            Debug.LogWarning(
+                "[HandManager] 버림 카드 이동 테스트가 이미 실행 중입니다."
+            );
+
+            return;
+        }
+
+        if (discardPileTarget == null)
+        {
+            Debug.LogError(
+                "[HandManager] 버림 더미 도착 위치가 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        if (handCardUIs.Count == 0 || handCardUIs[0] == null)
+        {
+            Debug.LogWarning(
+                "[HandManager] 이동 테스트에 사용할 손패 카드 UI가 없습니다."
+            );
+
+            return;
+        }
+
+        discardMoveTestCoroutine = StartCoroutine(
+            PlayDiscardCardsMoveTestCoroutine()
+        );
+    }
+
+    /// <summary>
+    /// 테스트 시작 시점의 손패 카드 UI를 복사하여 순서대로 이동을 시작합니다.
+    /// </summary>
+    private IEnumerator PlayDiscardCardsMoveTestCoroutine()
+    {
+        List<CardUI> testCards = new List<CardUI>();
+
+        foreach (CardUI cardUI in handCardUIs)
+        {
+            if (cardUI != null)
+            {
+                testCards.Add(cardUI);
+            }
+        }
+
+        float moveInterval = Mathf.Max(0f, discardCardMoveInterval);
+
+        for (int i = 0; i < testCards.Count; i++)
+        {
+            CardUI testCard = testCards[i];
+
+            if (testCard == null)
+            {
+                continue;
+            }
+
+            Coroutine cardMoveCoroutine = StartCoroutine(
+                PlayDiscardCardMoveTestCoroutine(testCard)
+            );
+
+            bool hasNextCard = i < testCards.Count - 1;
+
+            if (hasNextCard && moveInterval > 0f)
+            {
+                yield return new WaitForSeconds(moveInterval);
+            }
+            else if (!hasNextCard)
+            {
+                yield return cardMoveCoroutine;
+            }
+        }
+
+        discardMoveTestCoroutine = null;
+    }
+
+    /// <summary>
+    /// 카드 UI의 현재 화면 위치를 기준으로 버림 더미까지 보간합니다.
+    /// 테스트 종료 시 기존 UI 상태를 보존하기 위해 원래 Transform을 복원합니다.
+    /// </summary>
+    private IEnumerator PlayDiscardCardMoveTestCoroutine(CardUI testCard)
+    {
+        if (testCard == null)
+        {
+            yield break;
+        }
+
+        RectTransform cardRectTransform =
+            testCard.GetComponent<RectTransform>();
+
+        if (cardRectTransform == null)
+        {
+            Debug.LogError(
+                "[HandManager] 이동 테스트 카드에 RectTransform이 없습니다."
+            );
+
+            yield break;
+        }
+
+        Vector3 startPosition = cardRectTransform.position;
+        Quaternion startRotation = cardRectTransform.localRotation;
+        Vector3 startScale = cardRectTransform.localScale;
+        bool wasCardEnabled = testCard.enabled;
+
+        testCard.enabled = false;
+
+        float elapsedTime = 0f;
+        float moveDuration = Mathf.Max(0f, discardMoveDuration);
+
+        while (elapsedTime < moveDuration)
+        {
+            if (testCard == null)
+            {
+                yield break;
+            }
+
+            if (discardPileTarget == null)
+            {
+                cardRectTransform.position = startPosition;
+                cardRectTransform.localRotation = startRotation;
+                cardRectTransform.localScale = startScale;
+                testCard.enabled = wasCardEnabled;
+
+                yield break;
+            }
+
+            float progress = moveDuration > 0f
+                ? Mathf.Clamp01(elapsedTime / moveDuration)
+                : 1f;
+
+            cardRectTransform.position = Vector3.Lerp(
+                startPosition,
+                discardPileTarget.position,
+                progress
+            );
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (testCard != null && discardPileTarget != null)
+        {
+            cardRectTransform.position = discardPileTarget.position;
+            PlayDiscardArrivalVfx(false);
+        }
+
+        float holdDuration = Mathf.Max(0f, discardArrivalHoldDuration);
+
+        if (holdDuration > 0f)
+        {
+            yield return new WaitForSeconds(holdDuration);
+        }
+
+        if (testCard != null)
+        {
+            cardRectTransform.position = startPosition;
+            cardRectTransform.localRotation = startRotation;
+            cardRectTransform.localScale = startScale;
+            testCard.enabled = wasCardEnabled;
+        }
+
+    }
 
     /// <summary>
     /// 지정한 수만큼 카드를 드로우합니다.
