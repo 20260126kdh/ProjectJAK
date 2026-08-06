@@ -33,6 +33,14 @@
 - 2026-07-28: Intent Icon
 - 2026-08-05: VFX 작업 시작
 
+## 2026-08-06 — Scripts Managers 역할별 분류
+
+- `Managers`에 혼재한 16개 스크립트를 Core, Audio, Battle, Cards, Player, Scenes 영역으로 이동
+- 관련 경로: `Assets/Scripts/Core`, `Audio`, `Battle/Managers`, `Cards/Managers`, `Player/Managers`, `Scenes/Managers`
+- Inspector/데이터 변경: 없음, 기존 `.meta`와 GUID 유지
+- 검증: 이동 전후 GUID·내용 해시 일치, 누락·고아 `.meta` 없음, Unity 6000.0.78f1 컴파일·도메인 재로드 성공, C# 및 Missing Script 오류 없음
+- 남은 작업: Play Mode 기능 회귀 확인
+
 ## 기록 형식
 
 ```text

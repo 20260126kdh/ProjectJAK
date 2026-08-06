@@ -1,3 +1,41 @@
+# 완료된 이전 작업
+
+## 작업명
+
+Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
+
+## 목표
+
+- `Assets/Scripts/Managers`에 혼재한 스크립트를 역할별 기존 영역으로 이동한다.
+- 스크립트와 `.meta`를 함께 이동하여 Unity GUID 참조를 보존한다.
+- 코드, 클래스명, namespace와 공개 API는 변경하지 않는다.
+
+## 현재 상태
+
+완료 — 2026-08-06
+
+## 변경 범위
+
+- `Assets/Scripts/Core`
+- `Assets/Scripts/Audio`
+- `Assets/Scripts/Battle/Managers`
+- `Assets/Scripts/Cards/Managers`
+- `Assets/Scripts/Player/Managers`
+- `Assets/Scripts/Scenes/Managers`
+
+## 검증
+
+- 16개 스크립트와 각 `.meta` 파일의 이동을 확인했다.
+- 이동 전후 스크립트 GUID가 모두 동일함을 확인했다.
+- Unity 6000.0.78f1에서 16개 이동을 인식하고 `Assembly-CSharp`와 `Assembly-CSharp-Editor` 컴파일 및 도메인 재로드가 완료됐다.
+- `Editor.log`에서 C# 컴파일 오류와 Missing Script 관련 오류가 없음을 확인했다.
+- 이동한 스크립트 15개의 기존 Scene 직렬화 참조가 유지됨을 확인했다. `GameFlowManager`는 직렬화 참조가 없다.
+- Play Mode 기능 회귀 테스트는 실행하지 않았다.
+
+## 다음 작업
+
+사용자가 `다음`이라고 하면 `Assets/Scripts/UI` 정리 범위를 분석한다. 승인 전에는 추가 이동을 진행하지 않는다.
+
 # 현재 작업
 
 ## 작업명
