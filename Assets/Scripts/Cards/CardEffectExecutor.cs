@@ -47,7 +47,8 @@ public class CardEffectExecutor : MonoBehaviour
     CardData cardData,
     Enemy targetEnemy,
     int damageModifier = 0,
-    int damageMultiplier = 1)
+    int damageMultiplier = 1,
+    Crew targetCrew = null)
     {
         if (cardData == null)
         {
@@ -84,7 +85,8 @@ public class CardEffectExecutor : MonoBehaviour
         {
             ExecuteSingleEffect(
                 effect,
-                targetEnemy
+                targetEnemy,
+                targetCrew
             );
         }
     }
@@ -94,7 +96,8 @@ public class CardEffectExecutor : MonoBehaviour
     /// </summary>
     private void ExecuteSingleEffect(
         CardEffectData effect,
-        Enemy targetEnemy)
+        Enemy targetEnemy,
+        Crew targetCrew)
     {
         switch (effect.effectType)
         {
@@ -178,7 +181,7 @@ public class CardEffectExecutor : MonoBehaviour
                 break;
 
             case CardEffectType.Sacrifice:
-                ExecuteSacrifice(effect);
+                ExecuteSacrifice(effect, targetCrew);
                 break;
 
             case CardEffectType.SacrificeAll:
@@ -186,10 +189,7 @@ public class CardEffectExecutor : MonoBehaviour
                 break;
 
             case CardEffectType.SetMaxHealth:
-                Debug.Log(
-                    $"[CardEffectExecutor] " +
-                    $"최대 체력 설정 예정 : {effect.value}"
-                );
+                ExecuteSetCrewHealth(effect);
                 break;
 
             case CardEffectType.MightEqualToSacrificedHealth:
@@ -197,9 +197,8 @@ public class CardEffectExecutor : MonoBehaviour
                 break;
 
             case CardEffectType.DealDamageEqualToHarpoonerStack:
-                Debug.Log(
-                    "[CardEffectExecutor] " +
-                    "작살 스택만큼 피해 예정"
+                ExecuteDamageEqualToHarpoonStack(
+                    targetEnemy
                 );
                 break;
         }
@@ -840,8 +839,106 @@ public class CardEffectExecutor : MonoBehaviour
              i < effect.value;
              i++)
         {
+            if (!crewManager.CanSummon)
+            {
+                break;
+            }
+
             crewManager.SummonCrew();
         }
+    }
+
+    /// <summary>
+    /// 현재 소환된 모든 선원의 현재 체력과 최대 체력을
+    /// 지정된 값으로 설정합니다.
+    /// </summary>
+    private void ExecuteSetCrewHealth(
+        CardEffectData effect)
+    {
+        if (effect.target != CardTargetType.AllUndeads)
+        {
+            Debug.LogWarning(
+                $"[CardEffectExecutor] 지원하지 않는 선원 체력 대상 : " +
+                $"{effect.target}"
+            );
+
+            return;
+        }
+
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        if (crewManager == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 선원 체력 설정을 위한 " +
+                "CrewManager를 찾지 못했습니다."
+            );
+
+            return;
+        }
+
+        int health = Mathf.Max(1, effect.value);
+        List<Crew> crews = crewManager.Crews.ToList();
+
+        foreach (Crew crew in crews)
+        {
+            if (crew == null || !crew.IsAlive)
+            {
+                continue;
+            }
+
+            crew.SetHealth(health, health);
+        }
+
+        Debug.Log(
+            $"[CardEffectExecutor] 모든 선원 체력 설정 : " +
+            $"{health}/{health} / {crews.Count}명"
+        );
+    }
+
+    /// <summary>
+    /// 선택한 적이 현재 보유한 작살 스택과 같은 수치의 피해를 줍니다.
+    /// 이 카드 효과는 작살 스택을 소비하지 않습니다.
+    /// </summary>
+    private void ExecuteDamageEqualToHarpoonStack(
+        Enemy targetEnemy)
+    {
+        if (!IsEnemyAlive(targetEnemy))
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 작살 스택 피해를 줄 적이 없습니다."
+            );
+
+            return;
+        }
+
+        HarpoonStackController harpoonController =
+            targetEnemy.GetComponent<HarpoonStackController>();
+
+        if (harpoonController == null)
+        {
+            Debug.LogWarning(
+                "[CardEffectExecutor] 대상 적에게 " +
+                "HarpoonStackController가 없습니다.",
+                targetEnemy
+            );
+
+            return;
+        }
+
+        int stackDamage =
+            Mathf.Max(0, harpoonController.CurrentHarpoonStack);
+
+        int actualDamage =
+            targetEnemy.TakeDamage(stackDamage);
+
+        Debug.Log(
+            $"[CardEffectExecutor] 작살 스택 동일 피해 : " +
+            $"스택 {stackDamage} / 실제 피해 {actualDamage} / " +
+            $"남은 스택 {harpoonController.CurrentHarpoonStack}",
+            targetEnemy
+        );
     }
 
     /// <summary>
@@ -849,7 +946,8 @@ public class CardEffectExecutor : MonoBehaviour
     /// 희생된 선원들의 현재 체력을 저장합니다.
     /// </summary>
     private void ExecuteSacrifice(
-        CardEffectData effect)
+        CardEffectData effect,
+        Crew targetCrew)
     {
         CrewManager crewManager =
             FindFirstObjectByType<CrewManager>();
@@ -864,10 +962,18 @@ public class CardEffectExecutor : MonoBehaviour
             return;
         }
 
-        int sacrificedHealth =
-            crewManager.SacrificeCrews(
-                effect.value
-            );
+        int sacrificedHealth;
+
+        if (effect.value == 1 && targetCrew != null)
+        {
+            sacrificedHealth =
+                crewManager.SacrificeCrew(targetCrew);
+        }
+        else
+        {
+            sacrificedHealth =
+                crewManager.SacrificeCrews(effect.value);
+        }
 
         sacrificedHealthThisCard +=
             sacrificedHealth;
@@ -1575,6 +1681,16 @@ public class CardEffectExecutor : MonoBehaviour
          */
         if (effect.statusEffectType ==
             StatusEffectType.Echo)
+        {
+            isPermanent = false;
+            remainingTurn = 1;
+        }
+
+        /*
+         * 힘 감소는 적이 이번 턴에 행동한 뒤 제거됩니다.
+         */
+        if (effect.statusEffectType ==
+            StatusEffectType.MightReduction)
         {
             isPermanent = false;
             remainingTurn = 1;

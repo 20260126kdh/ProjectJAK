@@ -32,5 +32,6 @@ public enum StatusEffectType
     Jinx,
     Paralyze,
     Toxic,
-    Exit
+    Exit,
+    MightReduction
 }

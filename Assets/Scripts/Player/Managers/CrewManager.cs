@@ -381,6 +381,37 @@ public class CrewManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 플레이어가 직접 선택한 선원 한 명을 희생하고 현재 체력을 반환합니다.
+    /// 이미 제거됐거나 관리 대상이 아닌 선원은 희생하지 않습니다.
+    /// </summary>
+    public int SacrificeCrew(Crew crew)
+    {
+        RemoveNullCrews();
+
+        if (crew == null || !crews.Contains(crew))
+        {
+            Debug.LogWarning(
+                "[CrewManager] 선택한 선원을 희생할 수 없습니다."
+            );
+
+            return 0;
+        }
+
+        int sacrificedHealth = crew.CurrentHP;
+
+        crews.Remove(crew);
+        Destroy(crew.gameObject);
+        RearrangeCrewPositions();
+
+        Debug.Log(
+            $"[CrewManager] 선택한 선원 희생 / " +
+            $"현재 체력 : {sacrificedHealth}"
+        );
+
+        return sacrificedHealth;
+    }
+
+    /// <summary>
     /// 현재 소환된 모든 선원을 동시에 희생합니다.
     /// 희생된 모든 선원의 현재 체력 합계를 반환합니다.
     /// </summary>

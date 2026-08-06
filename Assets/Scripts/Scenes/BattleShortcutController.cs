@@ -31,6 +31,19 @@ public class BattleShortcutController : MonoBehaviour
     [SerializeField]
     private PauseManager pauseManager;
 
+    [Header("Battle UI Manager")]
+    [SerializeField]
+    private BattleUIManager battleUIManager;
+
+    private void Awake()
+    {
+        if (battleUIManager == null)
+        {
+            battleUIManager =
+                FindFirstObjectByType<BattleUIManager>();
+        }
+    }
+
     /// <summary>
     /// 매 프레임 전투 단축키 입력을 확인합니다.
     /// </summary>
@@ -77,6 +90,17 @@ public class BattleShortcutController : MonoBehaviour
         if (startingDeckUI.IsDeckViewOpen)
         {
             HandleOpenedDeckViewInput();
+            return;
+        }
+
+        /*
+         * 보상, 휴식, 강화 등 주요 패널이 열려 있을 때는
+         * 전투 카드 선택과 턴 종료 단축키가 뒤에서 실행되지 않게 합니다.
+         * 덱 보기 화면은 위의 전용 입력 처리에서 먼저 분기합니다.
+         */
+        if (battleUIManager != null &&
+            battleUIManager.IsAnyPanelOpen())
+        {
             return;
         }
 
@@ -250,6 +274,12 @@ public class BattleShortcutController : MonoBehaviour
         {
             pauseManager =
                 FindFirstObjectByType<PauseManager>();
+        }
+
+        if (battleUIManager == null)
+        {
+            battleUIManager =
+                FindFirstObjectByType<BattleUIManager>();
         }
     }
 

@@ -52,7 +52,7 @@ TEC_SKL_001,2,ApplyStatus,Weaken,2,1,Enemy
 TEC_SKL_002,1,GainBlock,None,15,1,Self
 TEC_SKL_002,2,HarpoonerStack,None,3,1,Enemy
 TEC_SKL_003,1,HarpoonerStack,None,5,1,Enemy
-TEC_SKL_004,1,ApplyStatus,Might,-4,1,AllEnemies
+TEC_SKL_004,1,ApplyStatus,MightReduction,4,1,AllEnemies
 TEC_SKL_005,1,ApplyStatus,Echo,1,1,Self
 TEC_SKL_005,2,HarpoonerStack,None,5,1,AllEnemies
 TEC_SKL_006,1,ApplyStatus,Immortal,1,1,Self

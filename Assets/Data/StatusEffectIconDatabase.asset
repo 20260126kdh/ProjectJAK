@@ -59,3 +59,5 @@ MonoBehaviour:
     iconSprite: {fileID: 893977028659320664, guid: 1cab97c448c67934f8200149e5237cc7, type: 3}
   - statusEffectType: 23
     iconSprite: {fileID: 38555356946100257, guid: 3cd8ff1354485eb46983e3c5ea518a66, type: 3}
+  - statusEffectType: 25
+    iconSprite: {fileID: 3862273165461876074, guid: 20716fadaa4015f4699e7f3fde9d57ff, type: 3}

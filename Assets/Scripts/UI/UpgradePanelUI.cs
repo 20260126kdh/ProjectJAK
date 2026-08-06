@@ -119,7 +119,7 @@ public class UpgradePanelUI : MonoBehaviour
 
         foreach (CardData card in deckManager.CurrentDeck)
         {
-            if (card == null)
+            if (card == null || card.IsUpgraded)
             {
                 continue;
             }
@@ -216,7 +216,7 @@ public class UpgradePanelUI : MonoBehaviour
     /// <summary>
     /// 강화할 카드 한 장을 선택합니다.
     /// 선택된 카드를 다시 클릭하면 선택을 해제합니다.
-    /// 다른 카드가 선택된 상태에서는 다른 카드를 선택할 수 없습니다.
+    /// 다른 카드를 클릭하면 해당 카드로 선택을 전환합니다.
     /// </summary>
     public void SelectUpgradeCard(CardUI cardUI)
     {
@@ -235,19 +235,6 @@ public class UpgradePanelUI : MonoBehaviour
 
             Debug.Log(
                 "[UpgradePanelUI] 강화 카드 선택 해제"
-            );
-
-            return;
-        }
-
-        /*
-         * 다른 카드가 이미 선택되어 있다면
-         * 현재 선택을 유지하고 클릭을 무시합니다.
-         */
-        if (selectedCardUI != null)
-        {
-            Debug.Log(
-                "[UpgradePanelUI] 다른 카드가 이미 선택되어 있습니다."
             );
 
             return;
@@ -274,28 +261,15 @@ public class UpgradePanelUI : MonoBehaviour
             return;
         }
 
+        if (selectedCardUI != null)
+        {
+            selectedCardUI.SetUpgradeSelected(false);
+        }
+
         selectedCardUI = cardUI;
         selectedCardData = cardData;
 
         selectedCardUI.SetUpgradeSelected(true);
-
-        /*
-         * 선택된 카드 외의 모든 카드 클릭을 잠급니다.
-         */
-        foreach (CardUI currentCardUI in cardUIs)
-        {
-            if (currentCardUI == null)
-            {
-                continue;
-            }
-
-            bool shouldLock =
-                currentCardUI != selectedCardUI;
-
-            currentCardUI.SetUpgradeSelectionLocked(
-                shouldLock
-            );
-        }
 
         if (confirmButton != null)
         {

@@ -136,6 +136,7 @@ public class EnemyStatusIconUI : MonoBehaviour
             case StatusEffectType.Jinx:
             case StatusEffectType.Paralyze:
             case StatusEffectType.Toxic:
+            case StatusEffectType.MightReduction:
                 return true;
 
             default:
@@ -202,6 +203,7 @@ public class EnemyStatusIconUI : MonoBehaviour
             case StatusEffectType.Cripple:
             case StatusEffectType.NoBlock:
             case StatusEffectType.Broken:
+            case StatusEffectType.MightReduction:
                 return true;
 
             default:

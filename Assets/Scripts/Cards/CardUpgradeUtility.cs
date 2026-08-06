@@ -82,6 +82,7 @@ public static class CardUpgradeUtility
             switch (effect.effectType)
             {
                 case CardEffectType.DealDamage:
+                case CardEffectType.AllCrewsDealDamageAllEnemies:
                     UpgradeDamage(
                         effect,
                         ref upgradedDescription,
@@ -383,6 +384,7 @@ public static class CardUpgradeUtility
             case StatusEffectType.Jinx:
             case StatusEffectType.Paralyze:
             case StatusEffectType.Toxic:
+            case StatusEffectType.MightReduction:
                 return true;
 
             default:

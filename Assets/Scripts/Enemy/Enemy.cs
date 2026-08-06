@@ -229,13 +229,14 @@ public class Enemy : MonoBehaviour
     }
 
     /// <summary>
-    /// 적에게 적용된 힘과 약화를 반영하여
+    /// 적에게 적용된 힘, 일시 힘 감소와 약화를 반영하여
     /// 플레이어에게 줄 최종 피해를 계산합니다.
     ///
     /// 계산 순서:
     /// 1. 기본 피해
     /// 2. 힘 수치 추가
-    /// 3. 약화가 있다면 40% 감소
+    /// 3. 일시 힘 감소 수치 차감
+    /// 4. 약화가 있다면 40% 감소
     /// </summary>
     public int CalculateOutgoingDamage(
         int baseDamage)
@@ -278,6 +279,26 @@ public class Enemy : MonoBehaviour
                 $"[Enemy] 힘 적용 : " +
                 $"{damageBeforeMight} + {mightValue} " +
                 $"= {finalDamage}",
+                this
+            );
+        }
+
+        int mightReductionValue =
+            statusEffectHandler.GetStatusValue(
+                StatusEffectType.MightReduction
+            );
+
+        if (mightReductionValue > 0)
+        {
+            int damageBeforeMightReduction =
+                finalDamage;
+
+            finalDamage -= mightReductionValue;
+
+            Debug.Log(
+                $"[Enemy] 힘 감소 적용 : " +
+                $"{damageBeforeMightReduction} - {mightReductionValue} " +
+                $"= {Mathf.Max(0, finalDamage)}",
                 this
             );
         }

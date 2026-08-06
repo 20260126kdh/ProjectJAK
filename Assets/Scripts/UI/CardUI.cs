@@ -249,16 +249,6 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
                 return;
             }
 
-            if (isUpgradeSelectionLocked &&
-                !isUpgradeSelected)
-            {
-                Debug.Log(
-                    "[CardUI] 다른 강화 카드가 이미 선택되어 있습니다."
-                );
-
-                return;
-            }
-
             upgradePanelUI.SelectUpgradeCard(this);
 
             return;

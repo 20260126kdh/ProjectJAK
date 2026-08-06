@@ -682,6 +682,15 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        if (IsSingleCrewSacrificeCard())
+        {
+            Debug.LogWarning(
+                "[BattleManager] 선택한 카드는 선원을 클릭해야 합니다."
+            );
+
+            return;
+        }
+
         if (targetEnemy == null)
         {
             Debug.LogWarning(
@@ -781,6 +790,24 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        if (IsSingleCrewSacrificeCard())
+        {
+            Debug.LogWarning(
+                "[BattleManager] 선택한 카드는 선원을 클릭해야 합니다."
+            );
+
+            return;
+        }
+
+        if (RequiresHarpoonStackDamageTarget())
+        {
+            Debug.LogWarning(
+                "[BattleManager] 선택한 카드는 적을 클릭해야 합니다."
+            );
+
+            return;
+        }
+
         if (targetPlayer == null)
         {
             Debug.LogWarning(
@@ -813,6 +840,97 @@ public class BattleManager : MonoBehaviour
         );
 
         FinishCardUse(usedCardData);
+    }
+
+    /// <summary>
+    /// 현재 선택된 단일 선원 희생 카드를 지정한 선원에게 사용합니다.
+    /// 선택 대상이 필요한 희생 카드 외에는 이 입력을 처리하지 않습니다.
+    /// </summary>
+    public void UseSelectedCardOnCrew(Crew targetCrew)
+    {
+        if (!CanUseSelectedCard())
+        {
+            return;
+        }
+
+        if (targetCrew == null || !IsSingleCrewSacrificeCard())
+        {
+            Debug.LogWarning(
+                "[BattleManager] 선택한 카드는 단일 선원 " +
+                "희생 대상 카드가 아닙니다."
+            );
+
+            return;
+        }
+
+        if (cardEffectExecutor == null)
+        {
+            Debug.LogError(
+                "[BattleManager] CardEffectExecutor가 " +
+                "연결되지 않았습니다."
+            );
+
+            return;
+        }
+
+        CardData usedCardData = selectedCardData;
+
+        cardEffectExecutor.ExecuteEffects(
+            usedCardData,
+            null,
+            0,
+            1,
+            targetCrew
+        );
+
+        FinishCardUse(usedCardData);
+    }
+
+    /// <summary>
+    /// 선택된 카드가 선원 한 명을 직접 지정해 희생하는 카드인지 확인합니다.
+    /// </summary>
+    private bool IsSingleCrewSacrificeCard()
+    {
+        if (selectedCardData == null ||
+            selectedCardData.effects == null)
+        {
+            return false;
+        }
+
+        foreach (CardEffectData effect in selectedCardData.effects)
+        {
+            if (effect.effectType == CardEffectType.Sacrifice &&
+                effect.value == 1 &&
+                effect.target == CardTargetType.Undead)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 선택된 카드가 적의 작살 스택을 기준으로 피해를 주는지 확인합니다.
+    /// </summary>
+    private bool RequiresHarpoonStackDamageTarget()
+    {
+        if (selectedCardData == null ||
+            selectedCardData.effects == null)
+        {
+            return false;
+        }
+
+        foreach (CardEffectData effect in selectedCardData.effects)
+        {
+            if (effect.effectType ==
+                CardEffectType.DealDamageEqualToHarpoonerStack)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -1224,7 +1342,7 @@ public class BattleManager : MonoBehaviour
                 "전투 진행 상태를 변경할 수 없습니다."
             );
 
-            ShowRewardPanel();
+            ShowRewardPanel(false);
             return;
         }
 
@@ -1236,7 +1354,7 @@ public class BattleManager : MonoBehaviour
         {
             stageManager.BattleWin();
 
-            ShowRewardPanel();
+            ShowRewardPanel(false);
             return;
         }
 
@@ -1277,7 +1395,7 @@ public class BattleManager : MonoBehaviour
              * Stage 1·2 보스와 모르바엘은
              * 기존처럼 리워드를 표시합니다.
              */
-            ShowRewardPanel();
+            ShowRewardPanel(true);
             return;
         }
 
@@ -1290,11 +1408,11 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// 전투 승리 리워드 패널을 표시합니다.
     /// </summary>
-    private void ShowRewardPanel()
+    private void ShowRewardPanel(bool isBossReward)
     {
         if (rewardPanelUI != null)
         {
-            rewardPanelUI.ShowRewardPanel();
+            rewardPanelUI.ShowRewardPanel(isBossReward);
         }
         else
         {

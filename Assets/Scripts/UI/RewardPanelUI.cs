@@ -73,9 +73,10 @@ public class RewardPanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 리워드 패널을 표시하고 리워드 카드를 생성합니다.
+    /// 리워드 패널을 표시하고 전투 종류에 맞는 리워드 카드를 생성합니다.
     /// </summary>
-    public void ShowRewardPanel()
+    /// <param name="isBossReward">보스 전투 승리 보상인지 여부</param>
+    public void ShowRewardPanel(bool isBossReward)
     {
         if (rewardPanel == null)
         {
@@ -90,7 +91,7 @@ public class RewardPanelUI : MonoBehaviour
 
         rewardPanel.SetActive(true);
 
-        GenerateRewardCards();
+        GenerateRewardCards(isBossReward);
 
         Debug.Log(
             "[RewardPanelUI] 리워드 패널 표시"
@@ -111,14 +112,22 @@ public class RewardPanelUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 리워드 카드 2장을 생성합니다.
+    /// 전투 종류에 맞는 리워드 카드 2장을 생성합니다.
     /// </summary>
-    private void GenerateRewardCards()
+    private void GenerateRewardCards(bool isBossReward)
     {
         ClearRewardCards();
 
+        CardRarity? forcedRarity =
+            isBossReward
+                ? CardRarity.Epic
+                : null;
+
         List<CardData> rewardCards =
-            GetRewardCards(2);
+            GetRewardCards(
+                2,
+                forcedRarity
+            );
 
         for (int i = 0;
              i < rewardCards.Count;
@@ -259,7 +268,9 @@ public class RewardPanelUI : MonoBehaviour
     /// <summary>
     /// 지정한 수만큼 리워드 카드를 뽑습니다.
     /// </summary>
-    private List<CardData> GetRewardCards(int count)
+    private List<CardData> GetRewardCards(
+        int count,
+        CardRarity? forcedRarity)
     {
         List<CardData> result =
             new List<CardData>();
@@ -294,6 +305,7 @@ public class RewardPanelUI : MonoBehaviour
             safetyCount++;
 
             CardRarity selectedRarity =
+                forcedRarity ??
                 GetRandomRarityByWeight();
 
             List<CardData> candidates =

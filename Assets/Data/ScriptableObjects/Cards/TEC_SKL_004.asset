@@ -24,7 +24,7 @@ MonoBehaviour:
   effects:
   - order: 1
     effectType: 5
-    statusEffectType: 1
-    value: -4
+    statusEffectType: 25
+    value: 4
     target: 3
     repeatCount: 1
