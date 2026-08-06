@@ -44,6 +44,10 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private Transform handCardParent;
 
+    [Header("버림 더미 도착 위치")]
+    [SerializeField]
+    private RectTransform discardPileTarget;
+
     [Header("카드 UI 프리팹")]
     [SerializeField]
     private CardUI cardPrefab;

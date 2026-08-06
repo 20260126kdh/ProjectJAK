@@ -4418,6 +4418,7 @@ MonoBehaviour:
   isPreserveMode: 0
   jinxedHandIndex: -1
   handCardParent: {fileID: 1286685307}
+  discardPileTarget: {fileID: 1046424323}
   cardPrefab: {fileID: 5473703925399372580, guid: 93e4a0b158ea9c9428cf17fc8a4a9b7c, type: 3}
   endTurnButtonObject: {fileID: 1070643219}
   turnManager: {fileID: 729106090}

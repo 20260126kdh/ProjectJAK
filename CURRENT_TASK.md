@@ -78,11 +78,11 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 현재 단계
 
-1단계 — `VFX_DiscardArrivalSplash` 튜닝 준비
+2단계 — 버림 덱 위치 `RectTransform` 확보
 
 ## 현재 상태
 
-진행 중
+2단계 완료 — 다음 단계 승인 대기
 
 ## 확인된 사실
 
@@ -90,28 +90,31 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 - 외부 원본은 `Assets/NamuFX/StylizedWaterEffects/Prefabs/Water_Splash_A.prefab`이다.
 - 프로젝트용 Prefab은 원본과 비교했을 때 루트 이름만 다르고 Particle System 설정은 동일하다.
 - 루트와 여섯 자식 Particle System은 `Looping`이 꺼져 있고 `Play On Awake`가 켜져 있다.
+- 프로젝트용 Prefab의 루트 Scale은 `(0.45, 0.45, 0.45)`이며 사용자가 화면 크기를 확인했다.
+- Battle Scene의 `BattleCanvas/BattlePanel/Discard deck`은 `RectTransform`이고 손패 부모와 같은 `BattlePanel` 아래에 있다.
+- `HandManager`의 `discardPileTarget`에 `Discard deck` RectTransform이 연결되어 있다.
 - 실제 턴 종료 코드와 VFX는 아직 연결되지 않았다.
-- 실제 화면에서의 크기, 위치, Sorting Layer와 재생 결과는 확인되지 않았다.
 
 ## 현재 단계 수정 대상
 
-- `Assets/Art/VFX/Water/VFX_DiscardArrivalSplash.prefab`
+- `Assets/Scripts/Cards/Managers/HandManager.cs`
+- `Assets/Scenes/PlayScene/BattleScene.unity`
 
 ## 현재 단계 금지 범위
 
 - `Assets/NamuFX` 외부 원본 수정
-- 카드, 덱, 손패와 턴 종료 코드 수정
-- Scene과 다른 Prefab 수정
+- 카드 이동, 덱 데이터, 손패 버림과 턴 종료 로직 수정
+- `BattleScene`의 승인된 Inspector 참조 외 Scene 수정
+- 다른 Prefab 수정
 - 다른 카드 더미 VFX 수정
 - 재셔플 연출 구현
 
 ## 현재 단계 완료 조건
 
-- Battle Scene의 Canvas, 카메라, Sorting Layer와 버림 덱 표시 환경을 확인한다.
-- 프로젝트용 Prefab만 조정한다.
-- Unity Play Mode에서 도착 Splash의 크기와 가시성을 사용자가 확인한다.
-- 확인 전에는 완료로 기록하지 않는다.
+- `HandManager`에 버림 더미 도착 위치용 `RectTransform` 필드가 존재한다.
+- Battle Scene의 기존 `Discard deck` RectTransform이 해당 필드에 연결되어 있다.
+- Unity 컴파일 오류와 Missing Reference가 없다.
 
 ## 다음 작업
 
-Battle Scene의 실제 표시 환경을 분석한 뒤 `VFX_DiscardArrivalSplash`의 튜닝 항목과 변경값을 제시한다. 사용자 승인 전에는 Prefab을 수정하지 않는다.
+2단계 검증 결과를 보고한다. 사용자가 `다음`이라고 하기 전에는 3단계 VFX 테스트 재생 메서드를 구현하지 않는다.

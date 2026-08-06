@@ -41,6 +41,15 @@
 - 검증: 이동 전후 GUID·내용 해시 일치, 누락·고아 `.meta` 없음, Unity 6000.0.78f1 컴파일·도메인 재로드 성공, C# 및 Missing Script 오류 없음
 - 남은 작업: Play Mode 기능 회귀 확인
 
+## 2026-08-06 — 버림 도착 물보라 튜닝 및 위치 참조 확보
+
+- `VFX_DiscardArrivalSplash` 루트 Scale을 `0.45`로 조정하고 사용자 화면 확인 완료
+- `HandManager`에 버림 더미 도착 위치용 `RectTransform` 필드 추가
+- Battle Scene의 기존 `Discard deck` RectTransform을 Inspector 참조로 연결
+- 관련 경로: `Assets/Art/VFX/Water/VFX_DiscardArrivalSplash.prefab`, `Assets/Scripts/Cards/Managers/HandManager.cs`, `Assets/Scenes/PlayScene/BattleScene.unity`
+- 검증: 직렬화 참조 일치, Unity 컴파일·도메인 재로드·Battle Scene 재임포트 성공, Missing Reference 오류 없음
+- 남은 작업: VFX 테스트 재생 메서드 구현
+
 ## 기록 형식
 
 ```text
