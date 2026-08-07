@@ -4420,6 +4420,7 @@ MonoBehaviour:
   handCardParent: {fileID: 1286685307}
   discardPileTarget: {fileID: 1046424323}
   discardArrivalVfxPrefab: {fileID: 2554184690986698155, guid: 0d3dc4a7189dfa44290a91d7027d4281, type: 3}
+  discardTransformVfxPrefab: {fileID: 118141701674537309, guid: 21ca2f831e2ab494fb0d4cbd63c60011, type: 3}
   cardPrefab: {fileID: 5473703925399372580, guid: 93e4a0b158ea9c9428cf17fc8a4a9b7c, type: 3}
   endTurnButtonObject: {fileID: 1070643219}
   turnManager: {fileID: 729106090}

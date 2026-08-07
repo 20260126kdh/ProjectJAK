@@ -55,17 +55,68 @@ public class HandManager : MonoBehaviour
 
     private ParticleSystem activeDiscardArrivalVfx;
 
-    [Header("버림 카드 이동 테스트")]
+    [Header("카드 물빛 변환 VFX")]
     [SerializeField]
-    private float discardMoveDuration = 1f;
+    private ParticleSystem discardTransformVfxPrefab;
 
     [SerializeField]
-    private float discardArrivalHoldDuration = 0.2f;
+    private float discardTransformDuration = 0.6f;
+
+    [SerializeField]
+    private float discardLiftHeight = 35f;
+
+    [Header("버림 카드 이동 테스트")]
+    [SerializeField]
+    private float discardMoveDuration = 0.7f;
+
+    [SerializeField]
+    private float discardRotationDegrees = 45f;
+
+    [SerializeField]
+    private float discardMoveArcHeight = 80f;
+
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float discardLightPointScale = 0.25f;
+
+    [SerializeField]
+    private float discardWaterWrapScale = 0.35f;
+
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float discardArrivalScale = 0f;
+
+    [SerializeField]
+    private float discardArrivalHoldDuration = 0.08f;
 
     [SerializeField]
     private float discardCardMoveInterval = 0.5f;
 
     private Coroutine discardMoveTestCoroutine;
+    private bool isDiscardAnimationPlaying;
+
+    private sealed class DiscardCardTestState
+    {
+        public CardUI CardUI { get; }
+        public RectTransform RectTransform { get; }
+        public Vector3 Position { get; }
+        public Quaternion Rotation { get; }
+        public Vector3 Scale { get; }
+        public bool WasCardEnabled { get; }
+
+        public DiscardCardTestState(
+            CardUI cardUI,
+            RectTransform rectTransform
+        )
+        {
+            CardUI = cardUI;
+            RectTransform = rectTransform;
+            Position = rectTransform.position;
+            Rotation = rectTransform.localRotation;
+            Scale = rectTransform.localScale;
+            WasCardEnabled = cardUI.enabled;
+        }
+    }
 
     [Header("카드 UI 프리팹")]
     [SerializeField]
@@ -238,6 +289,15 @@ public class HandManager : MonoBehaviour
             return;
         }
 
+        if (discardTransformVfxPrefab == null)
+        {
+            Debug.LogError(
+                "[HandManager] 카드 물빛 변환 VFX 프리팹이 연결되지 않았습니다."
+            );
+
+            return;
+        }
+
         if (handCardUIs.Count == 0 || handCardUIs[0] == null)
         {
             Debug.LogWarning(
@@ -257,32 +317,74 @@ public class HandManager : MonoBehaviour
     /// </summary>
     private IEnumerator PlayDiscardCardsMoveTestCoroutine()
     {
-        List<CardUI> testCards = new List<CardUI>();
+        yield return PlayDiscardCardsMoveCoroutine(
+            new List<CardUI>(handCardUIs),
+            true
+        );
 
-        foreach (CardUI cardUI in handCardUIs)
+        discardMoveTestCoroutine = null;
+    }
+
+    /// <summary>
+    /// 전달받은 카드 UI들을 순차 이동하고 필요할 때 원래 상태로 복원합니다.
+    /// </summary>
+    private IEnumerator PlayDiscardCardsMoveCoroutine(
+        List<CardUI> targetCardUIs,
+        bool restoreAfterAnimation
+    )
+    {
+        List<DiscardCardTestState> testCardStates =
+            new List<DiscardCardTestState>();
+
+        foreach (CardUI cardUI in targetCardUIs)
         {
-            if (cardUI != null)
-            {
-                testCards.Add(cardUI);
-            }
-        }
-
-        float moveInterval = Mathf.Max(0f, discardCardMoveInterval);
-
-        for (int i = 0; i < testCards.Count; i++)
-        {
-            CardUI testCard = testCards[i];
-
-            if (testCard == null)
+            if (cardUI == null)
             {
                 continue;
             }
 
+            RectTransform cardRectTransform =
+                cardUI.GetComponent<RectTransform>();
+
+            if (cardRectTransform == null)
+            {
+                Debug.LogError(
+                    "[HandManager] 이동 테스트 카드에 RectTransform이 없습니다."
+                );
+
+                continue;
+            }
+
+            testCardStates.Add(
+                new DiscardCardTestState(
+                    cardUI,
+                    cardRectTransform
+                )
+            );
+        }
+
+        float moveInterval = Mathf.Max(0f, discardCardMoveInterval);
+
+        for (int i = 0; i < testCardStates.Count; i++)
+        {
+            DiscardCardTestState testCardState = testCardStates[i];
+
+            if (testCardState.CardUI == null)
+            {
+                continue;
+            }
+
+            testCardState.CardUI.enabled = false;
+
+            bool isLastCard = i == testCardStates.Count - 1;
             Coroutine cardMoveCoroutine = StartCoroutine(
-                PlayDiscardCardMoveTestCoroutine(testCard)
+                PlayDiscardCardMoveTestCoroutine(
+                    testCardState,
+                    isLastCard
+                )
             );
 
-            bool hasNextCard = i < testCards.Count - 1;
+            bool hasNextCard = !isLastCard;
 
             if (hasNextCard && moveInterval > 0f)
             {
@@ -294,79 +396,6 @@ public class HandManager : MonoBehaviour
             }
         }
 
-        discardMoveTestCoroutine = null;
-    }
-
-    /// <summary>
-    /// 카드 UI의 현재 화면 위치를 기준으로 버림 더미까지 보간합니다.
-    /// 테스트 종료 시 기존 UI 상태를 보존하기 위해 원래 Transform을 복원합니다.
-    /// </summary>
-    private IEnumerator PlayDiscardCardMoveTestCoroutine(CardUI testCard)
-    {
-        if (testCard == null)
-        {
-            yield break;
-        }
-
-        RectTransform cardRectTransform =
-            testCard.GetComponent<RectTransform>();
-
-        if (cardRectTransform == null)
-        {
-            Debug.LogError(
-                "[HandManager] 이동 테스트 카드에 RectTransform이 없습니다."
-            );
-
-            yield break;
-        }
-
-        Vector3 startPosition = cardRectTransform.position;
-        Quaternion startRotation = cardRectTransform.localRotation;
-        Vector3 startScale = cardRectTransform.localScale;
-        bool wasCardEnabled = testCard.enabled;
-
-        testCard.enabled = false;
-
-        float elapsedTime = 0f;
-        float moveDuration = Mathf.Max(0f, discardMoveDuration);
-
-        while (elapsedTime < moveDuration)
-        {
-            if (testCard == null)
-            {
-                yield break;
-            }
-
-            if (discardPileTarget == null)
-            {
-                cardRectTransform.position = startPosition;
-                cardRectTransform.localRotation = startRotation;
-                cardRectTransform.localScale = startScale;
-                testCard.enabled = wasCardEnabled;
-
-                yield break;
-            }
-
-            float progress = moveDuration > 0f
-                ? Mathf.Clamp01(elapsedTime / moveDuration)
-                : 1f;
-
-            cardRectTransform.position = Vector3.Lerp(
-                startPosition,
-                discardPileTarget.position,
-                progress
-            );
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        if (testCard != null && discardPileTarget != null)
-        {
-            cardRectTransform.position = discardPileTarget.position;
-            PlayDiscardArrivalVfx(false);
-        }
-
         float holdDuration = Mathf.Max(0f, discardArrivalHoldDuration);
 
         if (holdDuration > 0f)
@@ -374,14 +403,344 @@ public class HandManager : MonoBehaviour
             yield return new WaitForSeconds(holdDuration);
         }
 
-        if (testCard != null)
+        if (restoreAfterAnimation)
         {
-            cardRectTransform.position = startPosition;
-            cardRectTransform.localRotation = startRotation;
-            cardRectTransform.localScale = startScale;
-            testCard.enabled = wasCardEnabled;
+            foreach (DiscardCardTestState testCardState in testCardStates)
+            {
+                RestoreDiscardCardTestState(testCardState);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 카드 UI를 물빛으로 변환하고 이동 입자를 버림 더미까지 보냅니다.
+    /// </summary>
+    private IEnumerator PlayDiscardCardMoveTestCoroutine(
+        DiscardCardTestState testCardState,
+        bool playArrivalVfx
+    )
+    {
+        if (
+            testCardState == null ||
+            testCardState.CardUI == null ||
+            testCardState.RectTransform == null
+        )
+        {
+            yield break;
         }
 
+        float elapsedTime = 0f;
+        float transformDuration = Mathf.Max(0f, discardTransformDuration);
+        float lightPointScale = Mathf.Clamp01(discardLightPointScale);
+        float arrivalScale = Mathf.Clamp01(discardArrivalScale);
+
+        if (
+            !TryConvertUiPositionToVfxWorldPosition(
+                testCardState.Position,
+                out Vector3 transformWorldPosition
+            )
+        )
+        {
+            yield break;
+        }
+
+        float minimumWaterWrapLifetime =
+            transformDuration +
+            Mathf.Max(0f, discardMoveDuration) +
+            Mathf.Max(0f, discardArrivalHoldDuration);
+        ParticleSystem cardWaterWrap = SpawnTemporaryParticleSystem(
+            discardTransformVfxPrefab,
+            transformWorldPosition,
+            minimumWaterWrapLifetime
+        );
+
+        if (cardWaterWrap != null)
+        {
+            ParticleSystem[] waterWrapParticleSystems =
+                cardWaterWrap.GetComponentsInChildren<ParticleSystem>(true);
+
+            foreach (ParticleSystem particleSystem in waterWrapParticleSystems)
+            {
+                ParticleSystem.MainModule main = particleSystem.main;
+                main.simulationSpace = ParticleSystemSimulationSpace.Local;
+            }
+
+            float waterWrapScale = Mathf.Max(0f, discardWaterWrapScale);
+            cardWaterWrap.transform.localScale =
+                Vector3.one * waterWrapScale;
+        }
+
+        while (elapsedTime < transformDuration)
+        {
+            if (
+                testCardState.CardUI == null ||
+                testCardState.RectTransform == null
+            )
+            {
+                yield break;
+            }
+
+            float progress = transformDuration > 0f
+                ? Mathf.Clamp01(elapsedTime / transformDuration)
+                : 1f;
+            float easedProgress =
+                progress * progress * (3f - 2f * progress);
+
+            testCardState.RectTransform.position =
+                testCardState.Position +
+                Vector3.up * discardLiftHeight * easedProgress;
+            testCardState.RectTransform.localRotation =
+                testCardState.Rotation * Quaternion.Euler(
+                    0f,
+                    0f,
+                    discardRotationDegrees * easedProgress
+                );
+            testCardState.RectTransform.localScale = Vector3.Lerp(
+                testCardState.Scale,
+                testCardState.Scale * lightPointScale,
+                easedProgress
+            );
+
+            UpdateDiscardWaterWrapPosition(
+                cardWaterWrap,
+                testCardState.RectTransform.position
+            );
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (
+            testCardState.CardUI == null ||
+            testCardState.RectTransform == null ||
+            discardPileTarget == null
+        )
+        {
+            yield break;
+        }
+
+        Vector3 transformedCardUiPosition =
+            testCardState.Position + Vector3.up * discardLiftHeight;
+        testCardState.RectTransform.position = transformedCardUiPosition;
+        testCardState.RectTransform.localRotation =
+            testCardState.Rotation * Quaternion.Euler(
+                0f,
+                0f,
+                discardRotationDegrees
+            );
+        testCardState.RectTransform.localScale =
+            testCardState.Scale * lightPointScale;
+
+        if (cardWaterWrap != null)
+        {
+            cardWaterWrap.transform.localScale =
+                Vector3.one * Mathf.Max(0f, discardWaterWrapScale);
+        }
+
+        Vector3 controlUiPosition = Vector3.Lerp(
+            transformedCardUiPosition,
+            discardPileTarget.position,
+            0.5f
+        ) + Vector3.up * discardMoveArcHeight;
+
+        elapsedTime = 0f;
+        float moveDuration = Mathf.Max(0f, discardMoveDuration);
+
+        while (elapsedTime < moveDuration)
+        {
+            if (
+                testCardState.CardUI == null ||
+                testCardState.RectTransform == null ||
+                discardPileTarget == null
+            )
+            {
+                yield break;
+            }
+
+            float progress = moveDuration > 0f
+                ? Mathf.Clamp01(elapsedTime / moveDuration)
+                : 1f;
+            float easedProgress = progress * progress;
+            Vector3 firstHalf = Vector3.Lerp(
+                transformedCardUiPosition,
+                controlUiPosition,
+                easedProgress
+            );
+            Vector3 secondHalf = Vector3.Lerp(
+                controlUiPosition,
+                discardPileTarget.position,
+                easedProgress
+            );
+
+            testCardState.RectTransform.position = Vector3.Lerp(
+                firstHalf,
+                secondHalf,
+                easedProgress
+            );
+            testCardState.RectTransform.localScale = Vector3.Lerp(
+                testCardState.Scale * lightPointScale,
+                testCardState.Scale * arrivalScale,
+                easedProgress
+            );
+
+            UpdateDiscardWaterWrapPosition(
+                cardWaterWrap,
+                testCardState.RectTransform.position
+            );
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (
+            testCardState.CardUI != null &&
+            testCardState.RectTransform != null &&
+            discardPileTarget != null
+        )
+        {
+            testCardState.RectTransform.position =
+                discardPileTarget.position;
+            testCardState.RectTransform.localScale =
+                testCardState.Scale * arrivalScale;
+        }
+
+        if (cardWaterWrap != null)
+        {
+            cardWaterWrap.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmitting
+            );
+        }
+
+        if (playArrivalVfx)
+        {
+            PlayDiscardArrivalVfx(false);
+        }
+    }
+
+    /// <summary>
+    /// UI 월드 위치를 전투 VFX가 사용하는 월드 평면 위치로 변환합니다.
+    /// </summary>
+    private bool TryConvertUiPositionToVfxWorldPosition(
+        Vector3 uiWorldPosition,
+        out Vector3 vfxWorldPosition
+    )
+    {
+        vfxWorldPosition = Vector3.zero;
+        Camera mainCamera = Camera.main;
+
+        if (mainCamera == null)
+        {
+            Debug.LogError(
+                "[HandManager] MainCamera 태그가 지정된 카메라를 찾을 수 없습니다."
+            );
+
+            return false;
+        }
+
+        Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(
+            null,
+            uiWorldPosition
+        );
+        Ray screenRay = mainCamera.ScreenPointToRay(screenPosition);
+        Plane vfxPlane = new Plane(Vector3.forward, Vector3.zero);
+
+        if (!vfxPlane.Raycast(screenRay, out float enter))
+        {
+            Debug.LogError(
+                "[HandManager] UI 위치를 VFX 월드 위치로 변환하지 못했습니다."
+            );
+
+            return false;
+        }
+
+        vfxWorldPosition = screenRay.GetPoint(enter);
+        return true;
+    }
+
+    /// <summary>
+    /// 카드 UI 위치를 따라 물 감싸기 VFX 루트를 이동합니다.
+    /// </summary>
+    private void UpdateDiscardWaterWrapPosition(
+        ParticleSystem cardWaterWrap,
+        Vector3 cardUiPosition
+    )
+    {
+        if (
+            cardWaterWrap == null ||
+            !TryConvertUiPositionToVfxWorldPosition(
+                cardUiPosition,
+                out Vector3 waterWrapWorldPosition
+            )
+        )
+        {
+            return;
+        }
+
+        cardWaterWrap.transform.position = waterWrapWorldPosition;
+    }
+
+    /// <summary>
+    /// 일회성 Particle System을 생성하고 전체 자식 재생이 끝난 뒤 제거합니다.
+    /// </summary>
+    private ParticleSystem SpawnTemporaryParticleSystem(
+        ParticleSystem particleSystemPrefab,
+        Vector3 worldPosition,
+        float minimumLifetime
+    )
+    {
+        if (particleSystemPrefab == null)
+        {
+            return null;
+        }
+
+        ParticleSystem spawnedParticleSystem = Instantiate(
+            particleSystemPrefab,
+            worldPosition,
+            Quaternion.identity
+        );
+        float cleanupDelay = 0f;
+        ParticleSystem[] particleSystems =
+            spawnedParticleSystem.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem particleSystem in particleSystems)
+        {
+            ParticleSystem.MainModule main = particleSystem.main;
+            float playbackDuration =
+                main.startDelay.constantMax +
+                main.duration +
+                main.startLifetime.constantMax;
+
+            cleanupDelay = Mathf.Max(cleanupDelay, playbackDuration);
+        }
+
+        Destroy(
+            spawnedParticleSystem.gameObject,
+            Mathf.Max(cleanupDelay, minimumLifetime)
+        );
+        return spawnedParticleSystem;
+    }
+
+    /// <summary>
+    /// 이동 테스트가 끝난 카드의 Transform과 입력 상태를 복원합니다.
+    /// </summary>
+    private void RestoreDiscardCardTestState(
+        DiscardCardTestState testCardState
+    )
+    {
+        if (
+            testCardState == null ||
+            testCardState.CardUI == null ||
+            testCardState.RectTransform == null
+        )
+        {
+            return;
+        }
+
+        testCardState.RectTransform.position = testCardState.Position;
+        testCardState.RectTransform.localRotation = testCardState.Rotation;
+        testCardState.RectTransform.localScale = testCardState.Scale;
+        testCardState.CardUI.enabled = testCardState.WasCardEnabled;
     }
 
     /// <summary>
@@ -545,6 +904,14 @@ public class HandManager : MonoBehaviour
     /// <param name="index">선택할 손패 UI 인덱스</param>
     public void SelectCardByIndex(int index)
     {
+        if (
+            isDiscardAnimationPlaying ||
+            discardMoveTestCoroutine != null
+        )
+        {
+            return;
+        }
+
         if (index < 0 || index >= handCardUIs.Count)
         {
             Debug.Log(
@@ -658,6 +1025,14 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void RequestSelectCard(CardUI cardUI)
     {
+        if (
+            isDiscardAnimationPlaying ||
+            discardMoveTestCoroutine != null
+        )
+        {
+            return;
+        }
+
         if (cardUI == null)
         {
             Debug.LogWarning(
@@ -690,6 +1065,18 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void StartPreserveMode()
     {
+        if (
+            isDiscardAnimationPlaying ||
+            discardMoveTestCoroutine != null
+        )
+        {
+            Debug.LogWarning(
+                "[HandManager] 버림 연출 중에는 보존 모드를 시작할 수 없습니다."
+            );
+
+            return;
+        }
+
         isPreserveMode = true;
         selectedPreserveCardUI = null;
 
@@ -769,6 +1156,18 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void ConfirmPreserveCard()
     {
+        if (
+            isDiscardAnimationPlaying ||
+            discardMoveTestCoroutine != null
+        )
+        {
+            Debug.LogWarning(
+                "[HandManager] 버림 연출이 이미 진행 중입니다."
+            );
+
+            return;
+        }
+
         if (!isPreserveMode)
         {
             Debug.LogWarning(
@@ -778,10 +1177,12 @@ public class HandManager : MonoBehaviour
             return;
         }
 
-        if (selectedPreserveCardUI != null)
+        CardUI confirmedPreservedCardUI = selectedPreserveCardUI;
+
+        if (confirmedPreservedCardUI != null)
         {
             preservedCard =
-                selectedPreserveCardUI.GetCardData();
+                confirmedPreservedCardUI.GetCardData();
 
             Debug.Log(
                 $"[HandManager] 보존 카드 확정: " +
@@ -799,6 +1200,76 @@ public class HandManager : MonoBehaviour
 
         isPreserveMode = false;
         selectedPreserveCardUI = null;
+
+        List<CardUI> cardsToAnimate = new List<CardUI>();
+
+        foreach (CardUI cardUI in handCardUIs)
+        {
+            if (
+                cardUI == null ||
+                cardUI == confirmedPreservedCardUI
+            )
+            {
+                continue;
+            }
+
+            cardsToAnimate.Add(cardUI);
+        }
+
+        if (confirmedPreservedCardUI != null)
+        {
+            confirmedPreservedCardUI.enabled = false;
+        }
+
+        if (cardsToAnimate.Count == 0)
+        {
+            CompletePreserveConfirmation();
+            return;
+        }
+
+        if (
+            discardPileTarget == null ||
+            discardTransformVfxPrefab == null ||
+            discardArrivalVfxPrefab == null ||
+            Camera.main == null
+        )
+        {
+            Debug.LogError(
+                "[HandManager] 버림 연출 설정이 누락되어 연출 없이 턴 종료 처리를 진행합니다."
+            );
+
+            CompletePreserveConfirmation();
+            return;
+        }
+
+        isDiscardAnimationPlaying = true;
+        discardMoveTestCoroutine = StartCoroutine(
+            PlayConfirmedDiscardCoroutine(cardsToAnimate)
+        );
+    }
+
+    /// <summary>
+    /// 보존하지 않은 카드의 연출을 마친 뒤 실제 버림과 턴 전환을 처리합니다.
+    /// </summary>
+    private IEnumerator PlayConfirmedDiscardCoroutine(
+        List<CardUI> cardsToAnimate
+    )
+    {
+        yield return PlayDiscardCardsMoveCoroutine(
+            cardsToAnimate,
+            false
+        );
+
+        CompletePreserveConfirmation();
+    }
+
+    /// <summary>
+    /// 기존 손패 데이터 규칙을 적용한 뒤 플레이어 턴을 종료합니다.
+    /// </summary>
+    private void CompletePreserveConfirmation()
+    {
+        discardMoveTestCoroutine = null;
+        isDiscardAnimationPlaying = false;
 
         DiscardUnpreservedCards();
 

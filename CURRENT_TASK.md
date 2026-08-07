@@ -78,11 +78,11 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 현재 단계
 
-2단계 — 버림 덱 위치 `RectTransform` 확보
+7단계 — 실제 턴 종료 로직과 연결
 
 ## 현재 상태
 
-2단계 완료 — 다음 단계 승인 대기
+7단계 완료 — 사용자 Unity Play Mode 확인 완료
 
 ## 확인된 사실
 
@@ -90,31 +90,42 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 - 외부 원본은 `Assets/NamuFX/StylizedWaterEffects/Prefabs/Water_Splash_A.prefab`이다.
 - 프로젝트용 Prefab은 원본과 비교했을 때 루트 이름만 다르고 Particle System 설정은 동일하다.
 - 루트와 여섯 자식 Particle System은 `Looping`이 꺼져 있고 `Play On Awake`가 켜져 있다.
-- 프로젝트용 Prefab의 루트 Scale은 `(0.45, 0.45, 0.45)`이며 사용자가 화면 크기를 확인했다.
+- 프로젝트용 도착 Prefab은 세로 물기둥을 끄고 낮은 물보라·링·버블 중심으로 조정했다.
 - Battle Scene의 `BattleCanvas/BattlePanel/Discard deck`은 `RectTransform`이고 손패 부모와 같은 `BattlePanel` 아래에 있다.
 - `HandManager`의 `discardPileTarget`에 `Discard deck` RectTransform이 연결되어 있다.
-- 실제 턴 종료 코드와 VFX는 아직 연결되지 않았다.
+- 카드 UI가 순차적으로 물빛 변환 후 버림 덱으로 가속 이동하는 테스트를 사용자가 확인했다.
+- 이동 카드는 원본의 25% 크기를 유지하고 프로젝트용 물 VFX가 카드 위치를 따라간다.
+- 보존 확정 시 선택한 카드 UI를 제외한 나머지 카드에 연출을 실행하도록 연결했다.
+- 연출 완료 후 기존 `DiscardUnpreservedCards`, Jinx 초기화와 턴 전환을 실행한다.
+- 실제 보존 확정 흐름에서 카드 이동, 버림 처리와 턴 전환이 정상 동작함을 사용자가 Play Mode에서 확인했다.
+- 보존 유무와 손패 수별 모든 경계 조건의 개별 검증 여부는 확인되지 않았다.
 
 ## 현재 단계 수정 대상
 
 - `Assets/Scripts/Cards/Managers/HandManager.cs`
 - `Assets/Scenes/PlayScene/BattleScene.unity`
+- `Assets/Art/VFX/Water/VFX_DiscardArrivalSplash.prefab`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
 
 ## 현재 단계 금지 범위
 
 - `Assets/NamuFX` 외부 원본 수정
-- 카드 이동, 덱 데이터, 손패 버림과 턴 종료 로직 수정
-- `BattleScene`의 승인된 Inspector 참조 외 Scene 수정
+- 기존 보존 카드 판정과 버림 덱 데이터 규칙 변경
+- `BattleScene`의 승인된 VFX Inspector 참조 외 Scene 수정
 - 다른 Prefab 수정
 - 다른 카드 더미 VFX 수정
 - 재셔플 연출 구현
 
 ## 현재 단계 완료 조건
 
-- `HandManager`에 버림 더미 도착 위치용 `RectTransform` 필드가 존재한다.
-- Battle Scene의 기존 `Discard deck` RectTransform이 해당 필드에 연결되어 있다.
+- 보존 카드는 이동 연출 대상에서 제외된다.
+- 나머지 카드 연출이 끝난 후 실제 버림 덱 데이터가 갱신된다.
+- 연출 중 중복 확정과 카드 선택이 차단된다.
+- 보존 카드 없음과 버릴 카드 없음 경로가 정상 종료된다.
+- 연출 후 적 턴이 한 번만 시작된다.
 - Unity 컴파일 오류와 Missing Reference가 없다.
 
 ## 다음 작업
 
-2단계 검증 결과를 보고한다. 사용자가 `다음`이라고 하기 전에는 3단계 VFX 테스트 재생 메서드를 구현하지 않는다.
+사용자가 `다음`이라고 하면 8단계 재셔플 연출을 설계한다. 승인 전에는 재셔플 코드와 VFX를 수정하지 않는다.
