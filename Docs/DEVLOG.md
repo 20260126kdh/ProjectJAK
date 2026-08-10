@@ -85,6 +85,41 @@
 - Inspector/데이터 변경: `statusEffectType` enum 직렬화 값 `23` → `24`
 - 검증: CSV와 ScriptableObject 일치, Unity 오류 로그 0건, 사용자 Play Mode 소멸 동작 확인 완료
 
+## 2026-08-10 — 보존 모드 ESC 취소
+
+- ESC 입력을 전담하는 `PauseManager`에서 일반 Pause보다 보존 모드 취소를 우선 처리
+- 보존 선택 표시를 해제하고 턴 종료 버튼을 복원하되 보존 카드 데이터와 턴 진행은 유지
+- 관련 경로: `Assets/Scripts/Cards/Managers/HandManager.cs`, `Assets/Scripts/Core/PauseManager.cs`, `Assets/Scenes/PlayScene/BattleScene.unity`
+- Inspector/데이터 변경: `PauseManager.handManager`에 BattleScene `HandManager` 연결
+- 검증: 사용자 Unity Play Mode에서 보존 취소, 선택 해제, Pause 미진입과 재진입 확인 완료
+
+## 2026-08-10 — 보존 모드 화면 70% 암전
+
+- BattleCanvas 전체를 덮는 검정 70% 불투명도의 `PreserveDimOverlay` 추가
+- `HandCardParent`를 별도 Canvas로 정렬하여 암전 위에 손패만 표시
+- 암전 밝기 차이가 표시되지 않던 Canvas 정렬 문제를 막기 위해 Overlay Order `100`, 손패 Order `101`로 렌더링 순서 고정
+- `PreserveDimOverlay` Image의 잘못된 스크립트 GUID로 Missing Script가 발생한 원인을 확인하고 Unity UI Image GUID로 수정
+- 보존 확정 버튼에 Canvas·GraphicRaycaster를 추가하고 Order `101`로 설정하여 손패와 함께 암전에서 제외
+- `EndTurnButton`을 보존 확정 버튼으로 잘못 판단한 설정을 복구하고, `ConfirmPreserveCard`가 연결된 실제 `PresrveConfirmButton`으로 Canvas·GraphicRaycaster 이동
+- `HandManager`uc5d0 실제 보존 확정 버튼 참조를 추가하고 보존 모드 진입 중에만 표시하도록 상태 연결
+
+## 2026-08-10 — 보존 선택 카드 중앙 확대
+
+- 보존 카드를 드로우와 동일한 `0.27초`에 화면 중앙으로 이동하고 `1.4배`로 확대
+- 중앙 표시 시 카드 회전을 제거하고 손패 최상단에 표시
+- 재선택, 다른 카드 선택, ESC 취소, 보존 확정과 전투 초기화 경로에서 원래 위치·회전·크기·형제 순서 복원
+- 관련 경로: `Assets/Scripts/Cards/Managers/HandManager.cs`
+- Inspector/데이터 변경: `preserveFocusedCardScale` 기본값 `1.4`
+- 검증: Unity 컴파일 및 Play Mode 확인 필요
+- 버프·디버프 정리표를 기준으로 모든 현재 상태 효과 enum의 한글명과 툴팁 설명을 동기화
+- 문서의 `ProfandHalo`는 실제 enum `ProfanedHalo`에 `장송의 가호`로 연결하고, enum에 없는 EOL/EOD는 제외
+- 툴팁 폰트를 상태 아이콘의 `Pretendard-Regular SDF`와 동일하게 연결하고 TMP 구형 줄바꿈 API 경고 제거
+- 검증: 사용자 Unity Play Mode에서 툴팁 표시와 폰트 정상 동작 및 Console 오류 없음 확인 완료
+- 보존 진입, ESC 취소, 보존 확정과 전투 초기화 경로에 암전 표시 상태 연결
+- 관련 경로: `Assets/Scripts/Cards/Managers/HandManager.cs`, `Assets/Scenes/PlayScene/BattleScene.unity`
+- Inspector/데이터 변경: `HandManager.preserveDimOverlay` 연결, HandCardParent Canvas·GraphicRaycaster 추가
+- 검증: 사용자 Unity Play Mode에서 시작 덱 표시, 보존 모드 70% 암전, 손패·보존 확정 버튼 제외와 버튼 상태 전환 확인 완료
+
 ```text
 ## YYYY-MM-DD — 기능명
 
@@ -94,3 +129,11 @@
 - 검증: ...
 - 남은 작업: ...
 ```
+
+## 2026-08-10 — 상태 효과 아이콘 Hover 툴팁
+
+- 공용 `EnemyStatusIconUI`에 마우스 진입·이탈 처리를 추가해 플레이어와 적 상태 아이콘 모두에 툴팁 표시
+- 상태 효과 이름, 실제 로직 기준 설명, 현재 수치와 지속 정보를 표시
+- 화면 경계 위치 보정과 Raycast 비활성화로 화면 이탈과 입력 방해를 방지
+- 관련 경로: `Assets/Scripts/UI/EnemyStatusIconUI.cs`, `Assets/Prefabs/Enemy/EnemyStatusIcon.prefab`
+- 검증: Unity 컴파일 및 Play Mode 확인 필요

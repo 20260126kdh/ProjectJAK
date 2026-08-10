@@ -161,3 +161,89 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 - 연출 중 카드 선택과 턴 종료가 차단된다.
 - Jinx 상태가 드로우 완료 후 정상 표시된다.
 - Unity 컴파일 오류와 Missing Reference가 없다.
+
+# 현재 작업 변경
+
+## 작업명
+
+보존 모드 UX 1단계 — ESC 취소
+
+## 현재 상태
+
+구현 및 사용자 Unity Play Mode 확인 완료
+
+## 수정 대상
+
+- `Assets/Scripts/Cards/Managers/HandManager.cs`
+- `Assets/Scripts/Core/PauseManager.cs`
+- `Assets/Scenes/PlayScene/BattleScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 보존 모드에서 ESC를 누르면 선택을 해제하고 일반 전투 상태로 복귀한다.
+- 같은 ESC 입력으로 Pause 패널이 열리지 않는다.
+- 기존 보존 카드 데이터와 턴 상태는 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+보존 모드 UX 2단계 — 손패 제외 화면 70% 암전
+
+## 현재 상태
+
+구현 및 사용자 Unity Play Mode 확인 완료
+
+## 완료 조건
+
+- 보존 모드 진입 시 손패를 제외한 화면이 검정 70% 불투명도로 어두워진다.
+- ESC 취소와 보존 확정 시 암전이 해제된다.
+- 암전 UI가 카드 및 단축키 입력을 막지 않는다.
+- 암전 Canvas는 Sorting Order `100`, 손패 Canvas는 `101`로 고정하여 다른 전투 UI와 무관하게 암전과 손패 표시 순서를 보장한다.
+- 보존 확정 버튼도 Canvas Sorting Order `101`로 표시하여 암전에서 제외한다.
+- 보존 확정 버튼은 보존 모드에서만 표시하고 시작 덱·일반 전투·취소·확정 상태에서는 숨긴다.
+
+# 현재 작업 변경
+
+## 작업명
+
+보존 모드 UX 3단계 — 선택 카드 중앙 확대
+
+## 현재 상태
+
+구현 및 사용자 Unity Play Mode 확인 완료
+
+## 완료 조건
+
+- 보존 카드 선택 시 드로우와 동일한 `0.27초`에 화면 중앙으로 이동한다.
+- 선택 카드는 원본의 `1.4배`로 확대되고 회전이 제거된다.
+- 재선택·다른 카드 선택·ESC 취소·보존 확정 시 원래 손패 배치로 복원된다.
+
+# 현재 작업 변경
+
+## 작업명
+
+버프/디버프 아이콘 Hover 설명 표시
+
+## 현재 상태
+
+구현 및 사용자 Unity Play Mode 확인 완료
+
+## 수정 대상
+
+- `Assets/Scripts/UI/EnemyStatusIconUI.cs`
+- `Assets/Prefabs/Enemy/EnemyStatusIcon.prefab`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 플레이어와 적 상태 효과 아이콘에 마우스를 올리면 이름, 설명, 현재 수치와 지속 정보가 표시된다.
+- 마우스가 벗어나거나 아이콘이 제거되면 툴팁이 숨겨진다.
+- 툴팁이 화면 가장자리 밖으로 나가지 않는다.
+- 툴팁은 다른 UI 입력을 가로막지 않는다.
+- 버프·디버프 이름과 설명은 기획 정리표의 공식 한글 표기를 사용한다.
+- 툴팁은 상태 아이콘과 동일한 `Pretendard-Regular SDF` 폰트와 Material을 사용한다.
+- 사용자 확인 결과 툴팁 한글명과 폰트가 정상 표시되며 Console 오류가 없다.

@@ -33,6 +33,10 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private CardUI selectedPreserveCardUI;
 
+    [Header("보존 모드 화면 암전")]
+    [SerializeField]
+    private GameObject preserveDimOverlay;
+
     [Header("보존 모드 여부")]
     [SerializeField]
     private bool isPreserveMode;
@@ -106,6 +110,16 @@ public class HandManager : MonoBehaviour
     private bool isDrawAnimationPlaying;
     private bool applyJinxAfterDraw;
     private bool wasEndTurnButtonActive;
+    private Coroutine preserveCardFocusCoroutine;
+    private RectTransform focusedPreserveCardRectTransform;
+    private Vector3 focusedPreserveCardPosition;
+    private Quaternion focusedPreserveCardRotation;
+    private Vector3 focusedPreserveCardScale;
+    private int focusedPreserveCardSiblingIndex;
+
+    [Header("보존 선택 카드 중앙 표시")]
+    [SerializeField]
+    private float preserveFocusedCardScale = 1.4f;
 
     private sealed class DiscardCardTestState
     {
@@ -137,6 +151,10 @@ public class HandManager : MonoBehaviour
     [Header("턴 종료 버튼 오브젝트")]
     [SerializeField]
     private GameObject endTurnButtonObject;
+
+    [Header("보존 확정 버튼 오브젝트")]
+    [SerializeField]
+    private GameObject preserveConfirmButtonObject;
 
     [Header("Turn Manager")]
     [SerializeField]
@@ -1283,10 +1301,16 @@ public class HandManager : MonoBehaviour
 
         isPreserveMode = true;
         selectedPreserveCardUI = null;
+        SetPreserveDimActive(true);
 
         if (endTurnButtonObject != null)
         {
             endTurnButtonObject.SetActive(false);
+        }
+
+        if (preserveConfirmButtonObject != null)
+        {
+            preserveConfirmButtonObject.SetActive(true);
         }
 
         if (battleManager != null)
@@ -1298,6 +1322,38 @@ public class HandManager : MonoBehaviour
 
         Debug.Log(
             "[HandManager] 보존 모드 시작"
+        );
+    }
+
+    /// <summary>
+    /// 현재 보존 선택을 해제하고 보존 모드 진입 전 상태로 복귀합니다.
+    /// 기존에 보존된 카드 데이터와 턴 진행은 변경하지 않습니다.
+    /// </summary>
+    public void CancelPreserveMode()
+    {
+        if (!isPreserveMode)
+        {
+            return;
+        }
+
+        RestoreFocusedPreserveCard();
+
+        selectedPreserveCardUI = null;
+        isPreserveMode = false;
+        SetPreserveDimActive(false);
+
+        if (endTurnButtonObject != null)
+        {
+            endTurnButtonObject.SetActive(true);
+        }
+
+        if (preserveConfirmButtonObject != null)
+        {
+            preserveConfirmButtonObject.SetActive(false);
+        }
+
+        Debug.Log(
+            "[HandManager] 보존 모드 취소"
         );
     }
 
@@ -1331,7 +1387,7 @@ public class HandManager : MonoBehaviour
 
         if (selectedPreserveCardUI == cardUI)
         {
-            selectedPreserveCardUI.SetDeselected();
+            RestoreFocusedPreserveCard();
             selectedPreserveCardUI = null;
 
             Debug.Log(
@@ -1343,11 +1399,11 @@ public class HandManager : MonoBehaviour
 
         if (selectedPreserveCardUI != null)
         {
-            selectedPreserveCardUI.SetDeselected();
+            RestoreFocusedPreserveCard();
         }
 
         selectedPreserveCardUI = cardUI;
-        selectedPreserveCardUI.SetSelected();
+        FocusPreserveCard(cardUI);
 
         Debug.Log(
             $"[HandManager] 보존 카드 선택: " +
@@ -1384,6 +1440,8 @@ public class HandManager : MonoBehaviour
 
         CardUI confirmedPreservedCardUI = selectedPreserveCardUI;
 
+        RestoreFocusedPreserveCard();
+
         if (confirmedPreservedCardUI != null)
         {
             preservedCard =
@@ -1405,6 +1463,12 @@ public class HandManager : MonoBehaviour
 
         isPreserveMode = false;
         selectedPreserveCardUI = null;
+        SetPreserveDimActive(false);
+
+        if (preserveConfirmButtonObject != null)
+        {
+            preserveConfirmButtonObject.SetActive(false);
+        }
 
         List<CardUI> cardsToAnimate = new List<CardUI>();
 
@@ -1485,6 +1549,11 @@ public class HandManager : MonoBehaviour
             endTurnButtonObject.SetActive(true);
         }
 
+        if (preserveConfirmButtonObject != null)
+        {
+            preserveConfirmButtonObject.SetActive(false);
+        }
+
         if (turnManager != null)
         {
             turnManager.EndPlayerTurnAndStartNextTurn();
@@ -1495,6 +1564,139 @@ public class HandManager : MonoBehaviour
                 "[HandManager] TurnManager가 연결되지 않았습니다."
             );
         }
+    }
+
+    /// <summary>
+    /// 보존 모드 전용 화면 암전 오브젝트의 표시 상태를 변경합니다.
+    /// </summary>
+    private void SetPreserveDimActive(bool isActive)
+    {
+        if (preserveDimOverlay != null)
+        {
+            preserveDimOverlay.SetActive(isActive);
+        }
+    }
+
+    /// <summary>
+    /// 보존으로 선택한 카드를 드로우 이동 시간에 맞춰 화면 중앙으로 이동시킵니다.
+    /// </summary>
+    private void FocusPreserveCard(CardUI cardUI)
+    {
+        if (cardUI == null || handCardParent == null)
+        {
+            return;
+        }
+
+        RectTransform cardRectTransform =
+            cardUI.GetComponent<RectTransform>();
+        RectTransform rootRectTransform =
+            handCardParent.root as RectTransform;
+
+        if (cardRectTransform == null || rootRectTransform == null)
+        {
+            return;
+        }
+
+        focusedPreserveCardRectTransform = cardRectTransform;
+        focusedPreserveCardPosition = cardRectTransform.position;
+        focusedPreserveCardRotation = cardRectTransform.localRotation;
+        focusedPreserveCardScale = cardRectTransform.localScale;
+        focusedPreserveCardSiblingIndex =
+            cardRectTransform.GetSiblingIndex();
+
+        cardRectTransform.SetAsLastSibling();
+
+        preserveCardFocusCoroutine = StartCoroutine(
+            AnimatePreserveCardToCenterCoroutine(
+                cardRectTransform,
+                rootRectTransform.position
+            )
+        );
+    }
+
+    /// <summary>
+    /// 보존 선택 카드를 화면 중앙으로 이동하고 확대합니다.
+    /// </summary>
+    private IEnumerator AnimatePreserveCardToCenterCoroutine(
+        RectTransform cardRectTransform,
+        Vector3 targetPosition)
+    {
+        Vector3 startPosition = cardRectTransform.position;
+        Quaternion startRotation = cardRectTransform.localRotation;
+        Vector3 startScale = cardRectTransform.localScale;
+        Vector3 targetScale =
+            startScale * Mathf.Max(0f, preserveFocusedCardScale);
+        float moveDuration = Mathf.Max(0f, drawMoveDuration);
+        float elapsedTime = 0f;
+
+        while (elapsedTime < moveDuration)
+        {
+            if (cardRectTransform == null)
+            {
+                preserveCardFocusCoroutine = null;
+                yield break;
+            }
+
+            float progress = moveDuration > 0f
+                ? Mathf.Clamp01(elapsedTime / moveDuration)
+                : 1f;
+            float easedProgress = progress * progress;
+
+            cardRectTransform.position = Vector3.Lerp(
+                startPosition,
+                targetPosition,
+                easedProgress
+            );
+            cardRectTransform.localRotation = Quaternion.Lerp(
+                startRotation,
+                Quaternion.identity,
+                easedProgress
+            );
+            cardRectTransform.localScale = Vector3.Lerp(
+                startScale,
+                targetScale,
+                easedProgress
+            );
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (cardRectTransform != null)
+        {
+            cardRectTransform.position = targetPosition;
+            cardRectTransform.localRotation = Quaternion.identity;
+            cardRectTransform.localScale = targetScale;
+        }
+
+        preserveCardFocusCoroutine = null;
+    }
+
+    /// <summary>
+    /// 중앙에 표시 중인 보존 선택 카드를 원래 손패 배치로 복원합니다.
+    /// </summary>
+    private void RestoreFocusedPreserveCard()
+    {
+        if (preserveCardFocusCoroutine != null)
+        {
+            StopCoroutine(preserveCardFocusCoroutine);
+            preserveCardFocusCoroutine = null;
+        }
+
+        if (focusedPreserveCardRectTransform != null)
+        {
+            focusedPreserveCardRectTransform.position =
+                focusedPreserveCardPosition;
+            focusedPreserveCardRectTransform.localRotation =
+                focusedPreserveCardRotation;
+            focusedPreserveCardRectTransform.localScale =
+                focusedPreserveCardScale;
+            focusedPreserveCardRectTransform.SetSiblingIndex(
+                focusedPreserveCardSiblingIndex
+            );
+        }
+
+        focusedPreserveCardRectTransform = null;
     }
 
     /// <summary>
@@ -1830,17 +2032,25 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void ResetHandForNewBattle()
     {
+        RestoreFocusedPreserveCard();
+
         handCards.Clear();
         preservedCard = null;
         selectedPreserveCardUI = null;
         isPreserveMode = false;
         jinxedHandIndex = -1;
+        SetPreserveDimActive(false);
 
         ClearHandUI();
 
         if (endTurnButtonObject != null)
         {
             endTurnButtonObject.SetActive(true);
+        }
+
+        if (preserveConfirmButtonObject != null)
+        {
+            preserveConfirmButtonObject.SetActive(false);
         }
 
         Debug.Log(

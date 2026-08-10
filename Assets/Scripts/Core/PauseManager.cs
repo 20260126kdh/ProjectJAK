@@ -27,6 +27,10 @@ public class PauseManager : MonoBehaviour
     [SerializeField]
     private StartingDeckUI startingDeckUI;
 
+    [Header("Hand Manager")]
+    [SerializeField]
+    private HandManager handManager;
+
     /// <summary>
     /// 현재 게임이 일시정지 상태인지 저장합니다.
     /// 설정 및 전투 포기 확인 화면에서도 true를 유지합니다.
@@ -96,8 +100,9 @@ public class PauseManager : MonoBehaviour
     /// 2. 환경 설정 화면 → Pause 메뉴 복귀
     /// 3. Pause 메뉴 → 게임 재개
     /// 4. 덱 보기 화면 → 덱 보기 닫기
-    /// 5. 다른 주요 패널 → 입력 무시
-    /// 6. 일반 전투 → Pause 열기
+    /// 5. 보존 모드 → 보존 취소
+    /// 6. 다른 주요 패널 → 입력 무시
+    /// 7. 일반 전투 → Pause 열기
     /// </summary>
     private void HandleEscapeInput()
     {
@@ -133,6 +138,13 @@ public class PauseManager : MonoBehaviour
                 startingDeckUI.CloseDeckView();
             }
 
+            return;
+        }
+
+        if (handManager != null &&
+            handManager.IsPreserveMode)
+        {
+            handManager.CancelPreserveMode();
             return;
         }
 
@@ -624,6 +636,12 @@ public class PauseManager : MonoBehaviour
         {
             startingDeckUI =
                 FindFirstObjectByType<StartingDeckUI>();
+        }
+
+        if (handManager == null)
+        {
+            handManager =
+                FindFirstObjectByType<HandManager>();
         }
     }
 
