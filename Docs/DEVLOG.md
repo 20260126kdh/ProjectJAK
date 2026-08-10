@@ -213,3 +213,11 @@
 - 강화 패널의 손패 숨김과 실제 강화 콜백 연결 구조는 유지
 - 관련 경로: `Assets/Art/VFX/CardUpgrade`, `Assets/Scripts/UI/VFX/CardUpgradeHammerVfx.cs`, `Assets/Prefabs/VFX/VFX_CardUpgradeHammer.prefab`
 - 검증: 정적 참조와 Unity 컴파일 로그 점검, Play Mode 시각 확인 필요
+
+## 2026-08-10 — 새 게임 스테이지 진행도 초기화 수정
+
+- 저장 후 종료 시 `DontDestroyOnLoad` 상태로 남은 `StageManager` 진행도가 새 게임에 이어지는 원인 확인
+- 새 게임에서 저장 파일과 이어하기 문맥을 제거한 뒤 런타임 스테이지 진행도도 최초 상태로 초기화
+- 이어하기와 전투 포기의 기존 저장·초기화 흐름은 변경하지 않음
+- 관련 경로: `Assets/Scripts/Scenes/Managers/TitleManager.cs`
+- 검증: 정적 호출 경로 및 Unity 컴파일 로그 점검, 새 게임·이어하기 Play Mode 회귀 확인 필요

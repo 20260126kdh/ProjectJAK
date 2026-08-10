@@ -72,6 +72,23 @@ public class TitleManager : MonoBehaviour
          */
         ContinueLoadContext.Clear();
 
+        /*
+         * 저장 후 종료로 타이틀에 돌아온 경우에도 StageManager는
+         * DontDestroyOnLoad로 이전 진행 상태를 유지합니다.
+         * 새 게임에서는 저장 파일뿐 아니라 런타임 진행도도 초기화해야 합니다.
+         */
+        if (StageManager.Instance == null)
+        {
+            Debug.LogError(
+                "[TitleManager] StageManager.Instance를 찾지 못해 " +
+                "새 게임 시작을 중단합니다."
+            );
+
+            return;
+        }
+
+        StageManager.Instance.ResetProgress();
+
         if (GameManager.Instance == null)
         {
             Debug.LogError(
