@@ -115,6 +115,20 @@
 - 문서의 `ProfandHalo`는 실제 enum `ProfanedHalo`에 `장송의 가호`로 연결하고, enum에 없는 EOL/EOD는 제외
 - 툴팁 폰트를 상태 아이콘의 `Pretendard-Regular SDF`와 동일하게 연결하고 TMP 구형 줄바꿈 API 경고 제거
 - 검증: 사용자 Unity Play Mode에서 툴팁 표시와 폰트 정상 동작 및 Console 오류 없음 확인 완료
+
+## 2026-08-10 — 버림 덱 셔플 VFX 1단계
+
+- 버림 덱 위치의 소용돌이 이후 난류가 뽑을 덱 위치로 이동하는 수동 테스트 추가
+- 기존 `VFX_VortexCore_Base`, `VFX_CardWaterStream`을 수정하지 않고 Scene 참조로 연결
+- 실제 덱 데이터와 자동 셔플 로직은 변경하지 않음
+- 관련 경로: `Assets/Scripts/Cards/Managers/HandManager.cs`, `Assets/Scenes/PlayScene/BattleScene.unity`
+- 검증: Unity 컴파일 및 Play Mode VFX 크기·위치 확인 필요
+- 물 폭탄과 단일 직선 난류 구성을 제거하고 작은 물살 3개의 순차 곡선 이동으로 교체
+- 각 물살에 서로 다른 간격과 곡률을 적용해 카드 묶음이 물살에 섞여 이동하는 느낌으로 조정
+- 마지막 도착 시 `VFX_DrawPileSplash`의 높은 물기둥을 제외한 낮은 물결과 입자만 재생
+- 기존 범용 VFX 조합을 대체하는 전용 `ShuffleTransferVfx`와 `VFX_DeckShuffleTransfer.prefab` 추가
+- 응축 원형 파동, 카드 비율 잔상 5개의 교차 셔플, 3중 S자 리본 이동, 도착 파동과 카드 재구성으로 시퀀스 구성
+- LineRenderer의 외곽광·본체·하이라이트를 분리해 화면을 가리지 않는 청록색 심해 물살 표현
 - 보존 진입, ESC 취소, 보존 확정과 전투 초기화 경로에 암전 표시 상태 연결
 - 관련 경로: `Assets/Scripts/Cards/Managers/HandManager.cs`, `Assets/Scenes/PlayScene/BattleScene.unity`
 - Inspector/데이터 변경: `HandManager.preserveDimOverlay` 연결, HandCardParent Canvas·GraphicRaycaster 추가
@@ -137,3 +151,18 @@
 - 화면 경계 위치 보정과 Raycast 비활성화로 화면 이탈과 입력 방해를 방지
 - 관련 경로: `Assets/Scripts/UI/EnemyStatusIconUI.cs`, `Assets/Prefabs/Enemy/EnemyStatusIcon.prefab`
 - 검증: Unity 컴파일 및 Play Mode 확인 필요
+
+## 2026-08-10 — 셔플 이동 VFX 물 표현 조정
+
+- 전용 셔플 VFX 본체에 `M_WaterTrail` 재질을 연결해 물결 질감을 적용
+- 이동 경로를 버림 덱 위로 먼저 상승한 후 뽑을 덱으로 휘어지는 2단계 곡선으로 변경
+- 본체 주변에 서로 다른 진폭으로 흔들리는 보조 물줄기 2개를 추가
+- 관련 경로: `Assets/Scripts/UI/VFX/ShuffleTransferVfx.cs`, `Assets/Prefabs/VFX/VFX_DeckShuffleTransfer.prefab`
+- 검증: 정적 참조 및 Unity 컴파일 로그 점검, Play Mode 시각 확인 필요
+- 상승 배율을 6으로 높이고 상승 구간을 전체 이동의 40%로 확대
+- 손패 상단을 통과한 뒤 뽑을 덱 가까이에서 하강하도록 곡선 제어점 수정
+- 물줄기 주변에 물 재질을 공유하는 작은 물방울 5개 추가
+- 이동 시간을 0.65초로 늦추고 상승 배율을 7.5로 높여 손패 위쪽 경로를 강조
+- 경로 높이는 유지하면서 물줄기, 파동, 물방울과 카드 잔상 시각 크기를 1.35배 확대
+- 밝은 청록과 흰색 하이라이트를 딥 블루·탁한 청록 계열로 낮추고 투명도를 조정
+- 공유 `M_WaterTrail` 원본 재질은 변경하지 않고 전용 프리팹 색상만 수정

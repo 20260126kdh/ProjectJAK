@@ -67,6 +67,46 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private ParticleSystem discardTransformVfxPrefab;
 
+    [Header("셔플 소용돌이 VFX")]
+    [SerializeField]
+    private ParticleSystem shuffleVortexVfxPrefab;
+
+    [Header("전용 덱 셔플 VFX")]
+    [SerializeField]
+    private ShuffleTransferVfx shuffleTransferVfxPrefab;
+
+    [Header("셔플 이동 물살 VFX")]
+    [SerializeField]
+    private ParticleSystem shuffleFlowVfxPrefab;
+
+    [Header("셔플 도착 VFX")]
+    [SerializeField]
+    private ParticleSystem shuffleArrivalVfxPrefab;
+
+    [SerializeField]
+    private float shuffleVortexLeadDuration = 0.6f;
+
+    [SerializeField]
+    private float shuffleFlowMoveDuration = 0.5f;
+
+    [SerializeField]
+    private float shuffleFlowSpawnInterval = 0.06f;
+
+    [SerializeField]
+    private int shuffleFlowCount = 3;
+
+    [SerializeField]
+    private float shuffleFlowArcHeight = 0.6f;
+
+    [SerializeField]
+    private float shuffleVortexScale = 0.35f;
+
+    [SerializeField]
+    private float shuffleFlowScale = 0.18f;
+
+    [SerializeField]
+    private float shuffleArrivalScale = 0.2f;
+
     [SerializeField]
     private float discardTransformDuration = 0.6f;
 
@@ -105,6 +145,7 @@ public class HandManager : MonoBehaviour
     private float discardCardMoveInterval = 0.5f;
 
     private Coroutine discardMoveTestCoroutine;
+    private Coroutine shuffleVfxTestCoroutine;
     private bool isDiscardAnimationPlaying;
     private Coroutine drawAnimationCoroutine;
     private bool isDrawAnimationPlaying;
@@ -197,6 +238,350 @@ public class HandManager : MonoBehaviour
         }
 
         PlayDiscardArrivalVfx(true);
+    }
+
+    /// <summary>
+    /// 버림 더미 소용돌이 이후 난류가 뽑을 더미로 이동하는 셔플 VFX를 테스트합니다.
+    /// 카드 및 덱 데이터는 변경하지 않습니다.
+    /// </summary>
+    [ContextMenu("셔플 VFX 테스트")]
+    public void PlayShuffleVfxTest()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning(
+                "[HandManager] 셔플 VFX 테스트는 Play Mode에서만 실행할 수 있습니다."
+            );
+
+            return;
+        }
+
+        if (shuffleVfxTestCoroutine != null)
+        {
+            Debug.LogWarning(
+                "[HandManager] 셔플 VFX 테스트가 이미 실행 중입니다."
+            );
+
+            return;
+        }
+
+        shuffleVfxTestCoroutine = StartCoroutine(
+            PlayDedicatedShuffleVfxTestCoroutine()
+        );
+    }
+
+    /// <summary>
+    /// 전용 셔플 프리팹으로 응축, 셔플, 이동과 재구성 연출을 테스트합니다.
+    /// </summary>
+    private IEnumerator PlayDedicatedShuffleVfxTestCoroutine()
+    {
+        if (
+            discardPileTarget == null ||
+            drawPileTarget == null ||
+            shuffleTransferVfxPrefab == null
+        )
+        {
+            Debug.LogError(
+                "[HandManager] 전용 셔플 VFX 테스트 설정이 누락되었습니다."
+            );
+            shuffleVfxTestCoroutine = null;
+            yield break;
+        }
+
+        if (
+            !TryConvertUiPositionToVfxWorldPosition(
+                discardPileTarget.position,
+                out Vector3 discardWorldPosition
+            ) ||
+            !TryConvertUiPositionToVfxWorldPosition(
+                drawPileTarget.position,
+                out Vector3 drawWorldPosition
+            )
+        )
+        {
+            shuffleVfxTestCoroutine = null;
+            yield break;
+        }
+
+        ShuffleTransferVfx shuffleVfx = Instantiate(
+            shuffleTransferVfxPrefab,
+            Vector3.zero,
+            Quaternion.identity
+        );
+        bool isCompleted = false;
+        shuffleVfx.Play(
+            discardWorldPosition,
+            drawWorldPosition,
+            () => isCompleted = true
+        );
+
+        while (!isCompleted && shuffleVfx != null)
+        {
+            yield return null;
+        }
+
+        shuffleVfxTestCoroutine = null;
+
+        Debug.Log(
+            "[HandManager] 전용 셔플 VFX 테스트 완료 / 덱 데이터 변경 없음"
+        );
+    }
+
+    /// <summary>
+    /// 셔플 VFX의 순서와 이동 경로만 재생합니다.
+    /// </summary>
+    private IEnumerator PlayShuffleVfxTestCoroutine()
+    {
+        if (
+            discardPileTarget == null ||
+            drawPileTarget == null ||
+            shuffleVortexVfxPrefab == null ||
+            shuffleFlowVfxPrefab == null ||
+            shuffleArrivalVfxPrefab == null
+        )
+        {
+            Debug.LogError(
+                "[HandManager] 셔플 VFX 테스트에 필요한 위치 또는 프리팹이 연결되지 않았습니다."
+            );
+            shuffleVfxTestCoroutine = null;
+            yield break;
+        }
+
+        if (
+            !TryConvertUiPositionToVfxWorldPosition(
+                discardPileTarget.position,
+                out Vector3 discardWorldPosition
+            ) ||
+            !TryConvertUiPositionToVfxWorldPosition(
+                drawPileTarget.position,
+                out Vector3 drawWorldPosition
+            )
+        )
+        {
+            shuffleVfxTestCoroutine = null;
+            yield break;
+        }
+
+        ParticleSystem vortexVfx = Instantiate(
+            shuffleVortexVfxPrefab,
+            discardWorldPosition,
+            Quaternion.identity
+        );
+        vortexVfx.transform.localScale =
+            Vector3.one * Mathf.Max(0f, shuffleVortexScale);
+        DestroyParticleVfxAfterPlayback(vortexVfx);
+
+        yield return new WaitForSeconds(
+            Mathf.Max(0f, shuffleVortexLeadDuration)
+        );
+
+        int flowCount = Mathf.Max(1, shuffleFlowCount);
+
+        for (int i = 0; i < flowCount; i++)
+        {
+            StartCoroutine(
+                AnimateShuffleFlowCoroutine(
+                    discardWorldPosition,
+                    drawWorldPosition,
+                    i,
+                    flowCount
+                )
+            );
+
+            if (i < flowCount - 1)
+            {
+                yield return new WaitForSeconds(
+                    Mathf.Max(0f, shuffleFlowSpawnInterval)
+                );
+            }
+        }
+
+        yield return new WaitForSeconds(
+            Mathf.Max(0f, shuffleFlowMoveDuration)
+        );
+
+        ParticleSystem arrivalVfx = Instantiate(
+            shuffleArrivalVfxPrefab,
+            drawWorldPosition,
+            Quaternion.identity
+        );
+        arrivalVfx.transform.localScale =
+            Vector3.one * Mathf.Max(0f, shuffleArrivalScale);
+        DisableTallShuffleArrivalParts(arrivalVfx.transform);
+        DestroyParticleVfxAfterPlayback(arrivalVfx);
+
+        shuffleVfxTestCoroutine = null;
+
+        Debug.Log(
+            "[HandManager] 셔플 VFX 테스트 완료 / 덱 데이터 변경 없음"
+        );
+    }
+
+    /// <summary>
+    /// 작은 물살 하나를 서로 다른 곡선으로 이동시켜
+    /// 여러 장의 카드가 물살에 섞여 이동하는 느낌을 만듭니다.
+    /// </summary>
+    private IEnumerator AnimateShuffleFlowCoroutine(
+        Vector3 startPosition,
+        Vector3 endPosition,
+        int flowIndex,
+        int flowCount)
+    {
+        Vector3 travelDirection = endPosition - startPosition;
+        Vector3 perpendicular = new Vector3(
+            -travelDirection.y,
+            travelDirection.x,
+            0f
+        ).normalized;
+        float centeredIndex =
+            flowIndex - (flowCount - 1) * 0.5f;
+        Vector3 spreadOffset =
+            perpendicular * centeredIndex * 0.18f;
+        Vector3 flowStartPosition =
+            startPosition + spreadOffset;
+        Vector3 controlPosition =
+            Vector3.Lerp(flowStartPosition, endPosition, 0.5f) +
+            Vector3.up *
+            Mathf.Max(0f, shuffleFlowArcHeight) *
+            (0.8f + flowIndex * 0.2f) +
+            spreadOffset * 0.4f;
+
+        ParticleSystem flowVfx = Instantiate(
+            shuffleFlowVfxPrefab,
+            flowStartPosition,
+            Quaternion.identity
+        );
+        ConfigureShuffleFlowParts(flowVfx.transform);
+        flowVfx.transform.localScale =
+            Vector3.one * Mathf.Max(0f, shuffleFlowScale);
+
+        float moveDuration =
+            Mathf.Max(0f, shuffleFlowMoveDuration);
+        float elapsedTime = 0f;
+
+        while (elapsedTime < moveDuration)
+        {
+            if (flowVfx == null)
+            {
+                yield break;
+            }
+
+            float progress = moveDuration > 0f
+                ? Mathf.Clamp01(elapsedTime / moveDuration)
+                : 1f;
+            float easedProgress =
+                1f - Mathf.Pow(1f - progress, 2f);
+            Vector3 firstHalf = Vector3.Lerp(
+                flowStartPosition,
+                controlPosition,
+                easedProgress
+            );
+            Vector3 secondHalf = Vector3.Lerp(
+                controlPosition,
+                endPosition,
+                easedProgress
+            );
+
+            flowVfx.transform.position = Vector3.Lerp(
+                firstHalf,
+                secondHalf,
+                easedProgress
+            );
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (flowVfx != null)
+        {
+            flowVfx.transform.position = endPosition;
+            flowVfx.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmitting
+            );
+            DestroyParticleVfxAfterPlayback(flowVfx);
+        }
+    }
+
+    /// <summary>
+    /// 이동 물살에서 고정 지면과 큰 폭발 파트를 제외해
+    /// 작은 물빛과 입자 꼬리만 남깁니다.
+    /// </summary>
+    private void ConfigureShuffleFlowParts(
+        Transform flowRoot)
+    {
+        if (flowRoot == null)
+        {
+            return;
+        }
+
+        for (int i = flowRoot.childCount - 1; i >= 0; i--)
+        {
+            Transform child = flowRoot.GetChild(i);
+            string childName = child.name.ToLowerInvariant();
+            bool shouldDisable =
+                childName == "explosion_highlight" ||
+                childName == "splash_ground" ||
+                childName == "splash_view";
+
+            if (shouldDisable)
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 셔플 도착 VFX에서 높은 물기둥만 끄고
+    /// 낮은 물결과 입자만 표시합니다.
+    /// </summary>
+    private void DisableTallShuffleArrivalParts(
+        Transform arrivalRoot)
+    {
+        if (arrivalRoot == null)
+        {
+            return;
+        }
+
+        for (int i = arrivalRoot.childCount - 1; i >= 0; i--)
+        {
+            Transform child = arrivalRoot.GetChild(i);
+            string childName = child.name.ToLowerInvariant();
+
+            if (childName.StartsWith("splash_long"))
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 모든 자식 Particle System의 재생 시간을 계산해 VFX를 제거합니다.
+    /// </summary>
+    private void DestroyParticleVfxAfterPlayback(
+        ParticleSystem rootParticleSystem)
+    {
+        if (rootParticleSystem == null)
+        {
+            return;
+        }
+
+        float cleanupDelay = 0f;
+        ParticleSystem[] particleSystems =
+            rootParticleSystem.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem particleSystem in particleSystems)
+        {
+            ParticleSystem.MainModule main = particleSystem.main;
+            float playbackDuration =
+                main.startDelay.constantMax +
+                main.duration +
+                main.startLifetime.constantMax;
+
+            cleanupDelay = Mathf.Max(cleanupDelay, playbackDuration);
+        }
+
+        Destroy(rootParticleSystem.gameObject, cleanupDelay);
     }
 
     /// <summary>

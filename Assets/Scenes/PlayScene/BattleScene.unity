@@ -4424,6 +4424,18 @@ MonoBehaviour:
   discardPileTarget: {fileID: 1046424323}
   discardArrivalVfxPrefab: {fileID: 2554184690986698155, guid: 0d3dc4a7189dfa44290a91d7027d4281, type: 3}
   discardTransformVfxPrefab: {fileID: 118141701674537309, guid: 21ca2f831e2ab494fb0d4cbd63c60011, type: 3}
+  shuffleVortexVfxPrefab: {fileID: 6484756454414123860, guid: c57a4415a7b22524fb22e9ce7a7cd7a5, type: 3}
+  shuffleTransferVfxPrefab: {fileID: 11400000, guid: dc9c65451ed64fb2a28df29d5015a771, type: 3}
+  shuffleFlowVfxPrefab: {fileID: 118141701674537309, guid: 21ca2f831e2ab494fb0d4cbd63c60011, type: 3}
+  shuffleArrivalVfxPrefab: {fileID: 8566467169595368490, guid: 05b343ad6f40dff4592d7b697606f0d1, type: 3}
+  shuffleVortexLeadDuration: 0.6
+  shuffleFlowMoveDuration: 0.5
+  shuffleFlowSpawnInterval: 0.06
+  shuffleFlowCount: 3
+  shuffleFlowArcHeight: 0.6
+  shuffleVortexScale: 0.35
+  shuffleFlowScale: 0.18
+  shuffleArrivalScale: 0.2
   cardPrefab: {fileID: 5473703925399372580, guid: 93e4a0b158ea9c9428cf17fc8a4a9b7c, type: 3}
   endTurnButtonObject: {fileID: 1070643219}
   preserveConfirmButtonObject: {fileID: 692912761}
