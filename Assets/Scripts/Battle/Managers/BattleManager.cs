@@ -1256,6 +1256,52 @@ public class BattleManager : MonoBehaviour
         EndBattle();
     }
 
+#if UNITY_EDITOR
+
+    /// <summary>
+    /// 테스트 편의를 위해 현재 일반 전투를 즉시 승리 처리합니다.
+    /// 보스 전투와 시작 전 또는 이미 종료된 전투에서는 실행하지 않습니다.
+    /// </summary>
+    /// <returns>일반 전투 종료 처리를 실행했다면 true를 반환합니다.</returns>
+    public bool SkipNormalBattleForTesting()
+    {
+        if (!isBattleStarted)
+        {
+            Debug.LogWarning(
+                "[BattleManager] 시작되지 않았거나 이미 종료된 전투는 " +
+                "넘길 수 없습니다."
+            );
+
+            return false;
+        }
+
+        StageManager stageManager = StageManager.Instance;
+
+        if (stageManager == null)
+        {
+            stageManager = FindFirstObjectByType<StageManager>();
+        }
+
+        if (stageManager == null ||
+            stageManager.CurrentPhase != StagePhase.NormalBattle)
+        {
+            Debug.LogWarning(
+                "[BattleManager] F10 전투 넘기기는 일반 전투에서만 사용할 수 있습니다."
+            );
+
+            return false;
+        }
+
+        Debug.Log(
+            "[BattleManager] F10 테스트 단축키 - 일반 전투 즉시 승리"
+        );
+
+        EndBattle();
+        return true;
+    }
+
+#endif
+
     /// <summary>
     /// 현재 전투에 소환된 모든 선원을 제거합니다.
     /// </summary>

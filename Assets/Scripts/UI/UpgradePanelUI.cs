@@ -33,11 +33,81 @@ public class UpgradePanelUI : MonoBehaviour
     [SerializeField]
     private Button confirmButton;
 
+    [Header("강화 망치 VFX")]
+    [SerializeField]
+    private CardUpgradeHammerVfx upgradeHammerVfxPrefab;
+
+    [Header("전투 손패")]
+    [SerializeField]
+    private GameObject handCardParentObject;
+
     private readonly List<CardUI> cardUIs =
         new List<CardUI>();
 
     private CardUI selectedCardUI;
     private CardData selectedCardData;
+    private bool isUpgradeVfxPlaying;
+    private bool wasHandCardParentActive;
+    private bool hasStoredHandCardParentState;
+
+    [ContextMenu("강화 망치 VFX 테스트")]
+    private void PlayUpgradeHammerVfxTest()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("[UpgradePanelUI] 강화 망치 VFX 테스트는 Play Mode에서 실행해야 합니다.");
+            return;
+        }
+
+        if (isUpgradeVfxPlaying || selectedCardUI == null)
+        {
+            Debug.LogWarning("[UpgradePanelUI] 테스트할 강화 카드를 먼저 선택해야 합니다.");
+            return;
+        }
+
+        RectTransform selectedCardRect = selectedCardUI.transform as RectTransform;
+
+        if (selectedCardRect == null || upgradeHammerVfxPrefab == null || panel == null)
+        {
+            Debug.LogError("[UpgradePanelUI] 강화 망치 VFX 테스트 설정이 누락되었습니다.");
+            return;
+        }
+
+        isUpgradeVfxPlaying = true;
+        SetUpgradeInteractionLocked(true);
+
+        CardUpgradeHammerVfx hammerVfx = Instantiate(
+            upgradeHammerVfxPrefab,
+            panel.transform,
+            false
+        );
+        hammerVfx.transform.SetAsLastSibling();
+        hammerVfx.Play(
+            selectedCardRect,
+            null,
+            () =>
+            {
+                isUpgradeVfxPlaying = false;
+                SetUpgradeInteractionLocked(false);
+            }
+        );
+    }
+
+    private void SetUpgradeInteractionLocked(bool locked)
+    {
+        foreach (CardUI cardUI in cardUIs)
+        {
+            if (cardUI != null)
+            {
+                cardUI.SetUpgradeSelectionLocked(locked);
+            }
+        }
+
+        if (confirmButton != null)
+        {
+            confirmButton.interactable = !locked && selectedCardData != null;
+        }
+    }
 
     private void Awake()
     {
@@ -59,6 +129,7 @@ public class UpgradePanelUI : MonoBehaviour
         }
 
         panel.SetActive(true);
+        HideHandCards();
 
         ResetSelection();
         RefreshCards();
@@ -81,6 +152,38 @@ public class UpgradePanelUI : MonoBehaviour
         }
 
         panel.SetActive(false);
+        RestoreHandCards();
+    }
+
+    private void HideHandCards()
+    {
+        if (handCardParentObject == null)
+        {
+            return;
+        }
+
+        if (!hasStoredHandCardParentState)
+        {
+            wasHandCardParentActive = handCardParentObject.activeSelf;
+            hasStoredHandCardParentState = true;
+        }
+
+        handCardParentObject.SetActive(false);
+    }
+
+    private void RestoreHandCards()
+    {
+        if (!hasStoredHandCardParentState)
+        {
+            return;
+        }
+
+        if (handCardParentObject != null)
+        {
+            handCardParentObject.SetActive(wasHandCardParentActive);
+        }
+
+        hasStoredHandCardParentState = false;
     }
 
     /// <summary>

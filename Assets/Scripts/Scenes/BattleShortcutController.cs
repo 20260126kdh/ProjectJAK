@@ -9,6 +9,7 @@ using UnityEngine;
 /// - D: 전체 덱 보기
 /// - A: 뽑을 패 더미 보기
 /// - S: 버림 패 더미 보기
+/// - F10: 현재 일반 전투 즉시 승리 처리(Editor 전용)
 ///
 /// Esc 입력은 이 클래스에서 처리하지 않습니다.
 /// 덱 화면 닫기와 일시정지는 PauseManager가 전담합니다.
@@ -35,12 +36,22 @@ public class BattleShortcutController : MonoBehaviour
     [SerializeField]
     private BattleUIManager battleUIManager;
 
+    [Header("Battle Manager")]
+    [SerializeField]
+    private BattleManager battleManager;
+
     private void Awake()
     {
         if (battleUIManager == null)
         {
             battleUIManager =
                 FindFirstObjectByType<BattleUIManager>();
+        }
+
+        if (battleManager == null)
+        {
+            battleManager =
+                FindFirstObjectByType<BattleManager>();
         }
     }
 
@@ -103,6 +114,15 @@ public class BattleShortcutController : MonoBehaviour
         {
             return;
         }
+
+#if UNITY_EDITOR
+
+        if (HandleNormalBattleSkipInput())
+        {
+            return;
+        }
+
+#endif
 
         /*
          * 카드 목록 화면이 닫혀 있다면
@@ -247,6 +267,36 @@ public class BattleShortcutController : MonoBehaviour
 #if UNITY_EDITOR
 
     /// <summary>
+    /// F10 입력으로 현재 일반 전투를 즉시 승리 처리합니다.
+    /// 보스 전투와 이미 종료된 전투에서는 실행되지 않습니다.
+    /// </summary>
+    /// <returns>F10 입력을 감지했다면 true를 반환합니다.</returns>
+    private bool HandleNormalBattleSkipInput()
+    {
+        if (!Input.GetKeyDown(KeyCode.F10))
+        {
+            return false;
+        }
+
+        if (battleManager == null)
+        {
+            Debug.LogError(
+                "[BattleShortcutController] BattleManager가 연결되지 않아 " +
+                "일반 전투를 넘길 수 없습니다."
+            );
+
+            return true;
+        }
+
+        battleManager.SkipNormalBattleForTesting();
+        return true;
+    }
+
+#endif
+
+#if UNITY_EDITOR
+
+    /// <summary>
     /// Inspector에서 참조가 비어 있다면
     /// 현재 씬에서 자동으로 탐색합니다.
     /// </summary>
@@ -280,6 +330,12 @@ public class BattleShortcutController : MonoBehaviour
         {
             battleUIManager =
                 FindFirstObjectByType<BattleUIManager>();
+        }
+
+        if (battleManager == null)
+        {
+            battleManager =
+                FindFirstObjectByType<BattleManager>();
         }
     }
 

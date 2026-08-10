@@ -2214,6 +2214,7 @@ MonoBehaviour:
   turnManager: {fileID: 729106090}
   startingDeckUI: {fileID: 1394341546}
   pauseManager: {fileID: 84682307}
+  battleManager: {fileID: 1757670132}
 --- !u!1 &312040569
 GameObject:
   m_ObjectHideFlags: 0
@@ -8593,6 +8594,8 @@ MonoBehaviour:
   cardParent: {fileID: 1307728246}
   cardPrefab: {fileID: 5473703925399372580, guid: 93e4a0b158ea9c9428cf17fc8a4a9b7c, type: 3}
   confirmButton: {fileID: 2104874852}
+  upgradeHammerVfxPrefab: {fileID: 11400000, guid: ad21b636bfd648b287a417b292c3ebb8, type: 3}
+  handCardParentObject: {fileID: 1286685306}
 --- !u!1 &1095444282
 GameObject:
   m_ObjectHideFlags: 0
