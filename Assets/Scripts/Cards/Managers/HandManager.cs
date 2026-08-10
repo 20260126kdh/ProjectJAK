@@ -45,6 +45,10 @@ public class HandManager : MonoBehaviour
     [SerializeField]
     private Transform handCardParent;
 
+    [Header("뽑을 더미 시작 위치")]
+    [SerializeField]
+    private RectTransform drawPileTarget;
+
     [Header("버림 더미 도착 위치")]
     [SerializeField]
     private RectTransform discardPileTarget;
@@ -67,7 +71,11 @@ public class HandManager : MonoBehaviour
 
     [Header("버림 카드 이동 테스트")]
     [SerializeField]
-    private float discardMoveDuration = 0.7f;
+    private float discardMoveDuration = 0.54f;
+
+    [Header("드로우 카드 이동")]
+    [SerializeField]
+    private float drawMoveDuration = 0.27f;
 
     [SerializeField]
     private float discardRotationDegrees = 45f;
@@ -94,6 +102,10 @@ public class HandManager : MonoBehaviour
 
     private Coroutine discardMoveTestCoroutine;
     private bool isDiscardAnimationPlaying;
+    private Coroutine drawAnimationCoroutine;
+    private bool isDrawAnimationPlaying;
+    private bool applyJinxAfterDraw;
+    private bool wasEndTurnButtonActive;
 
     private sealed class DiscardCardTestState
     {
@@ -757,6 +769,8 @@ public class HandManager : MonoBehaviour
             return;
         }
 
+        int firstDrawnCardIndex = handCards.Count;
+
         for (int i = 0; i < drawCount; i++)
         {
             CardData drawnCard =
@@ -777,10 +791,191 @@ public class HandManager : MonoBehaviour
 
         RefreshHandUI();
 
+        int drawnCardCount =
+            handCards.Count - firstDrawnCardIndex;
+
+        if (drawnCardCount > 0)
+        {
+            StartDrawAnimation(
+                firstDrawnCardIndex,
+                drawnCardCount
+            );
+        }
+
         Debug.Log(
             $"[HandManager] 현재 손패: " +
             $"{handCards.Count}장"
         );
+    }
+
+    /// <summary>
+    /// 새로 뽑은 카드 UI를 뽑을 더미에서 손패로 순차 이동시킵니다.
+    /// </summary>
+    private void StartDrawAnimation(
+        int firstDrawnCardIndex,
+        int drawnCardCount)
+    {
+        if (drawPileTarget == null)
+        {
+            Debug.LogError(
+                "[HandManager] 뽑을 더미 시작 위치가 연결되지 않아 드로우 연출을 생략합니다."
+            );
+
+            return;
+        }
+
+        if (drawAnimationCoroutine != null)
+        {
+            Debug.LogWarning(
+                "[HandManager] 드로우 연출이 이미 진행 중입니다."
+            );
+
+            return;
+        }
+
+        drawAnimationCoroutine = StartCoroutine(
+            PlayDrawCardsCoroutine(
+                firstDrawnCardIndex,
+                drawnCardCount
+            )
+        );
+    }
+
+    /// <summary>
+    /// 드로우된 카드를 한 장씩 활성화하여 최종 손패 위치로 이동시킵니다.
+    /// </summary>
+    private IEnumerator PlayDrawCardsCoroutine(
+        int firstDrawnCardIndex,
+        int drawnCardCount)
+    {
+        List<CardUI> drawnCardUIs = new List<CardUI>();
+        List<Vector3> targetPositions = new List<Vector3>();
+        List<Quaternion> targetRotations = new List<Quaternion>();
+
+        int lastDrawnCardIndex = Mathf.Min(
+            firstDrawnCardIndex + drawnCardCount,
+            handCardUIs.Count
+        );
+
+        for (int i = lastDrawnCardIndex - 1;
+             i >= firstDrawnCardIndex;
+             i--)
+        {
+            CardUI cardUI = handCardUIs[i];
+
+            if (cardUI == null)
+            {
+                continue;
+            }
+
+            RectTransform cardRectTransform =
+                cardUI.GetComponent<RectTransform>();
+
+            if (cardRectTransform == null)
+            {
+                continue;
+            }
+
+            drawnCardUIs.Add(cardUI);
+            targetPositions.Add(cardRectTransform.position);
+            targetRotations.Add(cardRectTransform.localRotation);
+            cardUI.gameObject.SetActive(false);
+        }
+
+        isDrawAnimationPlaying = true;
+
+        if (endTurnButtonObject != null)
+        {
+            wasEndTurnButtonActive = endTurnButtonObject.activeSelf;
+            endTurnButtonObject.SetActive(false);
+        }
+
+        float moveDuration = Mathf.Max(0f, drawMoveDuration);
+
+        for (int i = 0; i < drawnCardUIs.Count; i++)
+        {
+            CardUI cardUI = drawnCardUIs[i];
+
+            if (cardUI == null)
+            {
+                continue;
+            }
+
+            RectTransform cardRectTransform =
+                cardUI.GetComponent<RectTransform>();
+
+            if (cardRectTransform == null)
+            {
+                continue;
+            }
+
+            cardUI.gameObject.SetActive(true);
+            cardRectTransform.position = drawPileTarget.position;
+            cardRectTransform.localRotation = Quaternion.identity;
+
+            float elapsedTime = 0f;
+
+            while (elapsedTime < moveDuration)
+            {
+                if (cardUI == null || drawPileTarget == null)
+                {
+                    CompleteDrawAnimation(drawnCardUIs);
+                    yield break;
+                }
+
+                float progress = moveDuration > 0f
+                    ? Mathf.Clamp01(elapsedTime / moveDuration)
+                    : 1f;
+                float easedProgress = progress * progress;
+
+                cardRectTransform.position = Vector3.Lerp(
+                    drawPileTarget.position,
+                    targetPositions[i],
+                    easedProgress
+                );
+                cardRectTransform.localRotation = Quaternion.Lerp(
+                    Quaternion.identity,
+                    targetRotations[i],
+                    easedProgress
+                );
+
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            cardRectTransform.position = targetPositions[i];
+            cardRectTransform.localRotation = targetRotations[i];
+        }
+
+        CompleteDrawAnimation(drawnCardUIs);
+    }
+
+    /// <summary>
+    /// 드로우 연출 상태를 정리하고 대기 중인 Jinx 처리를 실행합니다.
+    /// </summary>
+    private void CompleteDrawAnimation(List<CardUI> drawnCardUIs)
+    {
+        foreach (CardUI cardUI in drawnCardUIs)
+        {
+            if (cardUI != null)
+            {
+                cardUI.gameObject.SetActive(true);
+            }
+        }
+
+        isDrawAnimationPlaying = false;
+        drawAnimationCoroutine = null;
+
+        if (endTurnButtonObject != null && wasEndTurnButtonActive)
+        {
+            endTurnButtonObject.SetActive(true);
+        }
+
+        if (applyJinxAfterDraw)
+        {
+            applyJinxAfterDraw = false;
+            ApplyJinxToRandomCard();
+        }
     }
 
     /// <summary>
@@ -905,6 +1100,7 @@ public class HandManager : MonoBehaviour
     public void SelectCardByIndex(int index)
     {
         if (
+            isDrawAnimationPlaying ||
             isDiscardAnimationPlaying ||
             discardMoveTestCoroutine != null
         )
@@ -944,6 +1140,12 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void ApplyJinxToRandomCard()
     {
+        if (isDrawAnimationPlaying)
+        {
+            applyJinxAfterDraw = true;
+            return;
+        }
+
         ClearJinxedCard();
 
         PlayerCombat playerCombat =
@@ -1026,6 +1228,7 @@ public class HandManager : MonoBehaviour
     public void RequestSelectCard(CardUI cardUI)
     {
         if (
+            isDrawAnimationPlaying ||
             isDiscardAnimationPlaying ||
             discardMoveTestCoroutine != null
         )
@@ -1066,6 +1269,7 @@ public class HandManager : MonoBehaviour
     public void StartPreserveMode()
     {
         if (
+            isDrawAnimationPlaying ||
             isDiscardAnimationPlaying ||
             discardMoveTestCoroutine != null
         )
@@ -1157,6 +1361,7 @@ public class HandManager : MonoBehaviour
     public void ConfirmPreserveCard()
     {
         if (
+            isDrawAnimationPlaying ||
             isDiscardAnimationPlaying ||
             discardMoveTestCoroutine != null
         )

@@ -129,3 +129,35 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 ## 다음 작업
 
 사용자가 `다음`이라고 하면 8단계 재셔플 연출을 설계한다. 승인 전에는 재셔플 코드와 VFX를 수정하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+뽑을 더미에서 손패로 순차 드로우 연출
+
+## 목표
+
+- 새로 뽑히는 카드가 `Decktodrawfrom`에서 각 카드의 최종 손패 위치로 이동한다.
+- 여러 장은 오른쪽 손패 자리부터 왼쪽 방향으로 한 장씩 이동한다.
+- 드로우 이동 시간은 `0.27초`로, 버림 카드 `0.54초`보다 2배 빠르게 재생한다.
+- 기존 드로우, 덱 재생성, Jinx와 턴 시작 규칙을 보존한다.
+
+## 현재 상태
+
+구현 및 사용자 Unity Play Mode 확인 완료
+
+## 수정 대상
+
+- `Assets/Scripts/Cards/Managers/HandManager.cs`
+- `Assets/Scenes/PlayScene/BattleScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 최초 4장과 새 턴 부족분이 오른쪽 자리부터 한 장씩 이동한다.
+- 카드 효과 드로우에도 같은 연출이 적용된다.
+- 연출 중 카드 선택과 턴 종료가 차단된다.
+- Jinx 상태가 드로우 완료 후 정상 표시된다.
+- Unity 컴파일 오류와 Missing Reference가 없다.

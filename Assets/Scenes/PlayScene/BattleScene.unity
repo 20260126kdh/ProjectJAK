@@ -4418,6 +4418,7 @@ MonoBehaviour:
   isPreserveMode: 0
   jinxedHandIndex: -1
   handCardParent: {fileID: 1286685307}
+  drawPileTarget: {fileID: 1120639609}
   discardPileTarget: {fileID: 1046424323}
   discardArrivalVfxPrefab: {fileID: 2554184690986698155, guid: 0d3dc4a7189dfa44290a91d7027d4281, type: 3}
   discardTransformVfxPrefab: {fileID: 118141701674537309, guid: 21ca2f831e2ab494fb0d4cbd63c60011, type: 3}

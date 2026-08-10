@@ -61,6 +61,30 @@
 
 ## 기록 형식
 
+## 2026-08-10 — 손패 버림 덱 이동 속도 조정
+
+- 손패 카드가 버림 덱까지 이동하는 시간을 `0.7초`에서 `0.54초`로 단축하여 이동 속도를 약 30% 높임
+- 관련 경로: `Assets/Scripts/Cards/Managers/HandManager.cs`
+- Inspector/데이터 변경 없음
+- 검증: 사용자 Unity Play Mode 확인 완료
+
+## 2026-08-10 — 뽑을 더미에서 손패로 순차 드로우 연출
+
+- 새로 뽑은 카드 UI를 `Decktodrawfrom`에서 최종 손패 위치로 한 장씩 이동하도록 연결
+- 카드 데이터와 최종 손패 순서는 유지하고 오른쪽 손패 자리부터 왼쪽 방향으로 이동 연출
+- 드로우 이동 시간을 `0.27초`로 분리하여 버림 카드 `0.54초`보다 2배 빠르게 재생하고 연출 중 카드 선택과 턴 종료를 차단
+- 턴 시작 Jinx 표시는 드로우 연출 완료 후 적용되도록 연결
+- 관련 경로: `Assets/Scripts/Cards/Managers/HandManager.cs`, `Assets/Scenes/PlayScene/BattleScene.unity`
+- Inspector/데이터 변경: `HandManager.drawPileTarget`에 `Decktodrawfrom` RectTransform 연결
+- 검증: 사용자 Unity Play Mode에서 드로우 속도·순서·동작 확인 완료
+
+## 2026-08-10 — TEC_SKL_006 소멸 데이터 동기화
+
+- `CardEffects.csv`의 `Exit` 설정에 맞춰 `TEC_SKL_006.asset` 두 번째 효과를 `Toxic`에서 `Exit`으로 동기화
+- 관련 경로: `Assets/Data/CSV/CardEffects.csv`, `Assets/Data/ScriptableObjects/Cards/TEC_SKL_006.asset`
+- Inspector/데이터 변경: `statusEffectType` enum 직렬화 값 `23` → `24`
+- 검증: CSV와 ScriptableObject 일치, Unity 오류 로그 0건, 사용자 Play Mode 소멸 동작 확인 완료
+
 ```text
 ## YYYY-MM-DD — 기능명
 
