@@ -371,3 +371,434 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 - 저장 후 종료로 타이틀에 돌아온 뒤 새 게임을 시작하면 Stage 1 일반 전투부터 시작한다.
 - 이전 런의 스테이지, 전투 횟수, 진행 단계와 선택 보스 상태가 남지 않는다.
 - 이어하기는 저장된 진행도를 기존과 동일하게 복원한다.
+
+# 현재 작업 변경
+
+## 작업명
+
+게임 화면 전환 페이드
+
+## 현재 상태
+
+구현 완료 — Unity 컴파일 및 Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/UI/ScreenFadeController.cs`
+- `Assets/Scripts/Scenes/Managers/ClassSelectManager.cs`
+- `Assets/Scripts/Battle/Managers/BattleManager.cs`
+- `Assets/Scripts/Core/PauseManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 최초 실행 시 0.64초 페이드 아웃 후 3프레임 페이드 인을 재생한다.
+- 클래스 선택 후 전투 진입과 다음 전투 진입 시 0.32초 페이드 아웃, 0.24초 페이드 인을 재생한다.
+- 타이틀 복귀 시 0.15초 페이드 아웃, 1.56초 페이드 인을 재생한다.
+- 페이드 중 중복 입력을 차단하고 일시정지 상태에서도 전환을 완료한다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 선택 카드 확장 UI 1단계
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/UI/ClassSelectionCardUI.cs`
+- `Assets/Scripts/Scenes/Managers/ClassSelectManager.cs`
+- `Assets/Scripts/Scenes/ClassSelectShortcutController.cs`
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 기본 화면에서 세 클래스 카드가 기존 위치에 표시된다.
+- 선택 카드는 0.16초 동안 중앙으로 이동하며 확대된다.
+- 나머지 두 카드는 좌우 끝으로 이동하며 축소된다.
+- 선택 해제 시 모든 카드가 원래 위치와 크기로 복원된다.
+- 프레임 PNG가 없으면 클래스별 임시 색상을 사용한다.
+- 추후 Inspector에 9-slice Sprite를 연결하면 코드 변경 없이 프레임을 교체할 수 있다.
+- 클릭, 숫자키 1·2·3, Enter와 Esc 입력이 기존 선택·확정·취소 규칙과 함께 동작한다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 상세 정보 및 가로형 비율 조정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Scenes/Managers/ClassSelectManager.cs`
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 선택 카드와 상세 패널이 기획서 기준 약 1.78:1 가로 비율로 표시된다.
+- 캐릭터 영역과 정보 영역이 약 25:75 비율로 표시된다.
+- 피지크 최대 체력 95, 전투 종료 회복량 7이 표시된다.
+- 테크니션 최대 체력 75, 작살잡이 스택 4회 기준 패시브가 표시된다.
+- 캡틴 최대 체력 75, 선원 2명·체력 12·공격 시 작살잡이 스택 2 패시브가 표시된다.
+- 실제 전투 패시브 로직과 시작 데이터는 이번 단계에서 변경하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 상세 패시브 설명 영역 넘침 수정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 테크니션과 캡틴의 패시브 설명이 패시브 패널 밖으로 나오지 않는다.
+- 긴 패시브 설명은 패널 안에서 줄바꿈되고 26~42 범위에서 자동으로 크기가 조정된다.
+- 피지크, 테크니션, 캡틴 모두 동일한 텍스트 표시 규칙을 사용한다.
+- 패시브 설명과 클래스 로그라인 영역이 겹치지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 상세 패시브 칸 비율 재조정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 클래스명, 체력과 패시브 칸의 세로 높이가 서로 어울리게 표시된다.
+- 패시브 칸은 오른쪽 가로 폭을 넓혀 긴 설명을 수용한다.
+- 테크니션과 캡틴 패시브가 24~34 글자 크기 범위에서 읽을 수 있게 표시된다.
+- 패시브 칸과 체력 칸, 로그라인 영역이 서로 겹치지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 상세 패시브 설명 축약
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 피지크 문구는 기존 간결한 설명을 유지한다.
+- 테크니션과 캡틴 패시브 설명은 효과 수치를 유지하면서 짧게 표시한다.
+- 실제 전투 패시브 로직과 UI 비율은 변경하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 설명 칸 위치 및 글자 크기 조정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 클래스 설명 패널이 패시브 영역보다 아래에 분리되어 표시된다.
+- 설명 텍스트가 설명 패널 중앙에 표시된다.
+- 패시브와 설명 텍스트가 동일한 24~34 자동 글자 크기 규칙을 사용한다.
+- 긴 클래스 설명이 설명 칸 안에서 줄바꿈되어 모두 표시된다.
+
+# 현재 작업 변경
+
+## 작업명
+
+패시브·클래스 설명 글자 크기 방향 정정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 패시브 글자가 기존 클래스 설명과 동일한 고정 크기 50으로 표시된다.
+- 클래스 설명 글자는 기존 고정 크기 50으로 복원된다.
+- 패시브 텍스트 영역은 높이 150에서 줄바꿈된다.
+- 아래로 내린 클래스 설명 패널 위치는 유지한다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 상세 체력·패시브 표기 칸 확대
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 체력 표기 칸이 330×140 크기로 표시된다.
+- 패시브 표기 칸이 680×140 크기로 표시된다.
+- 내부 텍스트 영역도 확대된 칸에 맞춰 조정된다.
+- 기존 글자 크기, 줄바꿈 규칙과 클래스 설명 위치는 유지한다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 상세 정보 칸 비율 및 정렬 통일
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 클래스명과 설명 칸의 좌우 경계가 동일하게 정렬된다.
+- 체력 칸 폭은 240으로 축소된다.
+- 패시브 칸은 남은 가로 공간을 사용하는 약 731 폭으로 확대된다.
+- 체력 칸과 패시브 칸 사이에 10의 간격이 유지된다.
+- 각 칸의 내부 텍스트 좌우 여백은 15로 통일된다.
+
+# 현재 작업 변경
+
+## 작업명
+
+체력·패시브 칸 가로 비율 추가 조정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 체력 칸 폭은 190으로 축소된다.
+- 패시브 칸 폭은 약 781로 확대된다.
+- 두 칸 사이 간격 10과 전체 행 폭 약 981은 유지된다.
+- 클래스명 및 설명 칸과의 좌우 정렬은 유지된다.
+
+# 현재 작업 변경
+
+## 작업명
+
+체력 줄바꿈 및 캡틴 패시브 넘침 수정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 피지크 체력 표기가 한 줄로 표시된다.
+- 캡틴 패시브 설명이 패시브 칸 안에 표시된다.
+- 체력과 패시브 글자 크기 50은 유지된다.
+- 패널 크기와 전체 정렬은 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+체력 및 피지크 패시브 텍스트 정렬
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `Assets/Scripts/Scenes/Managers/ClassSelectManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 모든 클래스의 체력 텍스트가 칸 중앙에 정렬된다.
+- 피지크 패시브 텍스트는 칸의 왼쪽·세로 중앙에 정렬된다.
+- 테크니션과 캡틴 패시브 텍스트는 왼쪽·위쪽 정렬을 유지한다.
+- 클래스 전환 시 이전 클래스의 세로 정렬이 남지 않는다.
+- 폰트 크기와 패널 비율은 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 설명 가독성 줄바꿈 조정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 피지크 설명이 계약 전후와 마지막 강조 문장 단위로 구분된다.
+- 테크니션 설명이 기술 연마와 작살 공격 묘사 단위로 구분된다.
+- 캡틴 설명이 유물 획득, 선원 소환과 선원 행동 단위로 구분된다.
+- 설명 문구, 글자 크기 50과 설명 패널 비율은 유지된다.
+
+# 현재 작업 변경
+
+## 작업명
+
+인게임 기준 클래스 설명 줄바꿈 재조정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 재확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 인게임 표시 폭에서 조사나 어미가 한 글자만 다음 줄로 밀리지 않는다.
+- 피지크 설명은 6개의 의미 단위 줄로 표시된다.
+- 테크니션 설명은 4개의 의미 단위 줄로 표시된다.
+- 캡틴 설명은 6개의 의미 단위 줄로 표시된다.
+- 폰트 크기와 설명 패널 비율은 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 설명 패널 및 텍스트 위치 재조정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 설명 패널이 기존 위치보다 위로 20 이동한다.
+- 설명 텍스트가 패널 내부에서 추가로 위로 15 이동한다.
+- 마지막 설명 줄이 배경 칸 안에 표시된다.
+- 클래스명, 체력, 패시브 칸과 버튼 위치는 유지된다.
+- 문구, 줄바꿈, 글자 크기와 패널 크기는 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 설명 영역 하단 확장
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scenes/PlayScene/Class_SelectScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 설명 패널의 위쪽 경계는 유지된다.
+- 설명 패널이 아래쪽으로 60 확장되어 약 417 높이가 된다.
+- 설명 텍스트 영역이 아래쪽으로 60 확장되어 320 높이가 된다.
+- 마지막 설명 줄이 배경 칸 안에 표시된다.
+- 버튼과 다른 정보 칸의 위치는 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+테크니션 로그라인 세로 중앙 정렬
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Scenes/Managers/ClassSelectManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 테크니션 로그라인 텍스트가 칸의 왼쪽·세로 중앙에 표시된다.
+- 피지크와 캡틴 로그라인은 왼쪽·위쪽 정렬을 유지한다.
+- 클래스 전환 시 이전 클래스의 정렬 상태가 남지 않는다.
+- 문구, 줄바꿈, 글자 크기와 패널 크기는 변경되지 않는다.

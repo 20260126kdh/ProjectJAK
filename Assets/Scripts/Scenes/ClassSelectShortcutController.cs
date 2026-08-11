@@ -25,7 +25,30 @@ public class ClassSelectShortcutController : MonoBehaviour
         }
 
         HandleEscapeInput();
+        HandleClassSelectionInput();
         HandleConfirmInput();
+    }
+
+    /// <summary>
+    /// 숫자키 1, 2, 3으로 클래스를 선택합니다.
+    /// </summary>
+    private void HandleClassSelectionInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1) ||
+            Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            classSelectManager.SelectPhysique();
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2) ||
+                 Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            classSelectManager.SelectTechnician();
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3) ||
+                 Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            classSelectManager.SelectCaptain();
+        }
     }
 
     /// <summary>

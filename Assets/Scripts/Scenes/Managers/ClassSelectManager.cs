@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -23,6 +22,44 @@ public class ClassSelectManager : MonoBehaviour
     [Tooltip("전투 씬의 이름입니다.")]
     [SerializeField]
     private string battleSceneName = "BattleScene";
+
+    [Header("클래스 선택 카드")]
+    [SerializeField]
+    private Button physiqueButton;
+
+    [SerializeField]
+    private Button technicianButton;
+
+    [SerializeField]
+    private Button captainButton;
+
+    [Header("추후 교체할 9-slice 프레임")]
+    [SerializeField]
+    private Sprite physiqueFrameSprite;
+
+    [SerializeField]
+    private Sprite technicianFrameSprite;
+
+    [SerializeField]
+    private Sprite captainFrameSprite;
+
+    [Header("카드 전환 설정")]
+    [SerializeField]
+    [Min(0f)]
+    private float cardTransitionDuration = 0.16f;
+
+    [SerializeField]
+    private Vector2 selectedCardSize = new Vector2(1180f, 660f);
+
+    [SerializeField]
+    private Vector2 sideCardSize = new Vector2(240f, 540f);
+
+    [SerializeField]
+    private float sideCardOffset = 760f;
+
+    [SerializeField]
+    [Range(0.1f, 1f)]
+    private float detailPanelScale = 0.75f;
 
     [Header("클래스 상세 정보 패널")]
     [SerializeField]
@@ -63,6 +100,9 @@ public class ClassSelectManager : MonoBehaviour
     /// </summary>
     private ClassInfo selectedClassInfo;
 
+    private ClassSelectionCardUI[] selectionCards;
+    private Vector2 cardCenterPosition;
+
     /// <summary>
     /// 현재 선택된 클래스를 반환합니다.
     /// </summary>
@@ -97,6 +137,7 @@ public class ClassSelectManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        InitializeSelectionCards();
         ResetSelection();
     }
 
@@ -157,6 +198,7 @@ public class ClassSelectManager : MonoBehaviour
         selectedClassInfo = classInfo;
 
         ShowClassInfo(classInfo);
+        ApplySelectedCardLayout(playerClass);
         OpenDetailPanel();
         SetConfirmButtonInteractable(true);
     }
@@ -176,6 +218,15 @@ public class ClassSelectManager : MonoBehaviour
         }
 
         classDetailPanel.SetActive(true);
+        classDetailPanel.transform.SetAsLastSibling();
+
+        RectTransform detailRect =
+            classDetailPanel.GetComponent<RectTransform>();
+
+        if (detailRect != null)
+        {
+            detailRect.localScale = Vector3.one * detailPanelScale;
+        }
     }
 
     /// <summary>
@@ -246,7 +297,7 @@ public class ClassSelectManager : MonoBehaviour
             $"최대 체력: {selectedClassInfo.maxHP}"
         );
 
-        SceneManager.LoadScene(battleSceneName);
+        ScreenFadeController.LoadBattleScene(battleSceneName);
     }
 
     /// <summary>
@@ -264,7 +315,7 @@ public class ClassSelectManager : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadScene(titleSceneName);
+        ScreenFadeController.LoadTitleScene(titleSceneName);
     }
 
     /// <summary>
@@ -332,11 +383,19 @@ public class ClassSelectManager : MonoBehaviour
         if (passiveText != null)
         {
             passiveText.text = classInfo.passiveDescription;
+            passiveText.horizontalAlignment = HorizontalAlignmentOptions.Left;
+            passiveText.verticalAlignment = classInfo.playerClass == PlayerClass.Physique
+                ? VerticalAlignmentOptions.Middle
+                : VerticalAlignmentOptions.Top;
         }
 
         if (descriptionText != null)
         {
             descriptionText.text = classInfo.description;
+            descriptionText.horizontalAlignment = HorizontalAlignmentOptions.Left;
+            descriptionText.verticalAlignment = classInfo.playerClass == PlayerClass.Technician
+                ? VerticalAlignmentOptions.Middle
+                : VerticalAlignmentOptions.Top;
         }
     }
 
@@ -353,6 +412,8 @@ public class ClassSelectManager : MonoBehaviour
             classDetailPanel.SetActive(false);
         }
 
+        RestoreDefaultCardLayout();
+
         SetConfirmButtonInteractable(false);
     }
 
@@ -365,6 +426,148 @@ public class ClassSelectManager : MonoBehaviour
         if (confirmButton != null)
         {
             confirmButton.interactable = isInteractable;
+        }
+    }
+
+    /// <summary>
+    /// 기존 클래스 버튼에 카드 프레임과 전환 동작을 연결합니다.
+    /// </summary>
+    private void InitializeSelectionCards()
+    {
+        if (physiqueButton == null ||
+            technicianButton == null ||
+            captainButton == null)
+        {
+            Debug.LogError(
+                "[ClassSelectManager] 클래스 선택 버튼 참조가 누락되었습니다."
+            );
+
+            return;
+        }
+
+        selectionCards = new[]
+        {
+            InitializeCard(
+                physiqueButton,
+                physiqueFrameSprite,
+                new Color(0.48f, 0.10f, 0.10f, 0.94f)
+            ),
+            InitializeCard(
+                technicianButton,
+                technicianFrameSprite,
+                new Color(0.05f, 0.36f, 0.18f, 0.94f)
+            ),
+            InitializeCard(
+                captainButton,
+                captainFrameSprite,
+                new Color(0.28f, 0.10f, 0.48f, 0.94f)
+            )
+        };
+
+        cardCenterPosition =
+            selectionCards[1].DefaultPosition;
+    }
+
+    private ClassSelectionCardUI InitializeCard(
+        Button button,
+        Sprite frameSprite,
+        Color fallbackColor)
+    {
+        ClassSelectionCardUI card =
+            button.GetComponent<ClassSelectionCardUI>();
+
+        if (card == null)
+        {
+            card = button.gameObject.AddComponent<ClassSelectionCardUI>();
+        }
+
+        card.Initialize(
+            button,
+            frameSprite,
+            fallbackColor
+        );
+
+        return card;
+    }
+
+    private void ApplySelectedCardLayout(PlayerClass playerClass)
+    {
+        if (selectionCards == null || selectionCards.Length != 3)
+        {
+            return;
+        }
+
+        int selectedIndex = GetCardIndex(playerClass);
+
+        if (selectedIndex < 0)
+        {
+            return;
+        }
+
+        int sideSlot = 0;
+
+        for (int index = 0; index < selectionCards.Length; index++)
+        {
+            bool isSelected = index == selectedIndex;
+            Vector2 targetPosition;
+            Vector2 targetSize;
+
+            if (isSelected)
+            {
+                targetPosition = cardCenterPosition;
+                targetSize = selectedCardSize;
+            }
+            else
+            {
+                float direction = sideSlot == 0 ? -1f : 1f;
+                targetPosition = cardCenterPosition +
+                    Vector2.right * sideCardOffset * direction;
+                targetSize = sideCardSize;
+                sideSlot++;
+            }
+
+            selectionCards[index].AnimateTo(
+                targetPosition,
+                targetSize,
+                cardTransitionDuration,
+                isSelected
+            );
+        }
+    }
+
+    private void RestoreDefaultCardLayout()
+    {
+        if (selectionCards == null)
+        {
+            return;
+        }
+
+        foreach (ClassSelectionCardUI card in selectionCards)
+        {
+            card.AnimateTo(
+                card.DefaultPosition,
+                card.DefaultSize,
+                cardTransitionDuration,
+                false
+            );
+        }
+    }
+
+    private int GetCardIndex(PlayerClass playerClass)
+    {
+        switch (playerClass)
+        {
+            case PlayerClass.Physique:
+                return 0;
+
+            case PlayerClass.Technician:
+                return 1;
+
+            case PlayerClass.Captain:
+                return 2;
+
+            default:
+                return -1;
         }
     }
 }

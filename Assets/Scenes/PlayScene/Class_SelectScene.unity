@@ -186,8 +186,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 14, y: 9.8365}
-  m_SizeDelta: {x: 529.8638, y: 100.377}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 771, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &176935567
 MonoBehaviour:
@@ -325,8 +325,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -71, y: -0.3736}
-  m_SizeDelta: {x: 423.348, y: 99.6328}
+  m_AnchoredPosition: {x: 0, y: -0.3736}
+  m_SizeDelta: {x: 951, y: 99.6328}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &276567366
 MonoBehaviour:
@@ -1180,8 +1180,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 336, y: 174}
-  m_SizeDelta: {x: -1055.1746, y: -759.95}
+  m_AnchoredPosition: {x: 319.67, y: 174}
+  m_SizeDelta: {x: -799.02, y: -739.95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &885973921
 MonoBehaviour:
@@ -1256,8 +1256,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 22.30188, y: 324.81}
-  m_SizeDelta: {x: -993.7964, y: -779.62}
+  m_AnchoredPosition: {x: 219.69, y: 324.81}
+  m_SizeDelta: {x: -599.02, y: -779.62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &895618890
 MonoBehaviour:
@@ -1677,7 +1677,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -0.001503}
-  m_SizeDelta: {x: 269.59, y: 100.377}
+  m_SizeDelta: {x: 180, y: 115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1204754350
 MonoBehaviour:
@@ -1733,7 +1733,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -2118,8 +2118,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 219.69, y: -116}
-  m_SizeDelta: {x: -599.02, y: -522.9984}
+  m_AnchoredPosition: {x: 219.69, y: -150}
+  m_SizeDelta: {x: -599.02, y: -462.9984}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1477429736
 MonoBehaviour:
@@ -2547,8 +2547,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -123, y: 174}
-  m_SizeDelta: {x: -1284.4, y: -759.9542}
+  m_AnchoredPosition: {x: -175.82, y: 174}
+  m_SizeDelta: {x: -1390, y: -739.9542}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1638512204
 MonoBehaviour:
@@ -2725,8 +2725,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000061035, y: 116}
-  m_SizeDelta: {x: 949.4773, y: 100.377}
+  m_AnchoredPosition: {x: -0.000061035, y: 15}
+  m_SizeDelta: {x: 949.4773, y: 320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1769160764
 MonoBehaviour:
@@ -2992,44 +2992,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   titleSceneName: Main_TitleScene
   battleSceneName: BattleScene
+  physiqueButton: {fileID: 698358891}
+  technicianButton: {fileID: 611187984}
+  captainButton: {fileID: 1429849044}
+  physiqueFrameSprite: {fileID: 0}
+  technicianFrameSprite: {fileID: 0}
+  captainFrameSprite: {fileID: 0}
+  cardTransitionDuration: 0.16
+  selectedCardSize: {x: 1180, y: 660}
+  sideCardSize: {x: 240, y: 540}
+  sideCardOffset: 760
+  detailPanelScale: 0.75
   classDetailPanel: {fileID: 533476692}
   classInfos:
   - playerClass: 2
     className: "\uD53C\uC9C0\uD06C"
     maxHP: 95
-    passiveDescription: "\uC804\uD22C \uC885\uB8CC \uC2DC \uCCB4\uB825\uC744 20 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+    passiveDescription: "\uC804\uD22C \uC885\uB8CC \uC2DC \uCCB4\uB825\uC744 7 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
     description: "\uB2F9\uC2E0\uC740 \uAE34 \uD56D\uD574 \uC138\uC6D4 \uB3D9\uC548
-      \uC5BB\uC740 \uBAA8\uB4E0 \uB178\uD558\uC6B0\uC640 \uAE30\uC220\uC744 \uD3EC\uAE30\uD558\uACE0,
-      \uC545\uB9C8\uC640 \uACC4\uC57D\uD558\uC5EC \uB2F9\uC2E0\uC758 \uD53C\uB97C
-      \uC81C\uBB3C\uB85C \uC0AC\uC6A9\uD574 \uC801\uC744 \uBB34\uCC38\uD788 \uC9D3\uBC1F\uAE30\uB85C
-      \uD588\uC2B5\uB2C8\uB2E4. \uB2F9\uC2E0\uC758 \uD53C\uAC00 \uB0A8\uC544\uC788\uB294
-      \uD55C, \uB04A\uC784\uC5C6\uB294 \uD798\uACFC \uC18D\uC0BC\uC784\uC774 \uD568\uAED8
-      \uD560 \uAC83\uC785\uB2C8\uB2E4."
+      \uC5BB\uC740\n\uBAA8\uB4E0 \uB178\uD558\uC6B0\uC640 \uAE30\uC220\uC744
+      \uD3EC\uAE30\uD558\uACE0,\n\uC545\uB9C8\uC640 \uACC4\uC57D\uD558\uC5EC
+      \uB2F9\uC2E0\uC758 \uD53C\uB97C \uC81C\uBB3C\uB85C \uC0AC\uC6A9\uD574\n\uC801\uC744
+      \uBB34\uCC38\uD788 \uC9D3\uBC1F\uAE30\uB85C \uD588\uC2B5\uB2C8\uB2E4.\n\uB2F9\uC2E0\uC758
+      \uD53C\uAC00 \uB0A8\uC544\uC788\uB294 \uD55C,\n\uB04A\uC784\uC5C6\uB294
+      \uD798\uACFC \uC18D\uC0BC\uC784\uC774 \uD568\uAED8 \uD560 \uAC83\uC785\uB2C8\uB2E4."
     classImage: {fileID: 0}
   - playerClass: 3
     className: "\uD14C\uD06C\uB2C8\uC158"
-    maxHP: 80
-    passiveDescription: "\uC801\uC5D0\uAC8C \uC791\uC0B4\uC7A1\uC774 \uC2A4\uD0DD\uC744
-      5 \uBD80\uC5EC\uD560 \uB54C \uB9C8\uB2E4 \uCD94\uAC00\uB85C \uC791\uC0B4\uC7A1\uC774
-      \uC2A4\uD0DD\uC744 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
-    description: "\uB2F9\uC2E0\uC740 \uAE34 \uC138\uC6D4\uB3D9\uC548 \uC5BB\uC5B4\uC628
-      \uBAA8\uB4E0 \uAE30\uC220\uB4E4\uC744 \uC5F0\uB9C8\uD588\uC2B5\uB2C8\uB2E4.
-      \uB2F9\uC2E0\uC758 \uC190 \uB05D\uC5D0\uC11C \uB0A0\uC544\uAC00\uB294 \uC791\uC0B4\uB4E4\uC740
-      \uC801\uB4E4\uC758 \uC2EC\uC7A5\uC744 \uAFF0\uB6AB\uACE0 \uC9C0\uB098\uAC08
-      \uAC83\uC785\uB2C8\uB2E4."
+    maxHP: 75
+    passiveDescription: "\uC791\uC0B4\uC7A1\uC774 4\uC2A4\uD0DD \uBD80\uC5EC\uB9C8\uB2E4
+      1\uC2A4\uD0DD\uC744 \uCD94\uAC00 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+    description: "\uB2F9\uC2E0\uC740 \uAE34 \uC138\uC6D4\uB3D9\uC548
+      \uC5BB\uC5B4\uC628\n\uBAA8\uB4E0 \uAE30\uC220\uB4E4\uC744 \uC5F0\uB9C8\uD588\uC2B5\uB2C8\uB2E4.\n\uB2F9\uC2E0\uC758
+      \uC190 \uB05D\uC5D0\uC11C \uB0A0\uC544\uAC00\uB294 \uC791\uC0B4\uB4E4\uC740\n\uC801\uB4E4\uC758
+      \uC2EC\uC7A5\uC744 \uAFF0\uB6AB\uACE0 \uC9C0\uB098\uAC08 \uAC83\uC785\uB2C8\uB2E4."
     classImage: {fileID: 0}
   - playerClass: 4
     className: "\uCEA1\uD2F4"
     maxHP: 75
-    passiveDescription: "\uC120\uC6D0\uC744 1\uBA85 \uC18C\uD658\uD569\uB2C8\uB2E4.
-      \uC120\uC6D0\uC740 \uACF5\uACA9 \uC2DC\uC5D0 \uC801\uC5D0\uAC8C \uC791\uC0B4\uC7A1\uC774
-      \uC2A4\uD0DD\uC744 1 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
+    passiveDescription: "\uCCB4\uB825 12 \uC120\uC6D0 2\uBA85\uC744 \uC18C\uD658\uD569\uB2C8\uB2E4.
+      \uC120\uC6D0 \uACF5\uACA9 \uC2DC \uC791\uC0B4\uC7A1\uC774 2\uC2A4\uD0DD\uC744
+      \uBD80\uC5EC\uD569\uB2C8\uB2E4."
     description: "\uB2F9\uC2E0\uC740 \uC545\uB9C8\uC758 \uC720\uBB3C\uC744 \uC190\uC5D0
-      \uB123\uC5B4 \uC8FD\uC740 \uC790\uB4E4\uC744 \uBD88\uB7EC\uC62C \uC218 \uC788\uAC8C
-      \uB418\uC5C8\uC2B5\uB2C8\uB2E4.  \uC601\uBA74\uC5D0\uC11C \uAE68\uC5B4\uB09C
-      \uC601\uD63C\uB4E4\uC740 \uB2F9\uC2E0\uC744 \uC120\uC7A5\uC73C\uB85C \uC778\uC2DD\uD558\uC5EC,
-      \uB2F9\uC2E0\uC758 \uBA85\uB839\uC774 \uB05D\uB0A0 \uB54C\uAE4C\uC9C0 \uC55E\uC73C\uB85C
-      \uC804\uC9C4\uD558\uACE0, \uCC3D\uC744 \uB358\uC9C8 \uAC83\uC785\uB2C8\uB2E4."
+      \uB123\uC5B4\n\uC8FD\uC740 \uC790\uB4E4\uC744 \uBD88\uB7EC\uC62C \uC218 \uC788\uAC8C
+      \uB418\uC5C8\uC2B5\uB2C8\uB2E4.\n\uC601\uBA74\uC5D0\uC11C \uAE68\uC5B4\uB09C
+      \uC601\uD63C\uB4E4\uC740\n\uB2F9\uC2E0\uC744 \uC120\uC7A5\uC73C\uB85C
+      \uC778\uC2DD\uD558\uC5EC,\n\uB2F9\uC2E0\uC758 \uBA85\uB839\uC774 \uB05D\uB0A0
+      \uB54C\uAE4C\uC9C0 \uC55E\uC73C\uB85C \uC804\uC9C4\uD558\uACE0,\n\uCC3D\uC744
+      \uB358\uC9C8 \uAC83\uC785\uB2C8\uB2E4."
     classImage: {fileID: 0}
   characterImage: {fileID: 1203302800}
   confirmButton: {fileID: 1801922094}

@@ -378,6 +378,16 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void StartNextBattle()
     {
+        ScreenFadeController.ChangeBattle(
+            StartNextBattleAfterFadeOut
+        );
+    }
+
+    /// <summary>
+    /// 화면이 완전히 가려진 뒤 다음 전투를 준비하고 시작합니다.
+    /// </summary>
+    private void StartNextBattleAfterFadeOut()
+    {
         Debug.Log("[BattleManager] 다음 전투 준비 시작");
 
         isBattleStarted = false;

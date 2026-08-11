@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// BattleScene의 일시정지 상태와 Esc 입력을 관리합니다.
@@ -437,7 +436,7 @@ public class PauseManager : MonoBehaviour
             "[PauseManager] 전투 포기 - 진행 초기화 후 타이틀 이동"
         );
 
-        SceneManager.LoadScene(
+        ScreenFadeController.LoadTitleScene(
             titleSceneName
         );
     }
@@ -588,7 +587,7 @@ public class PauseManager : MonoBehaviour
             "[PauseManager] 저장 후 종료"
         );
 
-        SceneManager.LoadScene(
+        ScreenFadeController.LoadTitleScene(
             titleSceneName
         );
     }
