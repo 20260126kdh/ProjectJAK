@@ -760,6 +760,55 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 작업명
 
+인게임 기본·클릭 커서 적용
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Resources/Cursor/Nomal.png`
+- `Assets/Resources/Cursor/Click.png`
+- `Assets/Scripts/UI/GameCursorController.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 게임 시작 시 Nomal 커서가 표시된다.
+- 마우스 왼쪽 버튼을 누르는 동안 Click 커서가 표시된다.
+- 버튼을 놓으면 Nomal 커서로 복귀한다.
+- 씬 전환 이후에도 커서가 유지된다.
+- 이미지의 화살촉 위치가 실제 클릭 지점과 일치한다.
+
+# 현재 작업 변경
+
+## 작업명
+
+첫 일반 전투 손패 좌표 간헐 오류 수정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 반복 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/UI/StartingDeckUI.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 시작 덱 확인 후 전투 패널이 활성화된 상태에서 첫 손패 좌표를 계산한다.
+- 첫 손패 4장이 항상 부채꼴 최종 위치와 회전값에 도착한다.
+- 첫 일반 전투를 반복 진입해도 카드가 화면 하단의 중간 좌표에 남지 않는다.
+- 일반 드로우, 다음 전투와 이어하기 손패 복원 흐름은 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
 클래스 설명 영역 하단 확장
 
 ## 현재 상태

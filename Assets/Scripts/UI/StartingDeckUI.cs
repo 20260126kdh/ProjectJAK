@@ -234,13 +234,6 @@ public class StartingDeckUI : MonoBehaviour
          */
         deckManager.PrepareDrawPileForBattle();
 
-        /*
-         * 기존 손패가 남아 있을 가능성에 대비해 초기화한 뒤
-         * 첫 손패 4장을 드로우합니다.
-         */
-        handManager.ClearHand();
-        handManager.DrawCards(4);
-
         currentViewMode =
             DeckViewMode.None;
 
@@ -255,6 +248,19 @@ public class StartingDeckUI : MonoBehaviour
         {
             battlePanel.SetActive(true);
         }
+
+        /*
+         * 비활성 패널에서 드로우 목적 좌표를 저장하면 Canvas가 활성화될 때
+         * 월드 좌표가 달라질 수 있으므로, 전투 UI의 최종 좌표를 먼저 확정합니다.
+         */
+        Canvas.ForceUpdateCanvases();
+
+        /*
+         * 기존 손패가 남아 있을 가능성에 대비해 초기화한 뒤
+         * 활성화된 전투 UI 기준으로 첫 손패 4장을 드로우합니다.
+         */
+        handManager.ClearHand();
+        handManager.DrawCards(4);
 
         bool battleStartSucceeded =
             StartPreparedBattle();

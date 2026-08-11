@@ -254,6 +254,25 @@
 - 관련 경로: `Assets/Scripts/Scenes/Managers/ClassSelectManager.cs`
 - 검증: 정적 코드 및 Unity 오류 로그 점검, Play Mode 클래스 전환 확인 필요
 
+## 2026-08-11 — 인게임 기본·클릭 커서 적용
+
+- 기본 `Nomal.png`와 클릭 `Click.png`를 런타임 로드용 `Assets/Resources/Cursor` 경로로 이동
+- 커서 이미지를 최대 64×64, Read/Write 활성화와 Cursor 타입으로 설정
+- 게임 시작 시 자동 생성되어 씬 전환 후에도 유지되는 `GameCursorController` 추가
+- 마우스 왼쪽 버튼을 누르는 동안 클릭 커서로 전환하고 버튼 해제 시 기본 커서로 복귀
+- 원본 이미지의 투명 여백을 반영한 hotspot을 적용해 화살촉과 실제 클릭 지점을 정렬
+- 관련 경로: `Assets/Resources/Cursor`, `Assets/Scripts/UI/GameCursorController.cs`
+- 검증: 정적 코드 및 Unity 오류 로그 점검, Editor·Windows 빌드 커서 크기와 hotspot 확인 필요
+
+## 2026-08-11 — 첫 일반 전투 손패 좌표 간헐 오류 수정
+
+- 시작 덱 확인 시 비활성 전투 패널에서 드로우 애니메이션의 월드 목적 좌표를 저장하던 순서 확인
+- 전투 패널 활성화와 시작 덱 패널 비활성화를 손패 생성보다 먼저 실행하도록 순서 변경
+- `Canvas.ForceUpdateCanvases()`로 전투 UI 최종 좌표를 확정한 뒤 첫 손패 4장을 드로우
+- 일반 드로우, 다음 전투와 이어하기 손패 복원 로직은 변경하지 않음
+- 관련 경로: `Assets/Scripts/UI/StartingDeckUI.cs`
+- 검증: 정적 호출 순서 및 Unity 오류 로그 점검, 새 게임 첫 일반 전투 반복 진입 확인 필요
+
 ## 2026-08-11 — 화면 전환 페이드 속도 조정
 
 - 전체 화면 전환이 빠르게 느껴지는 문제를 완화하기 위해 페이드 시간을 약 20% 연장
