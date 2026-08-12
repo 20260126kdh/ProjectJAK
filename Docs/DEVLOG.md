@@ -491,6 +491,14 @@
 - 관련 경로: `Assets/Data/StatusEffectIconDatabase.asset`
 - 검증: 번호·GUID 정적 점검 완료, Unity Play Mode 아이콘 표시 확인 필요
 
+## 2026-08-12 — 악마와의 거래 강화 설명 표기 수정
+
+- `PHY_SKL_002` 강화 시 체력 7, 힘 5로 표시되던 설명 숫자를 체력 7, 힘 7로 보정
+- 사용자 확인에 따라 강화 후 실제 체력 손실도 5에서 7로 변경해 표시와 일치시킴
+- 다른 카드 강화 규칙과 CSV·카드 ScriptableObject는 변경하지 않음
+- 관련 경로: `Assets/Scripts/Cards/CardUpgradeUtility.cs`
+- 검증: Unity 컴파일 및 강화 화면 표시 확인 필요
+
 ## 2026-08-11 — 게임 화면 전환 페이드
 
 - 런타임 전역 검은색 오버레이와 코루틴 기반 `ScreenFadeController` 추가

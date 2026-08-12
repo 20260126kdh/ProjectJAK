@@ -159,6 +159,35 @@ public static class CardUpgradeUtility
             }
         }
 
+        /*
+         * 악마와의 거래는 강화 시 체력 손실과 힘을 모두 5에서 7로 변경합니다.
+         * 일반 버프 강화는 설명의 첫 번째 5를 먼저 변경하므로,
+         * 체력 손실 효과와 남은 힘 표기를 함께 보정합니다.
+         */
+        if (cardData.cardID == "PHY_SKL_002")
+        {
+            CardEffectData healthLossEffect =
+                orderedEffects.Find(effect =>
+                    effect != null &&
+                    effect.effectType == CardEffectType.LoseHealth
+                );
+
+            if (healthLossEffect != null)
+            {
+                healthLossEffect.value = 7;
+            }
+
+            int physiqueSkillSearchIndex = 0;
+
+            ReplaceNextNumber(
+                ref upgradedDescription,
+                5,
+                7,
+                ref physiqueSkillSearchIndex,
+                cardData.cardName
+            );
+        }
+
         if (!changed)
         {
             return false;

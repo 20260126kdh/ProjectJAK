@@ -986,6 +986,29 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 작업명
 
+악마와의 거래 강화 설명 표기 수정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Cards/CardUpgradeUtility.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- `PHY_SKL_002` 강화 설명에 체력 손실 7과 힘 획득 7이 표시된다.
+- 강화 후 실제 체력 손실과 힘 획득이 모두 7이 된다.
+- 다른 카드의 강화 수치와 설명은 변경하지 않는다.
+- CSV와 카드 ScriptableObject는 변경하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
 인게임 기본·클릭 커서 적용
 
 ## 현재 상태
