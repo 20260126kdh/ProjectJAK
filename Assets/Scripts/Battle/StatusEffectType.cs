@@ -4,34 +4,36 @@
 /// </summary>
 public enum StatusEffectType
 {
-    None,
+    None = 0,
 
     // 버프
-    Might,
-    Guard,
-    Resist,
-    Lifesteal,
-    Echo,
-    Immortal,
-    Undead,
-    KShellguard,
-    DToxinSwitch,
-    FFesteredSkin,
-    HRevelation,
-    UnderGround,
-    UnderWater,
-    ProfanedHalo,
-    DevilPower,
+    Might = 1,
+    Guard = 2,
+    Resist = 3,
+    Lifesteal = 4,
+    Echo = 5,
+    Immortal = 6,
+    Undead = 7,
+    KShellguard = 8,
+    DToxinSwitch = 9,
+    FFesteredSkin = 10,
+    HRevelation = 11,
+    UnderGround = 12,
+    UnderWater = 13,
+    ProfanedHalo = 14,
 
     // 디버프
-    Weaken,
-    Vulnerable,
-    Cripple,
-    NoBlock,
-    Broken,
-    Jinx,
-    Paralyze,
-    Toxic,
-    Exit,
-    MightReduction
+    Weaken = 15,
+    Vulnerable = 16,
+    Cripple = 17,
+    NoBlock = 18,
+    Broken = 19,
+    Jinx = 20,
+    Paralyze = 21,
+    Toxic = 22,
+    Exit = 23,
+
+    // 기존 직렬화 값을 보존하기 위해 새 효과는 마지막 번호를 사용합니다.
+    DevilPower = 24,
+    MightReduction = 25
 }

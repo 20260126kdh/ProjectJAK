@@ -910,6 +910,82 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 작업명
 
+상태 효과 enum 직렬화 번호 복구
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Battle/StatusEffectType.cs`
+- `Assets/Data/ScriptableObjects/Cards/PHY_SKL_006.asset`
+- `Assets/Data/ScriptableObjects/Cards/TEC_SKL_006.asset`
+- `Assets/Data/ScriptableObjects/Cards/CAP_SKL_002.asset`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- `CAP_ATK_003` 영혼 파괴가 악마의 힘이 아닌 약화 1을 부여한다.
+- 기존 약화·취약 카드가 CSV에 기록된 상태 효과를 부여한다.
+- 소멸 카드 3종의 `Exit` 효과가 유지된다.
+- 악마의 힘과 힘 감소 효과가 기존 로직대로 동작한다.
+- 이후 enum 선언 순서 변경에도 기존 직렬화 번호가 변하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+클래스 기획서 기준 시작 스킬 에셋 수정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 수정 대상
+
+- `Assets/Data/ScriptableObjects/Cards/TEC_SKL_002.asset`
+- `Assets/Data/ScriptableObjects/Cards/CAP_SKL_001.asset`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 테크니션 시작 스킬 `엄폐`가 방어도 12를 획득한다.
+- 엄폐 카드 설명에도 방어도 12가 표시된다.
+- 캡틴 시작 스킬 `CAP_SKL_001`의 이름은 `길잡이`로 유지한다.
+- 길잡이의 피해 10과 전체 약화·취약 1 효과는 유지된다.
+- CSV와 시작 덱 구성은 변경하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+악마의 힘 상태 아이콘 연결
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 수정 대상
+
+- `Assets/Data/StatusEffectIconDatabase.asset`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- `DevilPower = 24` 상태에 `DevilPower.png` 아이콘이 표시된다.
+- 약화·취약을 포함한 기존 상태 효과 아이콘 연결은 유지된다.
+- 상태 효과 아이콘 데이터베이스에 중복 번호가 없다.
+
+# 현재 작업 변경
+
+## 작업명
+
 인게임 기본·클릭 커서 적용
 
 ## 현재 상태

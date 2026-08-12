@@ -466,6 +466,31 @@
 - 관련 경로: `Assets/Scripts/Cards/CardEffectExecutor.cs`
 - 검증: Unity 컴파일 및 Play Mode 단일·전체 공격 회복량 확인 필요
 
+## 2026-08-12 — 상태 효과 enum 직렬화 번호 복구
+
+- `DevilPower` 중간 삽입으로 기존 약화가 악마의 힘으로 해석되던 원인 수정
+- 기존 상태 효과 번호를 명시적으로 고정해 카드와 아이콘 ScriptableObject 호환성 복구
+- 번호 고정에 맞춰 피지크·테크니션·캡틴 소멸 카드 3종의 `Exit` 값을 교정
+- CSV와 카드 에셋의 전체 ApplyStatus 항목 대조 예정
+- 관련 경로: `Assets/Scripts/Battle/StatusEffectType.cs`, `Assets/Data/ScriptableObjects/Cards`
+- 검증: Unity 컴파일 및 Play Mode 영혼 파괴·소멸 카드 확인 필요
+
+## 2026-08-12 — 클래스 기획서 기준 시작 스킬 에셋 수정
+
+- 최신 클래스 세부 기획서를 기준으로 테크니션 `엄폐` 방어도를 15에서 12로 변경
+- 캡틴 시작 스킬 `CAP_SKL_001` 이름은 사용자 확인에 따라 `길잡이`로 유지
+- 카드 효과와 시작 덱 구성은 유지하고 CSV는 변경하지 않음
+- 관련 경로: `Assets/Data/ScriptableObjects/Cards/TEC_SKL_002.asset`, `Assets/Data/ScriptableObjects/Cards/CAP_SKL_001.asset`
+- 검증: 정적 에셋 값 점검 완료, Unity Play Mode 확인 필요
+
+## 2026-08-12 — 악마의 힘 상태 아이콘 연결
+
+- 상태 효과 enum 번호 복구에 맞춰 `DevilPower = 24` 아이콘 항목 추가
+- 기존 `DevilPower.png` Sprite GUID와 fileID를 상태 효과 아이콘 데이터베이스에 연결
+- 기존 약화·취약 및 다른 상태 효과 아이콘 항목은 유지
+- 관련 경로: `Assets/Data/StatusEffectIconDatabase.asset`
+- 검증: 번호·GUID 정적 점검 완료, Unity Play Mode 아이콘 표시 확인 필요
+
 ## 2026-08-11 — 게임 화면 전환 페이드
 
 - 런타임 전역 검은색 오버레이와 코루틴 기반 `ScreenFadeController` 추가

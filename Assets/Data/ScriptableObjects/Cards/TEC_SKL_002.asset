@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardID: TEC_SKL_002
   cardName: "\uC5C4\uD3D0"
-  description: "\uBC29\uC5B4\uB3C4\uB97C 15 \uC5BB\uC2B5\uB2C8\uB2E4. \uC801\uC5D0\uAC8C
+  description: "\uBC29\uC5B4\uB3C4\uB97C 12 \uC5BB\uC2B5\uB2C8\uB2E4. \uC801\uC5D0\uAC8C
     \uC791\uC0B4\uC7A1\uC774 \uC2A4\uD0DD\uC744 3 \uBD80\uC5EC\uD569\uB2C8\uB2E4."
   ownerClass: 3
   cardType: 2
@@ -25,7 +25,7 @@ MonoBehaviour:
   - order: 1
     effectType: 1
     statusEffectType: 0
-    value: 15
+    value: 12
     target: 0
     repeatCount: 1
   - order: 2
