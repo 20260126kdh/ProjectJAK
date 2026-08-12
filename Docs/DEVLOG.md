@@ -508,3 +508,10 @@
 - 비스케일 시간을 사용하고 페이드 중 UI Raycast를 차단하여 Pause 상태와 중복 입력 처리
 - 관련 경로: `Assets/Scripts/UI/ScreenFadeController.cs`, `Assets/Scripts/Scenes/Managers/ClassSelectManager.cs`, `Assets/Scripts/Battle/Managers/BattleManager.cs`, `Assets/Scripts/Core/PauseManager.cs`
 - 검증: 정적 참조 및 Unity 컴파일 로그 점검, Play Mode 시각 확인 필요
+
+# 2026-08-12 퍼즈 환경 설정 UI 정렬 수정
+
+- `BattleScene`의 `SettingsPanel`에 독립 Canvas와 GraphicRaycaster를 추가했다.
+- 환경 설정 Canvas의 Sorting Order를 `200`으로 지정해 보존 모드용 손패 Canvas(`101`)보다 위에 표시되도록 했다.
+- 손패와 보존 모드의 기존 정렬값 및 게임 규칙은 변경하지 않았다.
+- Unity Play Mode에서 퍼즈 → 환경 설정 표시 및 입력 회귀 확인이 필요하다.
