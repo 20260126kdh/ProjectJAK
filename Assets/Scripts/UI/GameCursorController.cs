@@ -9,13 +9,13 @@ public sealed class GameCursorController : MonoBehaviour
     private const string ClickCursorResourcePath = "Cursor/Click";
 
     private static readonly Vector2 NormalHotspotRatio = new Vector2(
-        40f / 256f,
-        25f / 256f
+        46f / 256f,
+        19f / 256f
     );
 
     private static readonly Vector2 ClickHotspotRatio = new Vector2(
-        36f / 256f,
-        24f / 256f
+        66f / 256f,
+        36f / 256f
     );
 
     private static GameCursorController instance;

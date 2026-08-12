@@ -376,6 +376,32 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 작업명
 
+게임 마우스 커서 이미지 교체
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Resources/Cursor/Nomal.png`
+- `Assets/Resources/Cursor/Click.png`
+- `Assets/Scripts/UI/GameCursorController.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 기본 상태에서 금색 테두리의 작살촉 커서를 표시한다.
+- 좌클릭 중에는 작살촉 끝에 청록색 반짝임이 있는 커서로 전환한다.
+- 두 이미지의 흰 배경은 투명 처리한다.
+- 일반·클릭 상태 전환 중 실제 클릭 지점은 작살촉 끝에 고정한다.
+- 일반·클릭 커서 본체는 5%씩 두 차례 축소해 최초 적용 크기의 90.25%로 표시한다.
+
+# 현재 작업 변경
+
+## 작업명
+
 게임 화면 전환 페이드
 
 ## 현재 상태

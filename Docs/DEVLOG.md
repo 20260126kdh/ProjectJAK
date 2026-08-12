@@ -409,6 +409,17 @@
 - 관련 경로: `Assets/Scripts/Scenes/Managers/TitleManager.cs`
 - 검증: 정적 호출 경로 및 Unity 컴파일 로그 점검, 새 게임·이어하기 Play Mode 회귀 확인 필요
 
+## 2026-08-12 — 게임 마우스 커서 이미지 교체
+
+- 기본 커서를 금색 테두리와 가죽 손잡이가 있는 작살촉 이미지로 교체
+- 좌클릭 중에는 작살촉 끝에 청록색 반짝임이 표시되는 별도 커서 적용
+- 두 원본의 흰 배경을 투명 처리하고 256×256 커서 텍스처로 정리
+- 일반·클릭 이미지의 여백 차이를 반영해 각각 작살촉 끝으로 Hotspot 재설정
+- 일반·클릭 커서 본체를 5% 축소하고 변경된 작살촉 위치에 맞춰 Hotspot 재보정
+- 축소된 커서에서 다시 5% 축소해 최초 크기의 90.25%로 조정하고 Hotspot 재보정
+- 관련 경로: `Assets/Resources/Cursor`, `Assets/Scripts/UI/GameCursorController.cs`
+- 검증: 이미지 알파 및 정적 Hotspot 점검, Unity Play Mode 시각 확인 필요
+
 ## 2026-08-11 — 게임 화면 전환 페이드
 
 - 런타임 전역 검은색 오버레이와 코루틴 기반 `ScreenFadeController` 추가
