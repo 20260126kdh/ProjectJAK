@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 전투 중 플레이어의 손패를 관리하는 클래스입니다.
@@ -1374,6 +1375,10 @@ public class HandManager : MonoBehaviour
         isDrawAnimationPlaying = false;
         drawAnimationCoroutine = null;
 
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+        tutorialManager?.NotifyPlayerTurnStarted();
+
         if (endTurnButtonObject != null && wasEndTurnButtonActive)
         {
             endTurnButtonObject.SetActive(true);
@@ -1653,6 +1658,20 @@ public class HandManager : MonoBehaviour
             return;
         }
 
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null &&
+            !tutorialManager.CanSelectCard(
+                cardUI != null
+                    ? cardUI.GetCardData()
+                    : null,
+                isPreserveMode
+            ))
+        {
+            return;
+        }
+
         if (isPreserveMode)
         {
             SelectPreserveCard(cardUI);
@@ -1676,6 +1695,16 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void StartPreserveMode()
     {
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null &&
+            tutorialManager.IsTutorialRunning &&
+            !tutorialManager.CanStartPreserve)
+        {
+            return;
+        }
+
         if (
             isDrawAnimationPlaying ||
             isDiscardAnimationPlaying ||
@@ -1795,6 +1824,10 @@ public class HandManager : MonoBehaviour
         selectedPreserveCardUI = cardUI;
         FocusPreserveCard(cardUI);
 
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+        tutorialManager?.NotifyPreserveCardSelected(cardData);
+
         Debug.Log(
             $"[HandManager] 보존 카드 선택: " +
             $"{cardData.cardName}"
@@ -1829,6 +1862,22 @@ public class HandManager : MonoBehaviour
         }
 
         CardUI confirmedPreservedCardUI = selectedPreserveCardUI;
+
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+        CardData tutorialPreservedCard =
+            confirmedPreservedCardUI != null
+                ? confirmedPreservedCardUI.GetCardData()
+                : null;
+
+        if (tutorialManager != null &&
+            tutorialManager.IsTutorialRunning &&
+            !tutorialManager.CanConfirmPreserve(tutorialPreservedCard))
+        {
+            return;
+        }
+
+        tutorialManager?.NotifyPreserveConfirmed(tutorialPreservedCard);
 
         RestoreFocusedPreserveCard();
 
@@ -1953,6 +2002,32 @@ public class HandManager : MonoBehaviour
             Debug.LogError(
                 "[HandManager] TurnManager가 연결되지 않았습니다."
             );
+        }
+    }
+
+    /// <summary>
+    /// 튜토리얼 보존 확정 버튼의 빨간 강조 표시를 전환합니다.
+    /// </summary>
+    public void SetTutorialPreserveConfirmHighlight(bool isVisible)
+    {
+        if (preserveConfirmButtonObject == null)
+        {
+            return;
+        }
+
+        Outline outline =
+            preserveConfirmButtonObject.GetComponent<Outline>();
+
+        if (outline == null && isVisible)
+        {
+            outline = preserveConfirmButtonObject.AddComponent<Outline>();
+            outline.effectColor = Color.red;
+            outline.effectDistance = new Vector2(6f, -6f);
+        }
+
+        if (outline != null)
+        {
+            outline.enabled = isVisible;
         }
     }
 

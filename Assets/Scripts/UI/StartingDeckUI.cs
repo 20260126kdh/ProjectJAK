@@ -232,7 +232,27 @@ public class StartingDeckUI : MonoBehaviour
          * 현재 전체 덱을 기준으로
          * 첫 전투용 드로우 파일을 만들고 섞습니다.
          */
-        deckManager.PrepareDrawPileForBattle();
+        if (GameManager.Instance == null)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] GameManager.Instance가 없어 " +
+                "튜토리얼 첫 손패를 준비하지 못했습니다."
+            );
+            return;
+        }
+
+        bool tutorialDrawPilePrepared =
+            deckManager.PrepareTutorialDrawPile(
+                GameManager.Instance.PlayerData.PlayerClass
+            );
+
+        if (!tutorialDrawPilePrepared)
+        {
+            Debug.LogError(
+                "[StartingDeckUI] 튜토리얼 드로우 파일 준비에 실패했습니다."
+            );
+            return;
+        }
 
         currentViewMode =
             DeckViewMode.None;
@@ -278,6 +298,21 @@ public class StartingDeckUI : MonoBehaviour
          * 이어하기 시 현재 전투를 처음부터 다시 시작합니다.
          */
         SaveManager.Instance.CaptureBattleStartSnapshot();
+
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null)
+        {
+            tutorialManager.BeginInitialTutorial();
+        }
+        else
+        {
+            Debug.LogWarning(
+                "[StartingDeckUI] TutorialManager가 없어 " +
+                "첫 전투 튜토리얼을 시작하지 못했습니다."
+            );
+        }
 
         Debug.Log(
             "[StartingDeckUI] 시작 덱 확인 완료"

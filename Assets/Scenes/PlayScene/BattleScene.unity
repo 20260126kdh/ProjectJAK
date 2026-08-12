@@ -15668,6 +15668,61 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 100
   m_TargetDisplay: 0
+--- !u!1 &2200000020
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2200000021}
+  - component: {fileID: 2200000022}
+  m_Layer: 5
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2200000021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2200000020}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2200000022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2200000020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 591788c20e434a4fb0dc4607a4f59f67, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  physiquePortrait: {fileID: 21300000, guid: 103a030a030a430a830a030a030a030a, type: 3}
+  technicianPortrait: {fileID: 21300000, guid: 105a050a050a450a850a050a050a050a, type: 3}
+  captainPortrait: {fileID: 21300000, guid: 101a010a010a410a810a010a010a010a, type: 3}
+  physiqueChangedPortrait: {fileID: 21300000, guid: 104a040a040a440a840a040a040a040a, type: 3}
+  technicianChangedPortrait: {fileID: 21300000, guid: 106a060a060a460a860a060a060a060a, type: 3}
+  captainChangedPortrait: {fileID: 21300000, guid: 102a020a020a420a820a020a020a020a, type: 3}
+  dialogueFrame: {fileID: 21300000, guid: 108a080a080a480a880a080a080a080a, type: 3}
+  nextNormal: {fileID: 21300000, guid: 107a070a070a470a870a070a070a070a, type: 3}
+  nextHover: {fileID: 21300000, guid: 109a090a090a490a890a090a090a090a, type: 3}
+  nextPressed: {fileID: 21300000, guid: 10aa100a100a4a0a8a0a100a100a100a, type: 3}
+  dialogueFont: {fileID: 11400000, guid: fa9d6f197b499cc45a2f028a860af93a, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -15676,6 +15731,7 @@ SceneRoots:
   - {fileID: 667682787}
   - {fileID: 38236400}
   - {fileID: 699388421}
+  - {fileID: 2200000021}
   - {fileID: 965771837}
   - {fileID: 1923899831}
   - {fileID: 1343777375}

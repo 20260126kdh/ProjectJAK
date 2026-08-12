@@ -66,6 +66,7 @@ public class CardUI : MonoBehaviour,
     private bool isUpgradeSelectionLocked;
 
     private bool isJinxed;
+    private Outline tutorialHighlightOutline;
 
     /// <summary>
     /// 현재 Jinx로 사용 불가 상태인지 반환합니다.
@@ -321,6 +322,24 @@ public class CardUI : MonoBehaviour,
 
         rectTransform.localScale =
             defaultScale;
+    }
+
+    /// <summary>
+    /// 튜토리얼에서 지정된 카드에 빨간색 강조 테두리를 표시합니다.
+    /// </summary>
+    public void SetTutorialHighlight(bool isVisible)
+    {
+        if (tutorialHighlightOutline == null)
+        {
+            tutorialHighlightOutline =
+                gameObject.AddComponent<Outline>();
+            tutorialHighlightOutline.effectColor = Color.red;
+            tutorialHighlightOutline.effectDistance =
+                new Vector2(6f, -6f);
+            tutorialHighlightOutline.useGraphicAlpha = false;
+        }
+
+        tutorialHighlightOutline.enabled = isVisible;
     }
 
     /// <summary>

@@ -446,6 +446,15 @@ public class PauseManager : MonoBehaviour
     /// </summary>
     private bool CanOpenPause()
     {
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null &&
+            tutorialManager.IsTutorialRunning)
+        {
+            return false;
+        }
+
         if (battleUIManager == null)
         {
             Debug.LogError(

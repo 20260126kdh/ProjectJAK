@@ -120,6 +120,16 @@ public class TurnManager : MonoBehaviour
     /// </summary>
     public void EndPlayerTurnAndStartNextTurn()
     {
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null &&
+            tutorialManager.IsTutorialRunning &&
+            !tutorialManager.CanEndTurnAfterPreserve)
+        {
+            return;
+        }
+
         if (!isPlayerTurn)
         {
             Debug.LogWarning(

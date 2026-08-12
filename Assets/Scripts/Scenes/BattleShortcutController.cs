@@ -60,6 +60,24 @@ public class BattleShortcutController : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null &&
+            tutorialManager.IsTutorialRunning)
+        {
+            if (!tutorialManager.IsTutorialActive)
+            {
+                HandleCardSelectionInput();
+
+                if (tutorialManager.CanStartPreserve)
+                {
+                    HandleEndTurnInput();
+                }
+            }
+            return;
+        }
+
         if (handManager == null ||
             turnManager == null ||
             startingDeckUI == null ||

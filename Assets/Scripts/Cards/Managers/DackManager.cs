@@ -370,6 +370,126 @@ public class DeckManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 새 게임 튜토리얼에서 사용할 첫 손패 네 장을
+    /// 투창, 회피, 클래스 스킬 1, 클래스 스킬 2 순서로 고정합니다.
+    /// 나머지 시작 덱 카드만 섞어 이후 드로우 순서로 사용합니다.
+    /// </summary>
+    /// <param name="playerClass">현재 선택한 플레이어 클래스</param>
+    /// <returns>튜토리얼 드로우 파일 준비 성공 여부</returns>
+    public bool PrepareTutorialDrawPile(
+        PlayerClass playerClass)
+    {
+        string firstSkillCardID;
+        string secondSkillCardID;
+
+        switch (playerClass)
+        {
+            case PlayerClass.Physique:
+                firstSkillCardID = "PHY_SKL_001";
+                secondSkillCardID = "PHY_SKL_002";
+                break;
+
+            case PlayerClass.Technician:
+                firstSkillCardID = "TEC_SKL_001";
+                secondSkillCardID = "TEC_SKL_002";
+                break;
+
+            case PlayerClass.Captain:
+                firstSkillCardID = "CAP_SKL_001";
+                secondSkillCardID = "CAP_SKL_002";
+                break;
+
+            default:
+                Debug.LogError(
+                    $"[DeckManager] 튜토리얼 첫 손패를 지원하지 않는 클래스입니다: " +
+                    $"{playerClass}"
+                );
+                return false;
+        }
+
+        List<CardData> remainingCards =
+            new List<CardData>();
+
+        for (int i = 0; i < currentDeck.Count; i++)
+        {
+            CardData card = currentDeck[i];
+
+            if (card != null)
+            {
+                remainingCards.Add(card);
+            }
+        }
+
+        string[] tutorialCardIDs =
+        {
+            "ALL_ATK_001",
+            "ALL_DEF_001",
+            firstSkillCardID,
+            secondSkillCardID
+        };
+        List<CardData> tutorialOpeningCards =
+            new List<CardData>();
+
+        for (int i = 0; i < tutorialCardIDs.Length; i++)
+        {
+            CardData tutorialCard =
+                TakeFirstCardByID(
+                    remainingCards,
+                    tutorialCardIDs[i]
+                );
+
+            if (tutorialCard == null)
+            {
+                Debug.LogError(
+                    $"[DeckManager] 튜토리얼 첫 손패 카드가 시작 덱에 없습니다: " +
+                    $"{tutorialCardIDs[i]}"
+                );
+                return false;
+            }
+
+            tutorialOpeningCards.Add(tutorialCard);
+        }
+
+        drawPile.Clear();
+        discardPile.Clear();
+        drawPile.AddRange(remainingCards);
+        ShuffleDrawPile();
+        drawPile.InsertRange(0, tutorialOpeningCards);
+
+        Debug.Log(
+            $"[DeckManager] 튜토리얼 드로우 파일 준비 완료 / " +
+            $"첫 손패: 투창, 회피, {firstSkillCardID}, {secondSkillCardID} / " +
+            $"남은 드로우 파일: {remainingCards.Count}장"
+        );
+
+        return true;
+    }
+
+    /// <summary>
+    /// 카드 목록에서 지정 ID의 첫 카드 한 장을 꺼냅니다.
+    /// 동일 공통 카드가 여러 장인 시작 덱에서도 정확히 한 장만 사용합니다.
+    /// </summary>
+    private CardData TakeFirstCardByID(
+        List<CardData> cards,
+        string cardID)
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            CardData card = cards[i];
+
+            if (card == null || card.cardID != cardID)
+            {
+                continue;
+            }
+
+            cards.RemoveAt(i);
+            return card;
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// 드로우 파일에서 카드 한 장을 꺼내 반환합니다.
     ///
     /// 드로우 파일이 비어 있으면

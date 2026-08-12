@@ -1191,6 +1191,14 @@ public class BattleManager : MonoBehaviour
         }
 
         ClearSelectedCard();
+
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null)
+        {
+            tutorialManager.NotifyCardUsed(usedCardData);
+        }
     }
 
     /// <summary>
