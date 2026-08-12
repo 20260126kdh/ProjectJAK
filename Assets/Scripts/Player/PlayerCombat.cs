@@ -238,6 +238,10 @@ public class PlayerCombat : MonoBehaviour
             return;
         }
 
+        int blockBeforeDamage = currentBlock;
+        int crewHealthDamage = 0;
+        int playerHealthDamage = 0;
+
         StatusEffectHandler statusEffectHandler =
             GetComponent<StatusEffectHandler>();
 
@@ -314,10 +318,15 @@ public class PlayerCombat : MonoBehaviour
 
             if (crewManager != null)
             {
+                int damageBeforeCrews = amount;
+
                 amount =
                     crewManager.AbsorbDamageWithCrews(
                         amount
                     );
+
+                crewHealthDamage =
+                    damageBeforeCrews - amount;
             }
         }
 
@@ -336,6 +345,8 @@ public class PlayerCombat : MonoBehaviour
             int actualHealthDamage =
                 previousHP - playerData.CurrentHP;
 
+            playerHealthDamage = actualHealthDamage;
+
             ProcessImmortal(statusEffectHandler);
 
             if (actualHealthDamage > 0 &&
@@ -348,6 +359,26 @@ public class PlayerCombat : MonoBehaviour
                 $"[PlayerCombat] 플레이어 체력 피해 : " +
                 $"요청 피해 {amount} / " +
                 $"실제 체력 피해 {actualHealthDamage}"
+            );
+        }
+
+        if (SFXManager.Instance != null)
+        {
+            bool wasFullyBlocked =
+                blockBeforeDamage > 0 &&
+                crewHealthDamage <= 0 &&
+                playerHealthDamage <= 0;
+
+            int hitDamage =
+                playerHealthDamage > 0
+                    ? playerHealthDamage
+                    : crewHealthDamage;
+
+            SFXManager.Instance.PlayHitResult(
+                hitDamage,
+                wasFullyBlocked,
+                false,
+                playerHealthDamage <= 0 && crewHealthDamage > 0
             );
         }
     }

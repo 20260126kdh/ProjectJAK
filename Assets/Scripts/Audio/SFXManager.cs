@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -47,6 +48,81 @@ public class SFXManager : MonoBehaviour
     [SerializeField]
     private float randomPitchRange = 0.05f;
 
+    [Header("전투 공격 및 피격")]
+
+    [SerializeField]
+    private AudioClip attackClip;
+
+    [SerializeField]
+    private AudioClip weakHitClip;
+
+    [SerializeField]
+    private AudioClip strongHitClip;
+
+    [SerializeField]
+    private AudioClip blockedHitClip;
+
+    [SerializeField]
+    private AudioClip harpoonHitClip;
+
+    [SerializeField]
+    [Min(0f)]
+    private float attackToHitDelay = 0.1f;
+
+    [Header("카드 복합 효과")]
+
+    [SerializeField]
+    private AudioClip gainBlockClip;
+
+    [SerializeField]
+    private AudioClip buffClip;
+
+    [SerializeField]
+    private AudioClip debuffClip;
+
+    [SerializeField]
+    private AudioClip harpoonStackClip;
+
+    [SerializeField]
+    [Min(0f)]
+    private float attackToBlockDelay = 0.3f;
+
+    [SerializeField]
+    [Min(0f)]
+    private float blockToBuffDelay = 0.6f;
+
+    [SerializeField]
+    [Min(0f)]
+    private float buffToDebuffDelay = 0.6f;
+
+    [SerializeField]
+    [Min(0f)]
+    private float debuffToHarpoonDelay = 0.7f;
+
+    [SerializeField]
+    [Min(0f)]
+    private float repeatedStatusDelay = 0.2f;
+
+    [Header("카드 및 UI")]
+
+    [SerializeField]
+    private AudioClip cardDrawClip;
+
+    [SerializeField]
+    private AudioClip cardHoverClip;
+
+    [SerializeField]
+    private AudioClip cardUpgradeClip;
+
+    [SerializeField]
+    private AudioClip clickClip;
+
+    [SerializeField]
+    private AudioClip restHealClip;
+
+    [SerializeField]
+    private AudioClip victoryClip;
+
     [Header("Debug")]
 
     [SerializeField]
@@ -79,6 +155,14 @@ public class SFXManager : MonoBehaviour
         ConfigureAudioSource();
 
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Update()
+    {
+        if (Input.anyKeyDown)
+        {
+            PlaySFX(clickClip);
+        }
     }
 
     #endregion
@@ -220,6 +304,136 @@ public class SFXManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 플레이어 또는 선원의 공격음 재생 후 0.1초 뒤 판정에 맞는 피격음을 재생합니다.
+    /// </summary>
+    public void PlayAttackHitSequence(
+        int actualHealthDamage,
+        bool wasFullyBlocked,
+        bool hadHarpoonStack,
+        bool isCrewAttack)
+    {
+        StartCoroutine(
+            PlayAttackHitSequenceCoroutine(
+                actualHealthDamage,
+                wasFullyBlocked,
+                hadHarpoonStack,
+                isCrewAttack
+            )
+        );
+    }
+
+    /// <summary>
+    /// 적 공격처럼 별도 공격음이 없는 피해의 피격음만 재생합니다.
+    /// </summary>
+    public void PlayHitResult(
+        int actualHealthDamage,
+        bool wasFullyBlocked,
+        bool hadHarpoonStack = false,
+        bool isCrewHit = false)
+    {
+        AudioClip hitClip = SelectHitClip(
+            actualHealthDamage,
+            wasFullyBlocked,
+            hadHarpoonStack,
+            isCrewHit
+        );
+
+        if (hitClip != null)
+        {
+            PlaySFX(hitClip);
+        }
+    }
+
+    /// <summary>
+    /// 한 카드에서 발생한 방어도, 버프, 디버프와 작살 효과음을
+    /// 전투 기획 순서와 간격에 맞춰 재생합니다.
+    /// </summary>
+    public void PlayCardEffectSequence(
+        bool hadAttack,
+        bool gainedBlock,
+        int distinctBuffCount,
+        int distinctDebuffCount,
+        bool appliedHarpoon)
+    {
+        if (!gainedBlock &&
+            distinctBuffCount <= 0 &&
+            distinctDebuffCount <= 0 &&
+            !appliedHarpoon)
+        {
+            return;
+        }
+
+        StartCoroutine(
+            PlayCardEffectSequenceCoroutine(
+                hadAttack,
+                gainedBlock,
+                Mathf.Clamp(distinctBuffCount, 0, 2),
+                Mathf.Clamp(distinctDebuffCount, 0, 2),
+                appliedHarpoon
+            )
+        );
+    }
+
+    /// <summary>
+    /// 적 행동에서 발생한 공격, 방어도, 버프와 디버프 효과음을
+    /// 전투 기획 순서와 간격에 맞춰 재생합니다.
+    /// </summary>
+    public void PlayEnemyEffectSequence(
+        bool hadAttack,
+        bool gainedBlock,
+        int distinctBuffCount,
+        int distinctDebuffCount)
+    {
+        PlayCardEffectSequence(
+            hadAttack,
+            gainedBlock,
+            distinctBuffCount,
+            distinctDebuffCount,
+            false
+        );
+    }
+
+    /// <summary>
+    /// 카드 한 장이 손패로 드로우될 때 효과음을 재생합니다.
+    /// </summary>
+    public void PlayCardDraw()
+    {
+        PlaySFX(cardDrawClip);
+    }
+
+    /// <summary>
+    /// 카드에 마우스가 진입했을 때 효과음을 재생합니다.
+    /// </summary>
+    public void PlayCardHover()
+    {
+        PlaySFX(cardHoverClip);
+    }
+
+    /// <summary>
+    /// 휴식 화면에서 카드 강화 패널을 열 때 효과음을 재생합니다.
+    /// </summary>
+    public void PlayCardUpgrade()
+    {
+        PlaySFX(cardUpgradeClip);
+    }
+
+    /// <summary>
+    /// 휴식 화면에서 회복을 선택했을 때 효과음을 재생합니다.
+    /// </summary>
+    public void PlayRestHeal()
+    {
+        PlaySFX(restHealClip);
+    }
+
+    /// <summary>
+    /// 마지막 적 처치 후 보상 패널이 표시될 때 승리음을 재생합니다.
+    /// </summary>
+    public void PlayVictory()
+    {
+        PlaySFX(victoryClip);
+    }
+
+    /// <summary>
     /// 현재 AudioSource에서 재생 중인 효과음을 정지합니다.
     ///
     /// PlayOneShot으로 재생된 모든 효과음이 함께 정지됩니다.
@@ -275,6 +489,130 @@ public class SFXManager : MonoBehaviour
         }
     }
 
+    private IEnumerator PlayAttackHitSequenceCoroutine(
+        int actualHealthDamage,
+        bool wasFullyBlocked,
+        bool hadHarpoonStack,
+        bool isCrewAttack)
+    {
+        if (attackClip != null)
+        {
+            PlaySFX(attackClip);
+        }
+
+        yield return new WaitForSecondsRealtime(attackToHitDelay);
+
+        PlayHitResult(
+            actualHealthDamage,
+            wasFullyBlocked,
+            hadHarpoonStack,
+            isCrewAttack
+        );
+    }
+
+    private AudioClip SelectHitClip(
+        int actualHealthDamage,
+        bool wasFullyBlocked,
+        bool hadHarpoonStack,
+        bool isCrewHit)
+    {
+        if (wasFullyBlocked)
+        {
+            return blockedHitClip;
+        }
+
+        if (actualHealthDamage <= 0)
+        {
+            return null;
+        }
+
+        if (isCrewHit)
+        {
+            return weakHitClip;
+        }
+
+        if (hadHarpoonStack)
+        {
+            return harpoonHitClip;
+        }
+
+        return actualHealthDamage < 20
+            ? weakHitClip
+            : strongHitClip;
+    }
+
+    private IEnumerator PlayCardEffectSequenceCoroutine(
+        bool hadAttack,
+        bool gainedBlock,
+        int buffPlayCount,
+        int debuffPlayCount,
+        bool appliedHarpoon)
+    {
+        if (hadAttack)
+        {
+            yield return new WaitForSecondsRealtime(attackToBlockDelay);
+        }
+
+        if (gainedBlock)
+        {
+            PlaySFX(gainBlockClip);
+
+            if (buffPlayCount > 0 || debuffPlayCount > 0 || appliedHarpoon)
+            {
+                yield return new WaitForSecondsRealtime(blockToBuffDelay);
+            }
+        }
+
+        if (buffPlayCount > 0)
+        {
+            PlaySFX(buffClip);
+
+            if (buffPlayCount > 1)
+            {
+                yield return new WaitForSecondsRealtime(repeatedStatusDelay);
+                PlaySFX(buffClip);
+            }
+
+            if (debuffPlayCount > 0 || appliedHarpoon)
+            {
+                float remainingDelay = Mathf.Max(
+                    0f,
+                    buffToDebuffDelay -
+                    (buffPlayCount > 1 ? repeatedStatusDelay : 0f)
+                );
+
+                yield return new WaitForSecondsRealtime(remainingDelay);
+            }
+        }
+
+        if (debuffPlayCount > 0)
+        {
+            PlaySFX(debuffClip);
+
+            if (debuffPlayCount > 1)
+            {
+                yield return new WaitForSecondsRealtime(repeatedStatusDelay);
+                PlaySFX(debuffClip);
+            }
+
+            if (appliedHarpoon)
+            {
+                float remainingDelay = Mathf.Max(
+                    0f,
+                    debuffToHarpoonDelay -
+                    (debuffPlayCount > 1 ? repeatedStatusDelay : 0f)
+                );
+
+                yield return new WaitForSecondsRealtime(remainingDelay);
+            }
+        }
+
+        if (appliedHarpoon)
+        {
+            PlaySFX(harpoonStackClip);
+        }
+    }
+
 #if UNITY_EDITOR
 
     /// <summary>
@@ -291,6 +629,13 @@ public class SFXManager : MonoBehaviour
                 0f,
                 0.5f
             );
+
+        attackToHitDelay = Mathf.Max(0f, attackToHitDelay);
+        attackToBlockDelay = Mathf.Max(0f, attackToBlockDelay);
+        blockToBuffDelay = Mathf.Max(0f, blockToBuffDelay);
+        buffToDebuffDelay = Mathf.Max(0f, buffToDebuffDelay);
+        debuffToHarpoonDelay = Mathf.Max(0f, debuffToHarpoonDelay);
+        repeatedStatusDelay = Mathf.Max(0f, repeatedStatusDelay);
 
         AudioSource source =
             GetComponent<AudioSource>();

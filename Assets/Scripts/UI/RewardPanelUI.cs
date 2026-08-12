@@ -93,6 +93,11 @@ public class RewardPanelUI : MonoBehaviour
 
         GenerateRewardCards(isBossReward);
 
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayVictory();
+        }
+
         Debug.Log(
             "[RewardPanelUI] 리워드 패널 표시"
         );

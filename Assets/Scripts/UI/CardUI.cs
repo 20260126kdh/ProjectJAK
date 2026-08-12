@@ -6,7 +6,9 @@ using UnityEngine.UI;
 /// <summary>
 /// 카드 한 장의 UI를 표시하고 클릭 선택을 처리하는 클래스입니다.
 /// </summary>
-public class CardUI : MonoBehaviour, IPointerClickHandler
+public class CardUI : MonoBehaviour,
+    IPointerClickHandler,
+    IPointerEnterHandler
 {
     [Header("카드 프레임")]
     [SerializeField]
@@ -264,6 +266,17 @@ public class CardUI : MonoBehaviour, IPointerClickHandler
         }
 
         handManager.RequestSelectCard(this);
+    }
+
+    /// <summary>
+    /// 카드 위로 마우스가 진입할 때 카드 Hover 효과음을 재생합니다.
+    /// </summary>
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayCardHover();
+        }
     }
 
     /// <summary>

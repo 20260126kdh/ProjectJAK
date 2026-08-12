@@ -402,6 +402,77 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 작업명
 
+전투 SFX 1단계 — 공격·피격·방어 판정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 수정 대상
+
+- `Assets/Audio/SFX`
+- `Assets/Scripts/Audio/SFXManager.cs`
+- `Assets/Scripts/Cards/CardEffectExecutor.cs`
+- `Assets/Scripts/Player/PlayerCombat.cs`
+- `Assets/Scenes/PlayScene/Main_TitleScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 플레이어와 선원 공격은 `attack` 재생 0.1초 뒤 판정 피격음을 재생한다.
+- 완전 방어는 `blocked_hit`, 방어 관통은 실제 체력 피해 판정음을 재생한다.
+- 작살 보유 적의 관통 피해는 `harpoonstack_hit`을 재생한다.
+- 일반 실제 체력 피해 20 미만은 `hit ver.1`, 20 이상은 `hit ver.2`를 재생한다.
+- 선원 공격과 선원 피격은 피해량과 관계없이 `hit ver.1`을 재생한다.
+- 중독과 자해에는 공격 SFX를 재생하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+전투 SFX 2단계 — 카드 복합 효과 재생 순서
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 완료 조건
+
+- 카드 효과 로직은 기존 데이터 순서대로 즉시 처리하고 SFX 순서만 별도로 제어한다.
+- 공격/피격 시작 0.3초 후 방어도, 방어도 시작 0.6초 후 버프를 재생한다.
+- 버프 시작 0.6초 후 디버프, 디버프 시작 0.7초 후 작살 스택음을 재생한다.
+- 앞 카테고리가 없는 경우 첫 번째 존재하는 효과음은 즉시 재생한다.
+- 서로 다른 버프·디버프가 2종 이상이면 0.2초 간격으로 각각 최대 2회 재생한다.
+- 같은 상태를 여러 대상에게 부여해도 해당 종류의 효과음은 한 번만 계산한다.
+- `Exit`은 버프음 대상에서 제외한다.
+- 실제 획득 방어도와 실제 추가 작살 스택이 0이면 해당 효과음을 재생하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+전투 SFX 3단계 — 카드·UI·승리 효과음
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 완료 조건
+
+- 실제 손패 드로우 이동을 시작하는 카드마다 `card_draw`를 한 번 재생한다.
+- 손패·보상·강화 카드에 마우스가 진입할 때 `card_hover`를 한 번 재생한다.
+- 휴식 화면에서 강화 패널이 정상적으로 열릴 때 `card_upgrade`를 재생한다.
+- 휴식 회복 버튼 처리가 성공할 때만 `heal`을 재생하고 전투 후 자동 회복에는 재생하지 않는다.
+- 마지막 적 처치 후 보상 패널이 활성화될 때 `victory`를 재생한다.
+- 마우스 버튼 또는 키보드 키를 누른 프레임마다 `click`을 한 번 재생한다.
+- 기존 드로우 속도, 강화, 회복량과 보상 생성 로직은 변경하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
 게임 화면 전환 페이드
 
 ## 현재 상태
@@ -781,6 +852,59 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 - 마지막 설명 줄이 배경 칸 안에 표시된다.
 - 클래스명, 체력, 패시브 칸과 버튼 위치는 유지된다.
 - 문구, 줄바꿈, 글자 크기와 패널 크기는 변경되지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+전투 SFX 4단계 적 행동 효과음
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 청음 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Audio/SFXManager.cs`
+- `Assets/Scripts/Pattern/EnemyPatternController.cs`
+- `Assets/Scripts/Enemy/Enemy.cs`
+- `Assets/Scripts/Enemy/HRevelationController.cs`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 성공한 적 패턴 행동의 방어도, 버프와 디버프 효과음만 재생한다.
+- 공격 이후 효과는 공격/피격 시작으로부터 0.3초 뒤 순서 재생을 시작한다.
+- 서로 다른 상태 효과가 여러 개면 같은 종류의 효과음을 0.2초 간격으로 최대 2회 재생한다.
+- 독오름, 불어터진 피부, 모독받은 후광과 심해의 속삭임에도 디버프음을 재생한다.
+- 적 패턴의 실제 효과 실행 순서와 전투 수치는 변경하지 않는다.
+
+# 현재 작업 변경
+
+## 작업명
+
+피지크 공격 카드 즉시 흡혈 수정
+
+## 현재 상태
+
+구현 완료 — Unity Play Mode 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Cards/CardEffectExecutor.cs`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- `PHY_ATK_005`는 해당 카드가 실제로 입힌 피해만큼 즉시 회복한다.
+- `PHY_ATK_007`은 모든 적에게 실제로 입힌 피해의 합계만큼 즉시 회복한다.
+- 두 카드 사용 후 흡혈 상태가 남아 다음 공격에서 회복하지 않는다.
+- `PHY_SKL_005`의 이번 턴 흡혈 상태는 기존대로 유지된다.
+- 방어도에 막힌 피해와 적의 남은 체력을 초과한 피해는 회복량에 포함하지 않는다.
 
 # 현재 작업 변경
 

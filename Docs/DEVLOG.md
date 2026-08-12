@@ -420,6 +420,52 @@
 - 관련 경로: `Assets/Resources/Cursor`, `Assets/Scripts/UI/GameCursorController.cs`
 - 검증: 이미지 알파 및 정적 Hotspot 점검, Unity Play Mode 시각 확인 필요
 
+## 2026-08-12 — 전투 SFX 1단계 공격·피격·방어
+
+- 플레이어·선원 공격에 `attack` 후 0.1초 지연된 피격음 조합 추가
+- 완전 방어, 방어 관통, 작살 보유 여부와 실제 체력 피해 20 기준으로 피격음 분기
+- 선원 공격 및 선원 피격은 약한 피격음으로 통일
+- 적 패턴 공격의 플레이어 방어·선원 흡수·플레이어 체력 피해 결과에 피격음 연결
+- 중독과 자해 피해는 공격 SFX 대상에서 제외
+- 관련 경로: `Assets/Audio/SFX`, `Assets/Scripts/Audio/SFXManager.cs`, `Assets/Scripts/Cards/CardEffectExecutor.cs`, `Assets/Scripts/Player/PlayerCombat.cs`, `Assets/Scenes/PlayScene/Main_TitleScene.unity`
+- 검증: Unity 컴파일 및 Play Mode 조합 확인 필요
+
+## 2026-08-12 — 전투 SFX 2단계 카드 복합 효과 순서
+
+- 카드 효과 실행 결과를 공격, 방어도, 버프, 디버프와 작살 카테고리로 수집
+- 실제 게임 효과 순서는 변경하지 않고 SFX만 0.3/0.6/0.6/0.7초 간격으로 예약 재생
+- 서로 다른 버프·디버프는 0.2초 간격으로 각 최대 2회 재생하고 동일 상태의 다중 대상은 한 번으로 통합
+- 실제 방어도 또는 작살 증가가 없는 경우와 `Exit` 상태는 해당 효과음에서 제외
+- 관련 경로: `Assets/Scripts/Audio/SFXManager.cs`, `Assets/Scripts/Cards/CardEffectExecutor.cs`, `Assets/Scenes/PlayScene/Main_TitleScene.unity`
+- 검증: Unity 컴파일 및 Play Mode 복합 카드 청음 확인 필요
+
+## 2026-08-12 — 전투 SFX 3단계 카드·UI·승리 효과음
+
+- 드로우 이동을 시작하는 카드마다 `card_draw`를 한 번씩 재생하도록 연결
+- 손패, 보상과 강화 카드의 Pointer Enter에 `card_hover` 연결
+- 휴식 회복 성공 시 `heal`, 강화 패널 진입 시 `card_upgrade` 재생
+- 마지막 적 처치 후 보상 패널 활성화와 동시에 `victory` 재생
+- SFXManager에서 마우스·키보드 입력 시작 프레임마다 공통 `click` 재생
+- 관련 경로: `Assets/Scripts/Audio/SFXManager.cs`, `Assets/Scripts/Cards/Managers/HandManager.cs`, `Assets/Scripts/UI/CardUI.cs`, `Assets/Scripts/UI/RestPanelUI.cs`, `Assets/Scripts/UI/RewardPanelUI.cs`, `Assets/Scenes/PlayScene/Main_TitleScene.unity`
+- 검증: Unity 컴파일 및 Play Mode UI 청음 확인 필요
+
+## 2026-08-12 — 전투 SFX 4단계 적 행동 효과음
+
+- 성공한 적 CSV 패턴 행동을 공격, 방어도, 버프와 디버프로 집계해 기존 SFX 간격 규칙 적용
+- 서로 다른 적 버프·디버프를 0.2초 간격으로 각 최대 2회 재생
+- 기본 공격 뒤 독오름·불어터진 피부 발동을 공격 이후 디버프음 순서에 연결
+- 모독받은 후광과 심해의 속삭임의 실제 상태이상 부여에 디버프음 연결
+- 관련 경로: `Assets/Scripts/Audio/SFXManager.cs`, `Assets/Scripts/Pattern/EnemyPatternController.cs`, `Assets/Scripts/Enemy/Enemy.cs`, `Assets/Scripts/Enemy/HRevelationController.cs`
+- 검증: 정적 diff 점검 완료, Unity 컴파일 및 Play Mode 청음 확인 필요
+
+## 2026-08-12 — 피지크 공격 카드 즉시 흡혈 수정
+
+- `PHY_ATK_005`, `PHY_ATK_007`의 공격 후 흡혈 상태 부여로 다음 공격에서 회복되던 원인 수정
+- 공격과 자기 흡혈이 함께 있는 카드는 각 대상의 실제 체력 피해만큼 즉시 회복하도록 처리
+- 카드 한정 흡혈 효과는 지속 상태로 남기지 않고 `PHY_SKL_005`의 턴 유지형 흡혈은 보존
+- 관련 경로: `Assets/Scripts/Cards/CardEffectExecutor.cs`
+- 검증: Unity 컴파일 및 Play Mode 단일·전체 공격 회복량 확인 필요
+
 ## 2026-08-11 — 게임 화면 전환 페이드
 
 - 런타임 전역 검은색 오버레이와 코루틴 기반 `ScreenFadeController` 추가

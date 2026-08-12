@@ -266,6 +266,12 @@ public class EnemyPatternController : MonoBehaviour
         );
 
         int executedActionCount = 0;
+        bool hadAttack = false;
+        bool gainedBlock = false;
+        HashSet<StatusEffectType> buffTypes =
+            new HashSet<StatusEffectType>();
+        HashSet<StatusEffectType> debuffTypes =
+            new HashSet<StatusEffectType>();
 
         for (int i = 0;
              i < actions.Count;
@@ -292,6 +298,13 @@ public class EnemyPatternController : MonoBehaviour
             if (executed)
             {
                 executedActionCount++;
+                RecordExecutedActionSfx(
+                    action,
+                    ref hadAttack,
+                    ref gainedBlock,
+                    buffTypes,
+                    debuffTypes
+                );
             }
             else
             {
@@ -310,7 +323,74 @@ public class EnemyPatternController : MonoBehaviour
             this
         );
 
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayEnemyEffectSequence(
+                hadAttack,
+                gainedBlock,
+                buffTypes.Count,
+                debuffTypes.Count
+            );
+        }
+
         AdvancePatternTurn();
+    }
+
+    private void RecordExecutedActionSfx(
+        EnemyPatternData action,
+        ref bool hadAttack,
+        ref bool gainedBlock,
+        HashSet<StatusEffectType> buffTypes,
+        HashSet<StatusEffectType> debuffTypes)
+    {
+        switch (action.actionType)
+        {
+            case EnemyPatternActionType.DealDamage:
+                hadAttack = true;
+                return;
+
+            case EnemyPatternActionType.GainBlock:
+                gainedBlock |= action.value > 0;
+                return;
+
+            case EnemyPatternActionType.ApplyStatus:
+                if (!action.hasStatusType ||
+                    action.statusType == StatusEffectType.None ||
+                    action.statusType == StatusEffectType.Exit)
+                {
+                    return;
+                }
+
+                if (IsDebuffStatus(action.statusType))
+                {
+                    debuffTypes.Add(action.statusType);
+                }
+                else
+                {
+                    buffTypes.Add(action.statusType);
+                }
+                return;
+        }
+    }
+
+    private bool IsDebuffStatus(StatusEffectType statusEffectType)
+    {
+        switch (statusEffectType)
+        {
+            case StatusEffectType.Weaken:
+            case StatusEffectType.Vulnerable:
+            case StatusEffectType.Cripple:
+            case StatusEffectType.NoBlock:
+            case StatusEffectType.Broken:
+            case StatusEffectType.Jinx:
+            case StatusEffectType.Paralyze:
+            case StatusEffectType.Toxic:
+            case StatusEffectType.MightReduction:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     /// <summary>

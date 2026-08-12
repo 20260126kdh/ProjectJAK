@@ -4685,6 +4685,27 @@ MonoBehaviour:
   defaultVolume: 1
   useRandomPitch: 0
   randomPitchRange: 0.05
+  attackClip: {fileID: 8300000, guid: 69719a3362e41f642aed959821157de2, type: 3}
+  weakHitClip: {fileID: 8300000, guid: 017c0788548baf54d8f42e1cb55045c6, type: 3}
+  strongHitClip: {fileID: 8300000, guid: 9053b22a4785efe439450b94185ac17b, type: 3}
+  blockedHitClip: {fileID: 8300000, guid: 6ad649b15ede47d49937fd33acae808c, type: 3}
+  harpoonHitClip: {fileID: 8300000, guid: 0cdef373424ce60418f279c485dca3c9, type: 3}
+  attackToHitDelay: 0.1
+  gainBlockClip: {fileID: 8300000, guid: e12f145aff763ca48b693cfacd407163, type: 3}
+  buffClip: {fileID: 8300000, guid: 573ed6cc083b625449174e5e2f4fa57d, type: 3}
+  debuffClip: {fileID: 8300000, guid: b6551083c0f37524184ee58abcab20dd, type: 3}
+  harpoonStackClip: {fileID: 8300000, guid: 9dc348f2352dcd944aabf83bbaf3cd6b, type: 3}
+  attackToBlockDelay: 0.3
+  blockToBuffDelay: 0.6
+  buffToDebuffDelay: 0.6
+  debuffToHarpoonDelay: 0.7
+  repeatedStatusDelay: 0.2
+  cardDrawClip: {fileID: 8300000, guid: 2eaed122063117d45b4d1c0644c2c607, type: 3}
+  cardHoverClip: {fileID: 8300000, guid: fbf55ac85e5fdd54aa3f7fc314991bdd, type: 3}
+  cardUpgradeClip: {fileID: 8300000, guid: f8fc7ac661b571747acc580f42371d64, type: 3}
+  clickClip: {fileID: 8300000, guid: 7905fe463c6234b4da59c439941c9439, type: 3}
+  restHealClip: {fileID: 8300000, guid: b9053e31366dee1438e3b77bc6625766, type: 3}
+  victoryClip: {fileID: 8300000, guid: f07f5b69e89fa15418ff763f47fa7595, type: 3}
   debugMode: 1
 --- !u!82 &1663429269
 AudioSource:

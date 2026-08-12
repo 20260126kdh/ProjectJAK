@@ -1316,6 +1316,11 @@ public class HandManager : MonoBehaviour
             cardRectTransform.position = drawPileTarget.position;
             cardRectTransform.localRotation = Quaternion.identity;
 
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayCardDraw();
+            }
+
             float elapsedTime = 0f;
 
             while (elapsedTime < moveDuration)

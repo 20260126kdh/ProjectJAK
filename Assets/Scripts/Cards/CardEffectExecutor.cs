@@ -40,6 +40,15 @@ public class CardEffectExecutor : MonoBehaviour
     /// </summary>
     private int currentCardDamageMultiplier = 1;
 
+    private bool currentCardHadAttack;
+    private bool currentCardGainedBlock;
+    private bool currentCardAppliedHarpoon;
+    private bool currentCardHasImmediateLifesteal;
+    private readonly HashSet<StatusEffectType> currentCardBuffTypes =
+        new HashSet<StatusEffectType>();
+    private readonly HashSet<StatusEffectType> currentCardDebuffTypes =
+        new HashSet<StatusEffectType>();
+
     /// <summary>
     /// 카드 효과 목록을 실행합니다.
     /// </summary>
@@ -75,11 +84,21 @@ public class CardEffectExecutor : MonoBehaviour
         currentCardDamageModifier = damageModifier;
         currentCardDamageMultiplier =
             Mathf.Max(1, damageMultiplier);
+        currentCardHadAttack = false;
+        currentCardGainedBlock = false;
+        currentCardAppliedHarpoon = false;
+        currentCardBuffTypes.Clear();
+        currentCardDebuffTypes.Clear();
 
         List<CardEffectData> orderedEffects =
             cardData.effects
                 .OrderBy(effect => effect.order)
                 .ToList();
+
+        currentCardHasImmediateLifesteal =
+            HasImmediateLifestealCombination(
+                orderedEffects
+            );
 
         foreach (CardEffectData effect in orderedEffects)
         {
@@ -87,6 +106,17 @@ public class CardEffectExecutor : MonoBehaviour
                 effect,
                 targetEnemy,
                 targetCrew
+            );
+        }
+
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayCardEffectSequence(
+                currentCardHadAttack,
+                currentCardGainedBlock,
+                currentCardBuffTypes.Count,
+                currentCardDebuffTypes.Count,
+                currentCardAppliedHarpoon
             );
         }
     }
@@ -125,10 +155,20 @@ public class CardEffectExecutor : MonoBehaviour
                 break;
 
             case CardEffectType.ApplyStatus:
+                if (IsImmediateLifestealEffect(effect))
+                {
+                    Debug.Log(
+                        "[CardEffectExecutor] " +
+                        "현재 카드 피해 한정 흡혈로 처리합니다."
+                    );
+                    break;
+                }
+
                 ExecuteApplyStatus(
                     effect,
                     targetEnemy
                 );
+                RecordStatusSfx(effect.statusEffectType);
                 break;
 
             case CardEffectType.HarpoonerStack:
@@ -178,6 +218,7 @@ public class CardEffectExecutor : MonoBehaviour
 
             case CardEffectType.DoubleNextAttackDamage:
                 ExecuteDoubleNextAttackDamage();
+                RecordStatusSfx(StatusEffectType.DevilPower);
                 break;
 
             case CardEffectType.Sacrifice:
@@ -194,6 +235,10 @@ public class CardEffectExecutor : MonoBehaviour
 
             case CardEffectType.MightEqualToSacrificedHealth:
                 ExecuteMightEqualToSacrificedHealth();
+                if (sacrificedHealthThisCard > 0)
+                {
+                    RecordStatusSfx(StatusEffectType.Might);
+                }
                 break;
 
             case CardEffectType.DealDamageEqualToHarpoonerStack:
@@ -295,6 +340,11 @@ public class CardEffectExecutor : MonoBehaviour
             harpoonController.AddHarpoonStack(
                 stackAmount
             );
+
+        if (actualAddedAmount > 0)
+        {
+            currentCardAppliedHarpoon = true;
+        }
 
         Debug.Log(
             $"[CardEffectExecutor] 작살 스택 부여 : " +
@@ -655,8 +705,11 @@ public class CardEffectExecutor : MonoBehaviour
         HarpoonStackController harpoonController =
             targetEnemy.GetComponent<HarpoonStackController>();
 
-        if (harpoonController != null &&
-            harpoonController.HasHarpoonStack)
+        bool hadHarpoonStack =
+            harpoonController != null &&
+            harpoonController.HasHarpoonStack;
+
+        if (hadHarpoonStack)
         {
             /*
              * 작살 추가 피해는 피해를 적용하기 전에
@@ -684,10 +737,21 @@ public class CardEffectExecutor : MonoBehaviour
          * 적의 취약과 장송의 가호는
          * Enemy.TakeDamage() 내부에서 적용됩니다.
          */
+        int blockBeforeDamage = targetEnemy.CurrentBlock;
+
         int actualDamage =
             targetEnemy.TakeDamage(
                 totalDamage
             );
+
+        PlayEnemyAttackSfx(
+            targetEnemy,
+            totalDamage,
+            blockBeforeDamage,
+            actualDamage,
+            hadHarpoonStack,
+            false
+        );
 
         ProcessLifesteal(
             playerCombat,
@@ -736,6 +800,11 @@ public class CardEffectExecutor : MonoBehaviour
 
         int addedAmount =
             harpoonController.AddHarpoonStack(2);
+
+        if (addedAmount > 0)
+        {
+            currentCardAppliedHarpoon = true;
+        }
 
         Debug.Log(
             $"[CardEffectExecutor] 캡틴 패시브 발동 : " +
@@ -790,19 +859,19 @@ public class CardEffectExecutor : MonoBehaviour
             return;
         }
 
-        if (statusEffectHandler == null)
-        {
-            return;
-        }
-
         if (actualDamage <= 0)
         {
             return;
         }
 
-        if (!statusEffectHandler.HasStatusEffect(
-            StatusEffectType.Lifesteal
-        ))
+        bool hasTurnLifesteal =
+            statusEffectHandler != null &&
+            statusEffectHandler.HasStatusEffect(
+                StatusEffectType.Lifesteal
+            );
+
+        if (!currentCardHasImmediateLifesteal &&
+            !hasTurnLifesteal)
         {
             return;
         }
@@ -813,6 +882,43 @@ public class CardEffectExecutor : MonoBehaviour
             $"[CardEffectExecutor] 흡혈 발동 : " +
             $"실제 피해 {actualDamage}만큼 회복"
         );
+    }
+
+    /// <summary>
+    /// 공격과 자기 흡혈 부여가 같은 카드에 함께 있으면
+    /// 해당 카드가 실제로 입힌 피해만 회복하는 효과로 해석합니다.
+    /// </summary>
+    private bool HasImmediateLifestealCombination(
+        List<CardEffectData> orderedEffects)
+    {
+        bool hasDamage = orderedEffects.Any(effect =>
+            effect != null &&
+            effect.effectType == CardEffectType.DealDamage
+        );
+
+        bool hasSelfLifesteal = orderedEffects.Any(effect =>
+            effect != null &&
+            effect.effectType == CardEffectType.ApplyStatus &&
+            effect.statusEffectType == StatusEffectType.Lifesteal &&
+            effect.target == CardTargetType.Self
+        );
+
+        return hasDamage && hasSelfLifesteal;
+    }
+
+    /// <summary>
+    /// 현재 효과가 카드 한정 흡혈을 표현하기 위한 데이터인지 확인합니다.
+    /// 이 효과는 지속 상태로 부여하지 않습니다.
+    /// </summary>
+    private bool IsImmediateLifestealEffect(
+        CardEffectData effect)
+    {
+        return
+            currentCardHasImmediateLifesteal &&
+            effect != null &&
+            effect.effectType == CardEffectType.ApplyStatus &&
+            effect.statusEffectType == StatusEffectType.Lifesteal &&
+            effect.target == CardTargetType.Self;
     }
 
     /// <summary>
@@ -930,8 +1036,17 @@ public class CardEffectExecutor : MonoBehaviour
         int stackDamage =
             Mathf.Max(0, harpoonController.CurrentHarpoonStack);
 
-        int actualDamage =
-            targetEnemy.TakeDamage(stackDamage);
+        int blockBeforeDamage = targetEnemy.CurrentBlock;
+        int actualDamage = targetEnemy.TakeDamage(stackDamage);
+
+        PlayEnemyAttackSfx(
+            targetEnemy,
+            stackDamage,
+            blockBeforeDamage,
+            actualDamage,
+            harpoonController.HasHarpoonStack,
+            false
+        );
 
         Debug.Log(
             $"[CardEffectExecutor] 작살 스택 동일 피해 : " +
@@ -1170,8 +1285,18 @@ public class CardEffectExecutor : MonoBehaviour
         int finalDamage =
             Mathf.Max(0, effect.value);
 
-        int actualDamage =
-            targetEnemy.TakeDamage(finalDamage);
+        int blockBeforeDamage = targetEnemy.CurrentBlock;
+        bool hadHarpoonStack = HasHarpoonStack(targetEnemy);
+        int actualDamage = targetEnemy.TakeDamage(finalDamage);
+
+        PlayEnemyAttackSfx(
+            targetEnemy,
+            finalDamage,
+            blockBeforeDamage,
+            actualDamage,
+            hadHarpoonStack,
+            true
+        );
 
         ApplyCaptainCrewPassive(
             targetEnemy
@@ -1263,10 +1388,18 @@ public class CardEffectExecutor : MonoBehaviour
             Enemy randomEnemy =
                 activeEnemies[randomIndex];
 
-            int actualDamage =
-                randomEnemy.TakeDamage(
-                    damagePerCrew
-                );
+            int blockBeforeDamage = randomEnemy.CurrentBlock;
+            bool hadHarpoonStack = HasHarpoonStack(randomEnemy);
+            int actualDamage = randomEnemy.TakeDamage(damagePerCrew);
+
+            PlayEnemyAttackSfx(
+                randomEnemy,
+                damagePerCrew,
+                blockBeforeDamage,
+                actualDamage,
+                hadHarpoonStack,
+                true
+            );
 
             ApplyCaptainCrewPassive(
                 randomEnemy
@@ -1356,10 +1489,18 @@ public class CardEffectExecutor : MonoBehaviour
                         continue;
                     }
 
-                    int actualDamage =
-                        enemy.TakeDamage(
-                            damagePerHit
-                        );
+                    int blockBeforeDamage = enemy.CurrentBlock;
+                    bool hadHarpoonStack = HasHarpoonStack(enemy);
+                    int actualDamage = enemy.TakeDamage(damagePerHit);
+
+                    PlayEnemyAttackSfx(
+                        enemy,
+                        damagePerHit,
+                        blockBeforeDamage,
+                        actualDamage,
+                        hadHarpoonStack,
+                        true
+                    );
 
                     ApplyCaptainCrewPassive(
                         enemy
@@ -1448,9 +1589,16 @@ public class CardEffectExecutor : MonoBehaviour
             return;
         }
 
+        int blockBeforeGain = playerCombat.CurrentBlock;
+
         playerCombat.GainBlock(
             effect.value
         );
+
+        if (playerCombat.CurrentBlock > blockBeforeGain)
+        {
+            currentCardGainedBlock = true;
+        }
     }
 
     /// <summary>
@@ -1523,9 +1671,16 @@ public class CardEffectExecutor : MonoBehaviour
 
         if (playerCombat.DamagedThisTurn)
         {
+            int blockBeforeGain = playerCombat.CurrentBlock;
+
             playerCombat.GainBlock(
                 effect.value
             );
+
+            if (playerCombat.CurrentBlock > blockBeforeGain)
+            {
+                currentCardGainedBlock = true;
+            }
 
             Debug.Log(
                 $"[CardEffectExecutor] 체력 손실 조건 " +
@@ -1720,6 +1875,88 @@ public class CardEffectExecutor : MonoBehaviour
             $"지속 턴 : {remainingTurn} / " +
             $"영구 여부 : {isPermanent}"
         );
+    }
+
+    /// <summary>
+    /// 적에게 적용된 공격 결과를 전투 SFX 규칙에 전달합니다.
+    /// </summary>
+    private void PlayEnemyAttackSfx(
+        Enemy targetEnemy,
+        int requestedDamage,
+        int blockBeforeDamage,
+        int actualHealthDamage,
+        bool hadHarpoonStack,
+        bool isCrewAttack)
+    {
+        if (SFXManager.Instance == null || requestedDamage <= 0)
+        {
+            return;
+        }
+
+        currentCardHadAttack = true;
+
+        bool wasFullyBlocked =
+            blockBeforeDamage > 0 &&
+            actualHealthDamage <= 0;
+
+        SFXManager.Instance.PlayAttackHitSequence(
+            actualHealthDamage,
+            wasFullyBlocked,
+            hadHarpoonStack,
+            isCrewAttack
+        );
+    }
+
+    private bool HasHarpoonStack(Enemy targetEnemy)
+    {
+        if (targetEnemy == null)
+        {
+            return false;
+        }
+
+        HarpoonStackController harpoonController =
+            targetEnemy.GetComponent<HarpoonStackController>();
+
+        return
+            harpoonController != null &&
+            harpoonController.HasHarpoonStack;
+    }
+
+    private void RecordStatusSfx(StatusEffectType statusEffectType)
+    {
+        if (statusEffectType == StatusEffectType.None ||
+            statusEffectType == StatusEffectType.Exit)
+        {
+            return;
+        }
+
+        if (IsDebuffStatus(statusEffectType))
+        {
+            currentCardDebuffTypes.Add(statusEffectType);
+            return;
+        }
+
+        currentCardBuffTypes.Add(statusEffectType);
+    }
+
+    private bool IsDebuffStatus(StatusEffectType statusEffectType)
+    {
+        switch (statusEffectType)
+        {
+            case StatusEffectType.Weaken:
+            case StatusEffectType.Vulnerable:
+            case StatusEffectType.Cripple:
+            case StatusEffectType.NoBlock:
+            case StatusEffectType.Broken:
+            case StatusEffectType.Jinx:
+            case StatusEffectType.Paralyze:
+            case StatusEffectType.Toxic:
+            case StatusEffectType.MightReduction:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     /// <summary>

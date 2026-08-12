@@ -224,8 +224,28 @@ public class Enemy : MonoBehaviour
             finalDamage
         );
 
-        ProcessDToxinSwitch(playerCombat);
-        ProcessFFesteredSkin(playerCombat);
+        int appliedDebuffCount = 0;
+
+        if (ProcessDToxinSwitch(playerCombat))
+        {
+            appliedDebuffCount++;
+        }
+
+        if (ProcessFFesteredSkin(playerCombat))
+        {
+            appliedDebuffCount++;
+        }
+
+        if (appliedDebuffCount > 0 &&
+            SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayEnemyEffectSequence(
+                true,
+                false,
+                0,
+                appliedDebuffCount
+            );
+        }
     }
 
     /// <summary>
@@ -457,12 +477,12 @@ public class Enemy : MonoBehaviour
     /// 독오름 패시브를 처리합니다.
     /// 공격 후 마비와 중독을 번갈아 부여합니다.
     /// </summary>
-    private void ProcessDToxinSwitch(
+    private bool ProcessDToxinSwitch(
         PlayerCombat playerCombat)
     {
         if (playerCombat == null)
         {
-            return;
+            return false;
         }
 
         StatusEffectHandler enemyStatusEffectHandler =
@@ -470,14 +490,14 @@ public class Enemy : MonoBehaviour
 
         if (enemyStatusEffectHandler == null)
         {
-            return;
+            return false;
         }
 
         if (!enemyStatusEffectHandler.HasStatusEffect(
                 StatusEffectType.DToxinSwitch
             ))
         {
-            return;
+            return false;
         }
 
         StatusEffectHandler playerStatusEffectHandler =
@@ -491,7 +511,7 @@ public class Enemy : MonoBehaviour
                 this
             );
 
-            return;
+            return false;
         }
 
         int applyValue =
@@ -535,18 +555,20 @@ public class Enemy : MonoBehaviour
 
         applyParalyzeNext =
             !applyParalyzeNext;
+
+        return true;
     }
 
     /// <summary>
     /// 불어터진 피부 패시브를 처리합니다.
     /// 공격 후 미끄러짐과 부러짐을 번갈아 부여합니다.
     /// </summary>
-    private void ProcessFFesteredSkin(
+    private bool ProcessFFesteredSkin(
         PlayerCombat playerCombat)
     {
         if (playerCombat == null)
         {
-            return;
+            return false;
         }
 
         StatusEffectHandler enemyStatusEffectHandler =
@@ -554,14 +576,14 @@ public class Enemy : MonoBehaviour
 
         if (enemyStatusEffectHandler == null)
         {
-            return;
+            return false;
         }
 
         if (!enemyStatusEffectHandler.HasStatusEffect(
                 StatusEffectType.FFesteredSkin
             ))
         {
-            return;
+            return false;
         }
 
         StatusEffectHandler playerStatusEffectHandler =
@@ -575,7 +597,7 @@ public class Enemy : MonoBehaviour
                 this
             );
 
-            return;
+            return false;
         }
 
         int applyValue =
@@ -619,6 +641,8 @@ public class Enemy : MonoBehaviour
 
         applyNoBlockNext =
             !applyNoBlockNext;
+
+        return true;
     }
 
     /// <summary>
@@ -946,6 +970,16 @@ public class Enemy : MonoBehaviour
             2,
             false
         );
+
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayEnemyEffectSequence(
+                false,
+                false,
+                0,
+                1
+            );
+        }
 
         Debug.Log(
             $"[Enemy] 모독받은 후광 발동 : " +

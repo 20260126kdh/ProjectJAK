@@ -167,6 +167,16 @@ public class HRevelationController : MonoBehaviour
                     false
                 );
 
+                if (SFXManager.Instance != null)
+                {
+                    SFXManager.Instance.PlayEnemyEffectSequence(
+                        false,
+                        false,
+                        0,
+                        2
+                    );
+                }
+
                 Debug.Log(
                     "[HRevelationController] 심해의 속삭임 발동 : " +
                     "약화 1, 손상 1 부여"

@@ -207,6 +207,11 @@ public class RestPanelUI : MonoBehaviour
             restButton.interactable = false;
         }
 
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayRestHeal();
+        }
+
         Debug.Log(
             $"[RestPanelUI] 휴식 완료 / " +
             $"최대 체력의 {healRate * 100f}% 회복 / " +
@@ -237,6 +242,11 @@ public class RestPanelUI : MonoBehaviour
         upgradePanelUI.ShowPanel();
 
         HideRestPanel();
+
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayCardUpgrade();
+        }
 
         Debug.Log(
             "[RestPanelUI] 카드 강화 패널 열기"
