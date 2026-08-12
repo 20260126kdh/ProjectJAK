@@ -55,9 +55,11 @@ public sealed class TutorialManager : MonoBehaviour
     private Image portraitImage;
     private TMP_Text dialogueText;
     private int currentDialogueIndex;
+    private int lastDialogueAdvanceFrame = -1;
     private bool isTutorialActive;
     private bool isWaitingForCardUse;
     private bool isWaitingForPreserve;
+    private bool isWaitingForPreserveModeStart;
     private bool isWaitingForNextTurn;
     private bool isFinalDialogueSequence;
     private bool isPreserveCardSelected;
@@ -65,6 +67,9 @@ public sealed class TutorialManager : MonoBehaviour
     private CardUI highlightedCardUI;
     private Coroutine highlightCoroutine;
     private Coroutine preserveConfirmHighlightCoroutine;
+    private Coroutine endTurnHighlightCoroutine;
+    private readonly List<TutorialTargetMarker> targetMarkers =
+        new List<TutorialTargetMarker>();
 
     /// <summary>
     /// 현재 튜토리얼 대화가 입력을 차단하고 있는지 반환합니다.
@@ -83,7 +88,12 @@ public sealed class TutorialManager : MonoBehaviour
     /// <summary>
     /// 현재 튜토리얼에서 보존 모드 진입을 허용하는지 반환합니다.
     /// </summary>
-    public bool CanStartPreserve => isWaitingForPreserve;
+    public bool CanStartPreserve => isWaitingForPreserveModeStart;
+
+    /// <summary>
+    /// 현재 튜토리얼 보존 단계에서 E 입력을 처리할 수 있는지 반환합니다.
+    /// </summary>
+    public bool CanHandlePreserveInput => isWaitingForPreserve;
 
     /// <summary>
     /// 튜토리얼 보존 확정 뒤 턴 전환을 허용하는지 반환합니다.
@@ -106,7 +116,17 @@ public sealed class TutorialManager : MonoBehaviour
         }
 
         return isWaitingForCardUse ||
-               (isWaitingForPreserve && isPreserveMode);
+               (isWaitingForPreserve &&
+                !isWaitingForPreserveModeStart &&
+                isPreserveMode);
+    }
+
+    private void Update()
+    {
+        if (isTutorialActive && Input.GetKeyDown(KeyCode.Space))
+        {
+            ShowNextDialogue();
+        }
     }
 
     /// <summary>
@@ -150,10 +170,13 @@ public sealed class TutorialManager : MonoBehaviour
     /// </summary>
     public void ShowNextDialogue()
     {
-        if (!isTutorialActive)
+        if (!isTutorialActive ||
+            lastDialogueAdvanceFrame == Time.frameCount)
         {
             return;
         }
+
+        lastDialogueAdvanceFrame = Time.frameCount;
 
         currentDialogueIndex++;
 
@@ -398,6 +421,7 @@ public sealed class TutorialManager : MonoBehaviour
         }
 
         StopCardHighlight();
+        ClearTargetMarkers();
         isWaitingForCardUse = false;
 
         if (requiredCardID == "ALL_ATK_001")
@@ -514,6 +538,25 @@ public sealed class TutorialManager : MonoBehaviour
     {
         isTutorialActive = false;
         tutorialRoot.SetActive(false);
+        isWaitingForPreserveModeStart = true;
+        endTurnHighlightCoroutine = StartCoroutine(
+            BlinkEndTurnHighlightCoroutine()
+        );
+    }
+
+    /// <summary>
+    /// 턴 종료/보존 버튼으로 보존 모드에 진입했음을 알립니다.
+    /// </summary>
+    public void NotifyPreserveModeStarted()
+    {
+        if (!isWaitingForPreserveModeStart)
+        {
+            return;
+        }
+
+        isWaitingForPreserveModeStart = false;
+        HandManager handManager = FindFirstObjectByType<HandManager>();
+        StopEndTurnHighlight(handManager);
         StartCardHighlight();
     }
 
@@ -561,9 +604,110 @@ public sealed class TutorialManager : MonoBehaviour
         StopPreserveConfirmHighlight(handManager);
 
         isWaitingForPreserve = false;
+        isWaitingForPreserveModeStart = false;
         isPreserveCardSelected = false;
         isWaitingForNextTurn = true;
         requiredCardID = null;
+    }
+
+    private IEnumerator BlinkEndTurnHighlightCoroutine()
+    {
+        bool visible = true;
+
+        while (isWaitingForPreserveModeStart)
+        {
+            HandManager handManager = FindFirstObjectByType<HandManager>();
+            handManager?.SetTutorialEndTurnHighlight(visible);
+            visible = !visible;
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private void StopEndTurnHighlight(HandManager handManager)
+    {
+        if (endTurnHighlightCoroutine != null)
+        {
+            StopCoroutine(endTurnHighlightCoroutine);
+            endTurnHighlightCoroutine = null;
+        }
+
+        handManager?.SetTutorialEndTurnHighlight(false);
+    }
+
+    /// <summary>
+    /// 튜토리얼 카드가 선택되면 실제 적용 대상 머리 위에 표시를 생성합니다.
+    /// </summary>
+    public void NotifyCardSelected(CardData cardData)
+    {
+        ClearTargetMarkers();
+
+        if (!isWaitingForCardUse ||
+            cardData == null ||
+            cardData.cardID != requiredCardID ||
+            cardData.effects == null)
+        {
+            return;
+        }
+
+        bool requiresEnemy = false;
+        bool requiresSelf = false;
+
+        foreach (CardEffectData effect in cardData.effects)
+        {
+            requiresEnemy |= effect.target == CardTargetType.Enemy ||
+                             effect.target == CardTargetType.AllEnemies;
+            requiresSelf |= effect.target == CardTargetType.Self;
+        }
+
+        if (requiresEnemy)
+        {
+            EnemySpawner enemySpawner =
+                FindFirstObjectByType<EnemySpawner>();
+
+            if (enemySpawner != null)
+            {
+                List<Enemy> activeEnemies =
+                    enemySpawner.GetActiveEnemies();
+
+                if (activeEnemies.Count > 0)
+                {
+                    AddTargetMarker(activeEnemies[0].transform);
+                }
+            }
+        }
+        else if (requiresSelf)
+        {
+            PlayerCombat player = FindFirstObjectByType<PlayerCombat>();
+            if (player != null)
+            {
+                AddTargetMarker(player.transform);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 카드 선택 해제 시 현재 대상 표시를 제거합니다.
+    /// </summary>
+    public void ClearTargetMarkers()
+    {
+        foreach (TutorialTargetMarker marker in targetMarkers)
+        {
+            if (marker != null)
+            {
+                Destroy(marker.gameObject);
+            }
+        }
+
+        targetMarkers.Clear();
+    }
+
+    private void AddTargetMarker(Transform target)
+    {
+        GameObject markerObject = new GameObject("TutorialTargetMarker");
+        TutorialTargetMarker marker =
+            markerObject.AddComponent<TutorialTargetMarker>();
+        marker.SetTarget(target);
+        targetMarkers.Add(marker);
     }
 
     private IEnumerator BlinkPreserveConfirmHighlightCoroutine()
@@ -768,6 +912,7 @@ public sealed class TutorialManager : MonoBehaviour
     {
         isTutorialActive = false;
         isFinalDialogueSequence = false;
+        ClearTargetMarkers();
         requiredCardID = null;
         tutorialRoot.SetActive(false);
         Debug.Log("[TutorialManager] 첫 전투 튜토리얼 완료");

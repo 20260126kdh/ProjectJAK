@@ -657,6 +657,10 @@ public class BattleManager : MonoBehaviour
             selectedCardUI = null;
             selectedCardData = null;
 
+            TutorialManager tutorialManager =
+                FindFirstObjectByType<TutorialManager>();
+            tutorialManager?.ClearTargetMarkers();
+
             Debug.Log("[BattleManager] 카드 선택 해제");
             return;
         }
@@ -670,6 +674,10 @@ public class BattleManager : MonoBehaviour
         selectedCardData = cardUI.GetCardData();
 
         selectedCardUI.SetSelected();
+
+        TutorialManager selectedTutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+        selectedTutorialManager?.NotifyCardSelected(selectedCardData);
 
         Debug.Log(
             $"[BattleManager] 카드 선택 : " +
@@ -1213,6 +1221,10 @@ public class BattleManager : MonoBehaviour
 
         selectedCardUI = null;
         selectedCardData = null;
+
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+        tutorialManager?.ClearTargetMarkers();
 
         Debug.Log("[BattleManager] 선택 카드 초기화");
     }

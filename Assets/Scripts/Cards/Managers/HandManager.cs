@@ -1739,6 +1739,8 @@ public class HandManager : MonoBehaviour
 
         RefreshHandUI();
 
+        tutorialManager?.NotifyPreserveModeStarted();
+
         Debug.Log(
             "[HandManager] 보존 모드 시작"
         );
@@ -2021,6 +2023,37 @@ public class HandManager : MonoBehaviour
         if (outline == null && isVisible)
         {
             outline = preserveConfirmButtonObject.AddComponent<Outline>();
+            outline.effectColor = Color.red;
+            outline.effectDistance = new Vector2(6f, -6f);
+        }
+
+        if (outline != null)
+        {
+            outline.enabled = isVisible;
+        }
+    }
+
+    /// <summary>
+    /// 튜토리얼 턴 종료/보존 버튼의 빨간 강조 표시를 전환합니다.
+    /// </summary>
+    public void SetTutorialEndTurnHighlight(bool isVisible)
+    {
+        SetTutorialButtonHighlight(endTurnButtonObject, isVisible);
+    }
+
+    private void SetTutorialButtonHighlight(
+        GameObject buttonObject,
+        bool isVisible)
+    {
+        if (buttonObject == null)
+        {
+            return;
+        }
+
+        Outline outline = buttonObject.GetComponent<Outline>();
+        if (outline == null && isVisible)
+        {
+            outline = buttonObject.AddComponent<Outline>();
             outline.effectColor = Color.red;
             outline.effectDistance = new Vector2(6f, -6f);
         }

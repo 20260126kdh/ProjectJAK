@@ -70,7 +70,7 @@ public class BattleShortcutController : MonoBehaviour
             {
                 HandleCardSelectionInput();
 
-                if (tutorialManager.CanStartPreserve)
+                if (tutorialManager.CanHandlePreserveInput)
                 {
                     HandleEndTurnInput();
                 }
