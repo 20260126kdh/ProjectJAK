@@ -652,3 +652,24 @@
 - 선원 위치 기준은 CrewPrefab/Visual SpriteRenderer의 화면 좌표 중심을 사용한다.
 - 다른 선원의 겹친 OnMouseDown 호출은 카드 사용 요청 전에 차단한다.
 - Unity Play Mode에서 선원 사이 중첩 영역과 각 선원 중심 클릭을 확인해야 한다.
+
+# 2026-08-13 플레이어 사망 작살 지퍼 전환 1단계
+
+- 불사 효과 처리 이후에도 플레이어 HP가 0이면 사망 전환을 한 번만 호출하도록 연결했다.
+- 작살 진행 위치와 각 화면 가로 지점의 통과 시간을 기준으로 붉은 영역이 위아래로 벌어지는 UI 메시를 추가했다.
+- 작살 퇴장 후 남은 영역을 완전히 열고 임시 사망 문구, 최종 스테이지와 타이틀 복귀 버튼을 표시한다.
+- 사망 연출 중 전투 시간은 정지하며 모든 전환 코루틴은 unscaledDeltaTime으로 재생한다.
+- PlayerCombat Inspector에서 교체할 작살·사망 UI 이미지와 연출 시간을 조정할 수 있다.
+- 실제 제공 이미지 연결 전 Unity Play Mode에서 지퍼 방향, 속도와 입력 차단을 확인해야 한다.
+
+# 2026-08-13 사망 UI 타이틀 복귀 보완
+
+- 사망 UI 타이틀 복귀 버튼의 중복 입력을 차단하고 입력 로그를 추가했다.
+- 기존 ScreenFadeController가 사용 가능하면 기존 페이드 전환으로 TitleScene에 이동한다.
+- 다른 화면 전환이 0.5초 이상 점유된 경우에는 TitleScene을 직접 불러오는 대체 경로를 추가했다.
+- 모든 타이틀 이동 경로에서 Time.timeScale을 먼저 1로 복구한다.
+
+# 2026-08-13 사망 UI 타이틀 씬 이름 수정
+
+- 사망 UI가 존재하지 않는 TitleScene을 요청하던 값을 Main_TitleScene으로 변경했다.
+- ScreenFadeController 경로와 SceneManager 직접 이동 경로가 Build Scene List의 동일한 씬을 사용한다.

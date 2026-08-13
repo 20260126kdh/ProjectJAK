@@ -7,6 +7,24 @@ using UnityEngine;
 /// </summary>
 public class PlayerCombat : MonoBehaviour
 {
+    [Header("플레이어 사망 전환")]
+    [SerializeField]
+    private PlayerDeathTransitionSettings deathTransitionSettings =
+        new PlayerDeathTransitionSettings
+        {
+            redColor = new Color(0.42f, 0.015f, 0.02f, 1f),
+            deathDelay = 0.35f,
+            harpoonTravelDuration = 0.58f,
+            openingDuration = 0.28f,
+            finishOpeningDuration = 0.20f,
+            deathUiDelay = 0.16f,
+            deathUiFadeDuration = 0.22f,
+            harpoonSize = new Vector2(300f, 120f),
+            harpoonHeight = 0f,
+            harpoonScreenMargin = 220f,
+            finishOpeningLead = 0.55f
+        };
+
     [Header("Player Data")]
     [SerializeField]
     private PlayerData playerData;
@@ -225,6 +243,8 @@ public class PlayerCombat : MonoBehaviour
         Debug.Log(
             $"[PlayerCombat] 피해 : {amount}"
         );
+
+        TryStartDeathTransition();
     }
 
     /// <summary>
@@ -381,6 +401,26 @@ public class PlayerCombat : MonoBehaviour
                 playerHealthDamage <= 0 && crewHealthDamage > 0
             );
         }
+
+        TryStartDeathTransition();
+    }
+
+    /// <summary>
+    /// 불사 처리가 끝난 뒤에도 체력이 0이면
+    /// 플레이어 사망 전환을 한 번만 시작합니다.
+    /// </summary>
+    private void TryStartDeathTransition()
+    {
+        if (playerData == null ||
+            playerData.CurrentHP > 0 ||
+            PlayerDeathTransitionController.IsPlaying)
+        {
+            return;
+        }
+
+        PlayerDeathTransitionController.Play(
+            deathTransitionSettings
+        );
     }
 
     /// <summary>

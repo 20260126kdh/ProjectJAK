@@ -131,6 +131,68 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 사용자가 `다음`이라고 하면 8단계 재셔플 연출을 설계한다. 승인 전에는 재셔플 코드와 VFX를 수정하지 않는다.
 
 # 현재 작업 변경
+## 작업명
+사망 UI 타이틀 씬 이름 수정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 사망 UI의 타이틀 복귀가 Build Scene List에 등록된 Main_TitleScene을 사용한다.
+- 기존 페이드 이동과 직접 이동 대체 경로가 같은 씬 이름을 사용한다.
+- 존재하지 않는 TitleScene 로드 오류가 발생하지 않는다.
+
+# 현재 작업 변경
+## 작업명
+사망 UI 타이틀 복귀 보완
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 사망 UI의 타이틀 복귀 버튼을 누르면 중복 입력 없이 한 번만 이동을 시작한다.
+- 기존 화면 페이드가 사용 가능하면 정상 페이드로 TitleScene에 이동한다.
+- 기존 전환이 0.5초 이상 점유 중이면 TitleScene을 직접 불러온다.
+- 타이틀 이동 전에 Time.timeScale이 1로 복구된다.
+
+# 현재 작업 변경
+## 작업명
+플레이어 사망 작살 지퍼 전환 1단계
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Player/PlayerCombat.cs`
+- `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `Assets/Scripts/UI/DeathZipperGraphic.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 불사 판정 후 플레이어 HP가 실제 0일 때만 사망 전환이 한 번 시작된다.
+- 작살 앞쪽은 기존 전투 화면, 작살 뒤쪽은 시간차로 벌어진 붉은 영역이 표시된다.
+- 작살 퇴장 후 화면 전체가 붉게 열린 뒤 사망 UI가 표시된다.
+- 연출 중 전투 시간이 정지하고 UI 연출은 실시간 기준으로 계속 진행된다.
+- 연출 시간, 색상, 작살 크기·높이와 교체 이미지가 PlayerCombat Inspector에 노출된다.
+
+# 현재 작업 변경
 
 ## 작업명
 
