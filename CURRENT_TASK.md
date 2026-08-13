@@ -1261,3 +1261,226 @@ Button_UI 미적용 에셋 연결
 - 피지크와 캡틴 로그라인은 왼쪽·위쪽 정렬을 유지한다.
 - 클래스 전환 시 이전 클래스의 정렬 상태가 남지 않는다.
 - 문구, 줄바꿈, 글자 크기와 패널 크기는 변경되지 않는다.
+# 현재 작업 변경
+## 작업명
+튜토리얼 대사 글자 크기 및 중앙 배치 조정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Tutorial/TutorialManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 튜토리얼 대사 글자가 기존 36pt보다 7pt 큰 43pt로 표시된다.
+- 튜토리얼 대사 텍스트 영역이 대사 프레임의 세로 중앙에 배치된다.
+- 초상화와 다음 버튼의 위치는 변경되지 않는다.
+
+# 현재 작업 변경
+## 작업명
+전투 덱 보기 버튼 상태 전환 수정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scenes/PlayScene/BattleScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 우측 상단 덱 보기 버튼을 누르는 동안 Pressed 이미지가 표시된다.
+- 덱 보기 버튼을 누른 뒤 다시 마우스를 올리면 Hover 이미지가 표시된다.
+- 덱 패널 노출과 카드 목록 동작은 변경되지 않는다.
+
+# 현재 작업 변경
+## 작업명
+캡틴 튜토리얼 배신 및 선원 1 지정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Tutorial/TutorialManager.cs`
+- `Assets/Scripts/Battle/Managers/BattleManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 캡틴 튜토리얼 스킬 사용 단계에서 CAP_SKL_002 배신을 안내한다.
+- 배신 카드 선택 시 선원 1 머리 위에 대상 표시가 출력된다.
+- 선원 1만 튜토리얼 지정 대상으로 사용할 수 있다.
+- 배신 사용 후 보존 단계에서는 남아 있는 CAP_SKL_001 길잡이를 지정한다.
+- 다른 클래스의 튜토리얼 스킬 단계는 변경되지 않는다.
+
+# 현재 작업 변경
+## 작업명
+캡틴 튜토리얼 선원 대상 마커 위치 수정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Tutorial/TutorialTargetMarker.cs`
+- `Assets/Scripts/Tutorial/TutorialManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- CAP_SKL_002 선택 시 역삼각형이 선원 1 이미지의 가로 중앙 위에 표시된다.
+- 선원 이동 및 재배치 시 마커가 선원 이미지 머리 위를 계속 추적한다.
+- 플레이어와 적 대상 마커의 기존 가로 위치는 변경되지 않는다.
+
+# 현재 작업 변경
+## 작업명
+선원 PNG 기준 튜토리얼 마커 배치
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Tutorial/TutorialTargetMarker.cs`
+- `Assets/Scripts/Tutorial/TutorialManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 선원 대상 마커가 CrewPrefab/Visual의 SpriteRenderer 경계를 직접 기준으로 사용한다.
+- 마커가 선원 PNG의 가로 중앙 및 최상단 위에 표시된다.
+- 다른 Renderer와 루트 오프셋은 선원 마커 위치 계산에 영향을 주지 않는다.
+- 적과 플레이어 대상 마커는 기존 위치 계산을 유지한다.
+
+# 현재 작업 변경
+## 작업명
+캡틴 및 선원 튜토리얼 마커 미세 조정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Tutorial/TutorialTargetMarker.cs`
+- `Assets/Scripts/Tutorial/TutorialManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 캡틴 대상 마커가 기존 위치보다 오른쪽으로 0.25 이동한다.
+- 선원 대상 마커가 PNG 기준 위치보다 왼쪽과 아래로 각각 0.20 이동한다.
+- 적 대상 마커 위치는 변경되지 않는다.
+- 대상 이동 및 재배치 중에도 오프셋이 유지된다.
+
+# 현재 작업 변경
+## 작업명
+아스피도켈 HP 0 침몰 사망 및 보상 전환 수정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Enemy/EnemySpawner.cs`
+- `Assets/Scripts/Battle/Managers/TurnManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 아스피도켈이 HP 0에서 침몰 상태로 진입한 뒤 적 행동 목록에 유지된다.
+- 다음 적 턴에 침몰 피해를 실행하고 기존 Die 흐름으로 사망한다.
+- 아스피도켈이 마지막 적이면 사망 통지 후 보상 화면으로 전환된다.
+- 침몰 상태가 아닌 HP 0 적은 기존처럼 행동 목록에서 제외된다.
+
+# 현재 작업 변경
+## 작업명
+일시정지 중 전투 카드 선택 및 사용 차단
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Cards/Managers/HandManager.cs`
+- `Assets/Scripts/Battle/Managers/BattleManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 일시정지 중 손패 카드를 새로 선택할 수 없다.
+- 일시정지 전에 선택한 카드도 적, 플레이어, 선원에게 사용할 수 없다.
+- 환경설정 및 전투 포기 확인 화면에서도 전투 카드 입력이 차단된다.
+- 게임 재개 후 기존 카드 선택과 사용 흐름이 정상 동작한다.
+
+# 현재 작업 변경
+## 작업명
+클래스별 튜토리얼 엑셀 스크립트 및 지정 색상 반영
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Tutorial/TutorialManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 캡틴, 테크니션, 피지크 튜토리얼 대사가 각 엑셀 원문과 일치한다.
+- 엑셀의 문장부호, 띄어쓰기와 줄바꿈이 그대로 표시된다.
+- 세 클래스의 마지막 17번 대사 전체만 #ff0000으로 표시된다.
+- 기존 카드 지정, 대상 제한, 보존 진행 로직은 유지된다.
+
+# 현재 작업 변경
+## 작업명
+선원 Collider 중첩 클릭 대상 판정 수정
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Player/CrewClickHandler.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 선원 Collider가 겹친 영역에서도 클릭 지점에 가장 가까운 선원만 선택된다.
+- 거리 판정은 각 선원의 Visual SpriteRenderer 중심을 사용한다.
+- 선원 1 PNG 위를 클릭하면 선원 2가 대신 선택되지 않는다.
+- 단독 선원 클릭과 기존 카드 사용 흐름은 유지된다.
+
+# 현재 작업 변경
+## 작업명
+3줄 이상 튜토리얼 대사 칸 높이 확장
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Tutorial/TutorialManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 실제 표시 줄 수가 3줄 이상이면 대사 프레임과 텍스트 영역의 높이가 60만큼 확장된다.
+- 1~2줄 대사로 전환하면 기존 높이로 자동 복구된다.
+- 확장 여부와 관계없이 대사는 프레임 중앙에 표시된다.
+- 초상화와 다음 버튼의 위치는 변경되지 않는다.

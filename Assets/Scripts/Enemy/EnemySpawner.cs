@@ -103,7 +103,8 @@ public class EnemySpawner : MonoBehaviour
                     continue;
                 }
 
-                if (enemy.CurrentHP <= 0)
+                if (enemy.CurrentHP <= 0 &&
+                    !CanActAtZeroHealth(enemy))
                 {
                     continue;
                 }
@@ -474,7 +475,8 @@ public class EnemySpawner : MonoBehaviour
                 continue;
             }
 
-            if (enemy.CurrentHP <= 0)
+            if (enemy.CurrentHP <= 0 &&
+                !CanActAtZeroHealth(enemy))
             {
                 continue;
             }
@@ -483,6 +485,24 @@ public class EnemySpawner : MonoBehaviour
         }
 
         return activeEnemies;
+    }
+
+    /// <summary>
+    /// 체력이 0이어도 전용 사망 전 행동을 실행해야 하는 적인지 확인합니다.
+    /// 아스피도켈은 침몰 상태에서 다음 적 턴의 폭발 후 사망합니다.
+    /// </summary>
+    private bool CanActAtZeroHealth(Enemy enemy)
+    {
+        if (enemy == null)
+        {
+            return false;
+        }
+
+        UnderGroundController underGroundController =
+            enemy.GetComponent<UnderGroundController>();
+
+        return underGroundController != null &&
+               underGroundController.CanExecuteUnderWaterExplosion();
     }
 
     /// <summary>

@@ -270,7 +270,14 @@ public class TurnManager : MonoBehaviour
                 continue;
             }
 
-            if (enemy.CurrentHP <= 0)
+            UnderGroundController underGroundController =
+                enemy.GetComponent<UnderGroundController>();
+            bool canExecuteUnderWaterExplosion =
+                underGroundController != null &&
+                underGroundController.CanExecuteUnderWaterExplosion();
+
+            if (enemy.CurrentHP <= 0 &&
+                !canExecuteUnderWaterExplosion)
             {
                 continue;
             }

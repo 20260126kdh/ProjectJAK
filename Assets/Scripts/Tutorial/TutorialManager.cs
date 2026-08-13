@@ -54,6 +54,8 @@ public sealed class TutorialManager : MonoBehaviour
     private GameObject tutorialRoot;
     private Image portraitImage;
     private TMP_Text dialogueText;
+    private RectTransform dialogueFrameRect;
+    private RectTransform dialogueTextRect;
     private int currentDialogueIndex;
     private int lastDialogueAdvanceFrame = -1;
     private bool isTutorialActive;
@@ -119,6 +121,23 @@ public sealed class TutorialManager : MonoBehaviour
                (isWaitingForPreserve &&
                 !isWaitingForPreserveModeStart &&
                 isPreserveMode);
+    }
+
+    /// <summary>
+    /// 캡틴 튜토리얼의 배신 사용 단계에서는 첫 번째 선원만 대상으로 허용합니다.
+    /// </summary>
+    public bool CanTargetCrew(Crew targetCrew)
+    {
+        if (!isWaitingForCardUse || requiredCardID != "CAP_SKL_002")
+        {
+            return true;
+        }
+
+        CrewManager crewManager = FindFirstObjectByType<CrewManager>();
+
+        return crewManager != null &&
+               crewManager.Crews.Count > 0 &&
+               crewManager.Crews[0] == targetCrew;
     }
 
     private void Update()
@@ -198,10 +217,12 @@ public sealed class TutorialManager : MonoBehaviour
             case PlayerClass.Captain:
                 dialogueSteps.Add(new TutorialDialogueData(
                     "반가워! 너가 이번에 새로 온 견습이구나?\n" +
-                    "양 옆에 얘네들? 아, 얘넨 엘리트 선원! 너도 열심히 하면 저렇게 될거야!"
+                    "양 옆에 얘네들? 아, 얘넨 엘리트 선원!\n" +
+                    "너도 열심히 하면 저렇게 될 거야!"
                 ));
                 dialogueSteps.Add(new TutorialDialogueData(
-                    "우선 전투의 기본부터 알려줄게!\n투창 카드를 사용해 적을 공격해봐!"
+                    "우선 전투의 기본부터 알려 줄게!\n" +
+                    "투창 카드를 사용해 적을 공격해봐!"
                     , "ALL_ATK_001"
                 ));
                 return true;
@@ -277,12 +298,12 @@ public sealed class TutorialManager : MonoBehaviour
             parent,
             dialogueFrame
         );
-        RectTransform frameRect = frameObject.GetComponent<RectTransform>();
-        frameRect.anchorMin = new Vector2(0.05f, 0f);
-        frameRect.anchorMax = new Vector2(0.95f, 0f);
-        frameRect.pivot = new Vector2(0.5f, 0f);
-        frameRect.anchoredPosition = new Vector2(0f, 4f);
-        frameRect.sizeDelta = new Vector2(0f, 370f);
+        dialogueFrameRect = frameObject.GetComponent<RectTransform>();
+        dialogueFrameRect.anchorMin = new Vector2(0.05f, 0f);
+        dialogueFrameRect.anchorMax = new Vector2(0.95f, 0f);
+        dialogueFrameRect.pivot = new Vector2(0.5f, 0f);
+        dialogueFrameRect.anchoredPosition = new Vector2(0f, 4f);
+        dialogueFrameRect.sizeDelta = new Vector2(0f, 370f);
 
         GameObject portraitObject = CreateImageObject(
             "Portrait",
@@ -309,18 +330,18 @@ public sealed class TutorialManager : MonoBehaviour
         dialogueText = textObject.GetComponent<TextMeshProUGUI>();
         dialogueText.font = dialogueFont;
         dialogueText.color = Color.white;
-        dialogueText.fontSize = 36f;
+        dialogueText.fontSize = 43f;
         dialogueText.alignment = TextAlignmentOptions.Center;
         dialogueText.textWrappingMode =
             TextWrappingModes.Normal;
         dialogueText.raycastTarget = false;
 
-        RectTransform textRect = textObject.GetComponent<RectTransform>();
-        textRect.anchorMin = new Vector2(0.25f, 0f);
-        textRect.anchorMax = new Vector2(0.88f, 0f);
-        textRect.pivot = new Vector2(0.5f, 0f);
-        textRect.anchoredPosition = new Vector2(0f, 75f);
-        textRect.sizeDelta = new Vector2(0f, 210f);
+        dialogueTextRect = textObject.GetComponent<RectTransform>();
+        dialogueTextRect.anchorMin = new Vector2(0.25f, 0f);
+        dialogueTextRect.anchorMax = new Vector2(0.88f, 0f);
+        dialogueTextRect.pivot = new Vector2(0.5f, 0.5f);
+        dialogueTextRect.anchoredPosition = new Vector2(0f, 189f);
+        dialogueTextRect.sizeDelta = new Vector2(0f, 210f);
 
         CreateNextButton(parent);
     }
@@ -405,6 +426,23 @@ public sealed class TutorialManager : MonoBehaviour
 
         dialogueText.text =
             dialogueSteps[currentDialogueIndex].dialogue;
+        UpdateDialogueHeight();
+    }
+
+    private void UpdateDialogueHeight()
+    {
+        // 명시적 줄바꿈뿐 아니라 화면 너비에 따른 자동 줄바꿈도 포함해
+        // 실제 표시 줄 수가 3줄 이상일 때만 대사 칸을 확장한다.
+        dialogueText.ForceMeshUpdate();
+        bool shouldExpand = dialogueText.textInfo.lineCount >= 3;
+        float frameHeight = shouldExpand ? 430f : 370f;
+        float textHeight = shouldExpand ? 270f : 210f;
+        float frameCenterY = 4f + (frameHeight * 0.5f);
+
+        dialogueFrameRect.sizeDelta = new Vector2(0f, frameHeight);
+        dialogueTextRect.sizeDelta = new Vector2(0f, textHeight);
+        dialogueTextRect.anchoredPosition =
+            new Vector2(0f, frameCenterY);
     }
 
     /// <summary>
@@ -427,7 +465,7 @@ public sealed class TutorialManager : MonoBehaviour
         if (requiredCardID == "ALL_ATK_001")
         {
             ShowActionDialogue(
-                "잘했네. 이번엔 회피 카드를 사용해 방어도를 올려봐라.",
+                GetDefenseInstruction(),
                 "ALL_DEF_001"
             );
             return;
@@ -504,25 +542,37 @@ public sealed class TutorialManager : MonoBehaviour
         if (playerClass == PlayerClass.Captain)
         {
             dialogueSteps.Add(new TutorialDialogueData(
-                "훗! 엘리트 선원의 힘을 너에게 줘봤어!\n" +
-                "하지만 그렇게 많이 좋아졌다고 해서 한 번에 무리하면 안되지!\n" +
+                "짠! 엘리트 선원의 힘을 너에게 줘봤어!\n" +
+                "하지만 그렇게 몸이 좋아졌다고 해서 한 번에 무리하면 안되지!\n" +
                 "한 번 움직일 땐 적당히 두 번정도만 움직이는게 좋아!"
             ));
             dialogueSteps.Add(new TutorialDialogueData(
-                "있잖아, 그렇게 우두커니 서서 멀리봐라 달라지는건 없다?\n" +
-                "차라리 다음을 기억하면서 힘을 아끼는게 더 나은 걸?"
+                "있잖아, 그렇게 우두커니 서서 멍때려봤자 달라지는 건 없다?\n" +
+                "차라리 다음을 기약하면서 힘을 아끼는게 더 나을 걸?"
+            ));
+        }
+        else if (playerClass == PlayerClass.Technician)
+        {
+            dialogueSteps.Add(new TutorialDialogueData(
+                "이제야 초보 티를 좀 벗은 것 같군.\n" +
+                "하지만 그렇게 몸이 좋아졌다고 해서 한 번에 무리하면 쓰나.\n" +
+                "한 번 움직일 땐 적당히 두 번정도만 움직여라."
+            ));
+            dialogueSteps.Add(new TutorialDialogueData(
+                "그렇게 씩씩대봤자 나아지는 건 아무것도 없다.\n" +
+                "다음을 기약하고 숨을 죽이는 것이 진짜 뱃사람이 가져야할 자세지."
             ));
         }
         else
         {
             dialogueSteps.Add(new TutorialDialogueData(
-                "이제야 좀 내 배의 선원답군.\n" +
+                "이제야 좀 내 배의 선원 답군.\n" +
                 "하지만 그렇게 몸이 좋아졌다고 해서 한 번에 무리하면 쓰나.\n" +
-                "한 번 움직일 땐 적당히 두 번정도만 움직여라."
+                "한 번 움직일 땐 적당히 두 번정도만 움직이라고."
             ));
             dialogueSteps.Add(new TutorialDialogueData(
-                "그렇게 멍뗀다고 나아지는건 아무것도 없다.\n" +
-                "다음을 기억하고 숨을 죽이는 것이 진짜 뱃사람이 가져야할 자세지."
+                "그렇게 씩씩대봤자 나아지는 건 아무것도 없다.\n" +
+                "다음을 기약하고 숨을 죽이는 것이 진짜 선원이 가져야할 자세지."
             ));
         }
 
@@ -651,15 +701,35 @@ public sealed class TutorialManager : MonoBehaviour
 
         bool requiresEnemy = false;
         bool requiresSelf = false;
+        bool requiresCrew = false;
 
         foreach (CardEffectData effect in cardData.effects)
         {
             requiresEnemy |= effect.target == CardTargetType.Enemy ||
                              effect.target == CardTargetType.AllEnemies;
             requiresSelf |= effect.target == CardTargetType.Self;
+            requiresCrew |= effect.target == CardTargetType.Undead;
         }
 
-        if (requiresEnemy)
+        if (requiresCrew)
+        {
+            CrewManager crewManager = FindFirstObjectByType<CrewManager>();
+
+            if (crewManager != null && crewManager.Crews.Count > 0)
+            {
+                Crew firstCrew = crewManager.Crews[0];
+                SpriteRenderer crewSpriteRenderer =
+                    firstCrew.transform.Find("Visual")?
+                        .GetComponent<SpriteRenderer>();
+
+                AddTargetMarker(
+                    firstCrew.transform,
+                    crewSpriteRenderer,
+                    new Vector2(-0.2f, -0.2f)
+                );
+            }
+        }
+        else if (requiresEnemy)
         {
             EnemySpawner enemySpawner =
                 FindFirstObjectByType<EnemySpawner>();
@@ -680,7 +750,17 @@ public sealed class TutorialManager : MonoBehaviour
             PlayerCombat player = FindFirstObjectByType<PlayerCombat>();
             if (player != null)
             {
-                AddTargetMarker(player.transform);
+                Vector2 markerOffset =
+                    GameManager.Instance.PlayerData.PlayerClass ==
+                    PlayerClass.Captain
+                        ? new Vector2(0.25f, 0f)
+                        : Vector2.zero;
+
+                AddTargetMarker(
+                    player.transform,
+                    null,
+                    markerOffset
+                );
             }
         }
     }
@@ -701,12 +781,15 @@ public sealed class TutorialManager : MonoBehaviour
         targetMarkers.Clear();
     }
 
-    private void AddTargetMarker(Transform target)
+    private void AddTargetMarker(
+        Transform target,
+        SpriteRenderer spriteRenderer = null,
+        Vector2 markerOffset = default)
     {
         GameObject markerObject = new GameObject("TutorialTargetMarker");
         TutorialTargetMarker marker =
             markerObject.AddComponent<TutorialTargetMarker>();
-        marker.SetTarget(target);
+        marker.SetTarget(target, spriteRenderer, markerOffset);
         targetMarkers.Add(marker);
     }
 
@@ -828,7 +911,7 @@ public sealed class TutorialManager : MonoBehaviour
             case PlayerClass.Technician:
                 return "TEC_SKL_001";
             case PlayerClass.Captain:
-                return "CAP_SKL_001";
+                return "CAP_SKL_002";
             default:
                 return string.Empty;
         }
@@ -842,14 +925,32 @@ public sealed class TutorialManager : MonoBehaviour
         switch (playerClass)
         {
             case PlayerClass.Captain:
-                return "이제 스킬 카드를 사용해 적을 공격해봐!";
+                return "어우, 아프겠다… 왜 이렇게 허약한 거야?\n" +
+                       "안되겠다, 내가 너 강하게 만들어 줄게!\n" +
+                       "스킬 카드를 사용해봐!";
             case PlayerClass.Technician:
-                return "이번엔 스킬 카드를 사용해 적을 공격해봐라.";
+                return "허 참, 이렇게나 몸이 둔해서 쓰나…\n" +
+                       "너에게 기술을 하나 전수해주마. \n" +
+                       "스킬 카드를 사용해 적에게 [작살스택]을 부여해봐라.";
             case PlayerClass.Physique:
-                return "이번엔 스킬 카드를 사용해 힘을 강화해봐라.";
+                return "허 참, 이렇게나 몸이 허약해서 쓰나…\n" +
+                       "이번엔 스킬 카드를 사용해 너의 몸을 강화해봐라.";
             default:
                 return string.Empty;
         }
+    }
+
+    private string GetDefenseInstruction()
+    {
+        if (GameManager.Instance.PlayerData.PlayerClass == PlayerClass.Captain)
+        {
+            return "잘했는데, 이게 참… 아, 아니야 아무것도!\n" +
+                   "이번엔 회피 카드를 사용해 방어도를 올려봐!";
+        }
+
+        return "형편없군. 마치 갓난아기를 보는 기분이야.\n" +
+               "어이, 칼 날아오는데 멀뚱히 서 있을 건가?\n" +
+               "회피 카드를 사용해 방어도를 올려봐라.";
     }
 
     private string GetSecondSkillCardID()
@@ -861,7 +962,7 @@ public sealed class TutorialManager : MonoBehaviour
             case PlayerClass.Technician:
                 return "TEC_SKL_002";
             case PlayerClass.Captain:
-                return "CAP_SKL_002";
+                return "CAP_SKL_001";
             default:
                 return string.Empty;
         }
@@ -874,21 +975,21 @@ public sealed class TutorialManager : MonoBehaviour
         if (GameManager.Instance.PlayerData.PlayerClass == PlayerClass.Captain)
         {
             dialogueSteps.Add(new TutorialDialogueData(
-                "이제야 좀 선원답네! 그러면 이제…"
+                "이제야 좀 선원 답네! 그러면 이제…"
             ));
             dialogueSteps.Add(new TutorialDialogueData(
-                "내 배에 탄 걸 환영한다!\n우린, 더 큰놈들을 사냥할 것이다!"
+                "<color=#ff0000>내 배에 탄 걸 환영한다!\n" +
+                "우린, 더 큰놈들을 사냥할 것이다!</color>"
             ));
             return;
         }
 
         dialogueSteps.Add(new TutorialDialogueData(
-            "이제야 좀 뱃사람답군. 이제…"
+            "이제야 좀 뱃사람 답군. 이제…"
         ));
         dialogueSteps.Add(new TutorialDialogueData(
-            GameManager.Instance.PlayerData.PlayerClass == PlayerClass.Physique
-                ? "내 배에 탄걸 환영한다, 꼬맹아.\n우린… 더 큰걸 잡을거다."
-                : "내 배에 탄 걸 환영한다, 꼬맹아.\n우린… 더 큰걸 잡을거다."
+            "<color=#ff0000>내 배에 탄 걸 환영한다, 꼬맹아.\n" +
+            "우린… 더 큰 걸 잡을 거다.</color>"
         ));
     }
 

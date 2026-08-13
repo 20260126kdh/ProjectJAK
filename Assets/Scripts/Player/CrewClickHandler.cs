@@ -31,7 +31,66 @@ public class CrewClickHandler : MonoBehaviour
             return;
         }
 
+        if (!IsClosestCrewToPointer())
+        {
+            return;
+        }
+
         battleManager.UseSelectedCardOnCrew(crew);
+    }
+
+    /// <summary>
+    /// 선원 Collider가 겹친 경우 실제 PNG 중심이 클릭 지점에 가장 가까운
+    /// 살아 있는 선원 하나만 입력을 처리하도록 합니다.
+    /// </summary>
+    private bool IsClosestCrewToPointer()
+    {
+        CrewManager crewManager =
+            FindFirstObjectByType<CrewManager>();
+
+        Camera mainCamera = Camera.main;
+
+        if (crewManager == null || mainCamera == null)
+        {
+            return true;
+        }
+
+        Vector3 pointerScreenPosition = Input.mousePosition;
+        Crew closestCrew = null;
+        float closestSqrDistance = float.MaxValue;
+
+        foreach (Crew candidate in crewManager.Crews)
+        {
+            if (candidate == null || !candidate.IsAlive)
+            {
+                continue;
+            }
+
+            SpriteRenderer candidateRenderer =
+                candidate.transform.Find("Visual")?
+                    .GetComponent<SpriteRenderer>();
+
+            Vector3 candidateWorldPosition =
+                candidateRenderer != null
+                    ? candidateRenderer.bounds.center
+                    : candidate.transform.position;
+            Vector3 candidateScreenPosition =
+                mainCamera.WorldToScreenPoint(candidateWorldPosition);
+            Vector2 screenDifference =
+                new Vector2(
+                    pointerScreenPosition.x - candidateScreenPosition.x,
+                    pointerScreenPosition.y - candidateScreenPosition.y
+                );
+            float sqrDistance = screenDifference.sqrMagnitude;
+
+            if (sqrDistance < closestSqrDistance)
+            {
+                closestSqrDistance = sqrDistance;
+                closestCrew = candidate;
+            }
+        }
+
+        return closestCrew == null || closestCrew == crew;
     }
 
     /// <summary>

@@ -9,13 +9,20 @@ public sealed class TutorialTargetMarker : MonoBehaviour
 
     private Transform target;
     private Renderer[] targetRenderers;
+    private SpriteRenderer targetSpriteRenderer;
+    private Vector2 positionOffset;
 
     /// <summary>
     /// 표시가 따라갈 전투 대상을 지정합니다.
     /// </summary>
-    public void SetTarget(Transform targetTransform)
+    public void SetTarget(
+        Transform targetTransform,
+        SpriteRenderer spriteRenderer = null,
+        Vector2 markerOffset = default)
     {
         target = targetTransform;
+        targetSpriteRenderer = spriteRenderer;
+        positionOffset = markerOffset;
         targetRenderers = target != null
             ? target.GetComponentsInChildren<Renderer>(true)
             : null;
@@ -59,7 +66,15 @@ public sealed class TutorialTargetMarker : MonoBehaviour
     {
         Vector3 position = target.position;
 
-        if (TryGetCombinedRendererBounds(out Bounds combinedBounds))
+        if (targetSpriteRenderer != null &&
+            targetSpriteRenderer.enabled &&
+            targetSpriteRenderer.gameObject.activeInHierarchy)
+        {
+            Bounds spriteBounds = targetSpriteRenderer.bounds;
+            position.x = spriteBounds.center.x;
+            position.y = spriteBounds.max.y + MarkerHeightOffset;
+        }
+        else if (TryGetCombinedRendererBounds(out Bounds combinedBounds))
         {
             position.y = combinedBounds.max.y + MarkerHeightOffset;
         }
@@ -68,6 +83,8 @@ public sealed class TutorialTargetMarker : MonoBehaviour
             position.y += 2f;
         }
 
+        position.x += positionOffset.x;
+        position.y += positionOffset.y;
         position.z = -1f;
         transform.position = position;
     }

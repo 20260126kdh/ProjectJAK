@@ -881,6 +881,15 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        TutorialManager tutorialManager =
+            FindFirstObjectByType<TutorialManager>();
+
+        if (tutorialManager != null &&
+            !tutorialManager.CanTargetCrew(targetCrew))
+        {
+            return;
+        }
+
         if (cardEffectExecutor == null)
         {
             Debug.LogError(
@@ -1120,6 +1129,18 @@ public class BattleManager : MonoBehaviour
         {
             Debug.LogWarning(
                 "[BattleManager] 아직 전투가 시작되지 않았습니다."
+            );
+
+            return false;
+        }
+
+        PauseManager pauseManager =
+            FindFirstObjectByType<PauseManager>();
+
+        if (pauseManager != null && pauseManager.IsPaused)
+        {
+            Debug.LogWarning(
+                "[BattleManager] 일시정지 중에는 카드를 사용할 수 없습니다."
             );
 
             return false;

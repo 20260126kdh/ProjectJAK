@@ -1640,6 +1640,14 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public void RequestSelectCard(CardUI cardUI)
     {
+        PauseManager pauseManager =
+            FindFirstObjectByType<PauseManager>();
+
+        if (pauseManager != null && pauseManager.IsPaused)
+        {
+            return;
+        }
+
         if (
             isDrawAnimationPlaying ||
             isDiscardAnimationPlaying ||
