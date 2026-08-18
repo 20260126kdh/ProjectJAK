@@ -12,6 +12,7 @@ public sealed class ClassSelectionCardUI : MonoBehaviour
     private Coroutine transitionCoroutine;
     private Vector2 defaultPosition;
     private Vector2 defaultSize;
+    private int defaultSiblingIndex;
     private Color accentColor;
 
     /// <summary>
@@ -41,6 +42,7 @@ public sealed class ClassSelectionCardUI : MonoBehaviour
 
         defaultPosition = rectTransform.anchoredPosition;
         defaultSize = rectTransform.sizeDelta;
+        defaultSiblingIndex = rectTransform.GetSiblingIndex();
 
         if (frameImage == null)
         {
@@ -59,6 +61,33 @@ public sealed class ClassSelectionCardUI : MonoBehaviour
         frameImage.color = frameSprite == null
             ? fallbackColor
             : Color.white;
+    }
+
+    /// <summary>
+    /// 상세 화면 전환 중 카드의 표시 여부를 설정합니다.
+    /// 선택하지 않은 카드가 전체 화면 배경 위로 노출되지 않도록 사용합니다.
+    /// </summary>
+    /// <param name="isVisible">카드를 표시할지 여부</param>
+    public void SetVisible(bool isVisible)
+    {
+        if (!isVisible && transitionCoroutine != null)
+        {
+            StopCoroutine(transitionCoroutine);
+            transitionCoroutine = null;
+        }
+
+        gameObject.SetActive(isVisible);
+    }
+
+    /// <summary>
+    /// 카드가 초기화될 당시의 계층 순서로 복원합니다.
+    /// </summary>
+    public void RestoreSiblingOrder()
+    {
+        if (rectTransform != null)
+        {
+            rectTransform.SetSiblingIndex(defaultSiblingIndex);
+        }
     }
 
     /// <summary>

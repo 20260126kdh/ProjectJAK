@@ -1,5 +1,7 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Video;
 using UnityEngine.UI;
 
 /// <summary>
@@ -46,16 +48,14 @@ public class ClassSelectManager : MonoBehaviour
     [Header("카드 전환 설정")]
     [SerializeField]
     [Min(0f)]
-    private float cardTransitionDuration = 0.16f;
+    private float cardTransitionDuration = 0.36f;
+
+    [SerializeField]
+    [Min(0f)]
+    private float detailContentDelay = 0.2f;
 
     [SerializeField]
     private Vector2 selectedCardSize = new Vector2(1180f, 660f);
-
-    [SerializeField]
-    private Vector2 sideCardSize = new Vector2(240f, 540f);
-
-    [SerializeField]
-    private float sideCardOffset = 760f;
 
     [SerializeField]
     [Range(0.1f, 1f)]
@@ -102,6 +102,10 @@ public class ClassSelectManager : MonoBehaviour
 
     private ClassSelectionCardUI[] selectionCards;
     private Vector2 cardCenterPosition;
+    private Coroutine openDetailCoroutine;
+    private VideoPlayer classVideoPlayer;
+    private RawImage classVideoImage;
+    private AspectRatioFitter classVideoAspectFitter;
 
     /// <summary>
     /// 현재 선택된 클래스를 반환합니다.
@@ -115,7 +119,8 @@ public class ClassSelectManager : MonoBehaviour
     {
         get
         {
-            return classDetailPanel != null && classDetailPanel.activeSelf;
+            return (classDetailPanel != null && classDetailPanel.activeSelf)
+                || openDetailCoroutine != null;
         }
     }
 
@@ -126,7 +131,8 @@ public class ClassSelectManager : MonoBehaviour
     {
         get
         {
-            return IsDetailPanelOpen
+            return classDetailPanel != null
+                && classDetailPanel.activeSelf
                 && selectedClass != PlayerClass.None
                 && selectedClassInfo != null;
         }
@@ -138,7 +144,17 @@ public class ClassSelectManager : MonoBehaviour
     private void Start()
     {
         InitializeSelectionCards();
+        InitializeClassVideo();
         ResetSelection();
+    }
+
+    private void OnDestroy()
+    {
+        if (classVideoPlayer != null)
+        {
+            classVideoPlayer.prepareCompleted -= OnClassVideoPrepared;
+            classVideoPlayer.errorReceived -= OnClassVideoError;
+        }
     }
 
     /// <summary>
@@ -199,8 +215,7 @@ public class ClassSelectManager : MonoBehaviour
 
         ShowClassInfo(classInfo);
         ApplySelectedCardLayout(playerClass);
-        OpenDetailPanel();
-        SetConfirmButtonInteractable(true);
+        ScheduleDetailPanelOpen();
     }
 
     /// <summary>
@@ -236,6 +251,36 @@ public class ClassSelectManager : MonoBehaviour
     public void CloseDetailPanel()
     {
         ResetSelection();
+    }
+
+    /// <summary>
+    /// 선택 카드의 확대가 끝난 뒤 상세 정보 패널을 표시합니다.
+    /// </summary>
+    private void ScheduleDetailPanelOpen()
+    {
+        if (openDetailCoroutine != null)
+        {
+            StopCoroutine(openDetailCoroutine);
+        }
+
+        openDetailCoroutine = StartCoroutine(OpenDetailPanelAfterTransition());
+    }
+
+    private IEnumerator OpenDetailPanelAfterTransition()
+    {
+        if (cardTransitionDuration > 0f)
+        {
+            yield return new WaitForSecondsRealtime(cardTransitionDuration);
+        }
+
+        if (detailContentDelay > 0f)
+        {
+            yield return new WaitForSecondsRealtime(detailContentDelay);
+        }
+
+        OpenDetailPanel();
+        SetConfirmButtonInteractable(true);
+        openDetailCoroutine = null;
     }
 
     /// <summary>
@@ -370,6 +415,8 @@ public class ClassSelectManager : MonoBehaviour
             characterImage.sprite = classInfo.classImage;
         }
 
+        PlayClassVideo(classInfo.playerClass);
+
         if (classNameText != null)
         {
             classNameText.text = classInfo.className;
@@ -404,8 +451,16 @@ public class ClassSelectManager : MonoBehaviour
     /// </summary>
     private void ResetSelection()
     {
+        if (openDetailCoroutine != null)
+        {
+            StopCoroutine(openDetailCoroutine);
+            openDetailCoroutine = null;
+        }
+
         selectedClass = PlayerClass.None;
         selectedClassInfo = null;
+
+        StopClassVideo();
 
         if (classDetailPanel != null)
         {
@@ -415,6 +470,141 @@ public class ClassSelectManager : MonoBehaviour
         RestoreDefaultCardLayout();
 
         SetConfirmButtonInteractable(false);
+    }
+
+    /// <summary>
+    /// 클래스 상세 이미지 칸에 영상을 표시할 UI와 재생기를 준비합니다.
+    /// </summary>
+    private void InitializeClassVideo()
+    {
+        if (characterImage == null)
+        {
+            Debug.LogError(
+                "[ClassSelectManager] 클래스 영상 표시 영역이 연결되지 않았습니다."
+            );
+            return;
+        }
+
+        if (characterImage.GetComponent<RectMask2D>() == null)
+        {
+            characterImage.gameObject.AddComponent<RectMask2D>();
+        }
+
+        GameObject videoObject = new GameObject(
+            "ClassVideo",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(RawImage),
+            typeof(AspectRatioFitter)
+        );
+
+        RectTransform videoRect = videoObject.GetComponent<RectTransform>();
+        videoRect.SetParent(characterImage.rectTransform, false);
+        videoRect.anchorMin = new Vector2(0.5f, 0.5f);
+        videoRect.anchorMax = new Vector2(0.5f, 0.5f);
+        videoRect.anchoredPosition = Vector2.zero;
+        videoRect.sizeDelta = characterImage.rectTransform.rect.size;
+
+        classVideoImage = videoObject.GetComponent<RawImage>();
+        classVideoImage.raycastTarget = false;
+        classVideoImage.color = Color.white;
+
+        classVideoAspectFitter = videoObject.GetComponent<AspectRatioFitter>();
+        classVideoAspectFitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+
+        classVideoPlayer = gameObject.AddComponent<VideoPlayer>();
+        classVideoPlayer.playOnAwake = false;
+        classVideoPlayer.source = VideoSource.VideoClip;
+        classVideoPlayer.renderMode = VideoRenderMode.APIOnly;
+        classVideoPlayer.audioOutputMode = VideoAudioOutputMode.None;
+        classVideoPlayer.isLooping = true;
+        classVideoPlayer.skipOnDrop = true;
+        classVideoPlayer.waitForFirstFrame = true;
+        classVideoPlayer.prepareCompleted += OnClassVideoPrepared;
+        classVideoPlayer.errorReceived += OnClassVideoError;
+    }
+
+    private void PlayClassVideo(PlayerClass playerClass)
+    {
+        if (classVideoPlayer == null || classVideoImage == null)
+        {
+            return;
+        }
+
+        string resourcePath = GetClassVideoResourcePath(playerClass);
+        VideoClip videoClip = Resources.Load<VideoClip>(resourcePath);
+
+        if (videoClip == null)
+        {
+            Debug.LogError(
+                $"[ClassSelectManager] 클래스 선택 영상을 찾을 수 없습니다: {resourcePath}"
+            );
+            return;
+        }
+
+        classVideoPlayer.Stop();
+        classVideoImage.texture = null;
+        classVideoPlayer.clip = videoClip;
+        classVideoPlayer.Prepare();
+    }
+
+    private static string GetClassVideoResourcePath(PlayerClass playerClass)
+    {
+        switch (playerClass)
+        {
+            case PlayerClass.Physique:
+                return "Video/ClassChoice/Class_Choice_PHY";
+
+            case PlayerClass.Technician:
+                return "Video/ClassChoice/Class_Choice_TEC";
+
+            case PlayerClass.Captain:
+                return "Video/ClassChoice/Class_Choice_CAP";
+
+            default:
+                return string.Empty;
+        }
+    }
+
+    private void OnClassVideoPrepared(VideoPlayer preparedPlayer)
+    {
+        if (preparedPlayer.clip == null || classVideoImage == null)
+        {
+            return;
+        }
+
+        classVideoImage.texture = preparedPlayer.texture;
+
+        if (classVideoAspectFitter != null && preparedPlayer.clip.height > 0)
+        {
+            classVideoAspectFitter.aspectRatio =
+                (float)preparedPlayer.clip.width / preparedPlayer.clip.height;
+        }
+
+        preparedPlayer.Play();
+    }
+
+    private static void OnClassVideoError(
+        VideoPlayer failedPlayer,
+        string message)
+    {
+        Debug.LogError(
+            $"[ClassSelectManager] 클래스 선택 영상 재생 실패: {message}"
+        );
+    }
+
+    private void StopClassVideo()
+    {
+        if (classVideoPlayer != null)
+        {
+            classVideoPlayer.Stop();
+            classVideoPlayer.clip = null;
+        }
+
+        if (classVideoImage != null)
+        {
+            classVideoImage.texture = null;
+        }
     }
 
     /// <summary>
@@ -504,33 +694,23 @@ public class ClassSelectManager : MonoBehaviour
             return;
         }
 
-        int sideSlot = 0;
-
         for (int index = 0; index < selectionCards.Length; index++)
         {
             bool isSelected = index == selectedIndex;
-            Vector2 targetPosition;
-            Vector2 targetSize;
+            ClassSelectionCardUI card = selectionCards[index];
 
-            if (isSelected)
+            if (!isSelected)
             {
-                targetPosition = cardCenterPosition;
-                targetSize = selectedCardSize;
-            }
-            else
-            {
-                float direction = sideSlot == 0 ? -1f : 1f;
-                targetPosition = cardCenterPosition +
-                    Vector2.right * sideCardOffset * direction;
-                targetSize = sideCardSize;
-                sideSlot++;
+                card.SetVisible(false);
+                continue;
             }
 
-            selectionCards[index].AnimateTo(
-                targetPosition,
-                targetSize,
+            card.SetVisible(true);
+            card.AnimateTo(
+                cardCenterPosition,
+                selectedCardSize,
                 cardTransitionDuration,
-                isSelected
+                true
             );
         }
     }
@@ -544,6 +724,8 @@ public class ClassSelectManager : MonoBehaviour
 
         foreach (ClassSelectionCardUI card in selectionCards)
         {
+            card.SetVisible(true);
+            card.RestoreSiblingOrder();
             card.AnimateTo(
                 card.DefaultPosition,
                 card.DefaultSize,

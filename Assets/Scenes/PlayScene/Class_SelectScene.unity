@@ -658,18 +658,13 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1203302799}
-  - {fileID: 895618889}
-  - {fileID: 1638512203}
-  - {fileID: 885973920}
-  - {fileID: 1477429735}
-  - {fileID: 581147417}
+  - {fileID: 2140000001}
   m_Father: {fileID: 1712052839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -340, y: -200}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &533476694
 MonoBehaviour:
@@ -740,7 +735,7 @@ Transform:
   m_Children:
   - {fileID: 1801922093}
   - {fileID: 968774835}
-  m_Father: {fileID: 533476693}
+  m_Father: {fileID: 2140000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &611187982
 GameObject:
@@ -1176,7 +1171,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 176935566}
-  m_Father: {fileID: 533476693}
+  m_Father: {fileID: 2140000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1252,7 +1247,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 276567365}
-  m_Father: {fileID: 533476693}
+  m_Father: {fileID: 2140000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1597,7 +1592,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 533476693}
+  m_Father: {fileID: 2140000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2114,7 +2109,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1769160763}
-  m_Father: {fileID: 533476693}
+  m_Father: {fileID: 2140000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2543,7 +2538,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1204754349}
-  m_Father: {fileID: 533476693}
+  m_Father: {fileID: 2140000001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2998,11 +2993,10 @@ MonoBehaviour:
   physiqueFrameSprite: {fileID: 0}
   technicianFrameSprite: {fileID: 0}
   captainFrameSprite: {fileID: 0}
-  cardTransitionDuration: 0.16
-  selectedCardSize: {x: 1180, y: 660}
-  sideCardSize: {x: 240, y: 540}
-  sideCardOffset: 760
-  detailPanelScale: 0.75
+  cardTransitionDuration: 0.36
+  detailContentDelay: 0.2
+  selectedCardSize: {x: 1920, y: 1080}
+  detailPanelScale: 1
   classDetailPanel: {fileID: 533476692}
   classInfos:
   - playerClass: 2
@@ -3199,6 +3193,47 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2076334426}
   m_CullTransparentMesh: 1
+--- !u!1 &2140000000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2140000001}
+  m_Layer: 5
+  m_Name: DetailContent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2140000001
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140000000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.2151898, y: 1.2151898, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 1203302799}
+  - {fileID: 895618889}
+  - {fileID: 1638512203}
+  - {fileID: 885973920}
+  - {fileID: 1477429735}
+  - {fileID: 581147417}
+  m_Father: {fileID: 533476693}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 1580, y: 880}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
