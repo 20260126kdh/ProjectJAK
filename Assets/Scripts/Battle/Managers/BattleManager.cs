@@ -6,6 +6,14 @@ using UnityEngine;
 /// </summary>
 public class BattleManager : MonoBehaviour
 {
+    private enum CardClickTarget
+    {
+        None,
+        Player,
+        Enemy,
+        Crew
+    }
+
     /// <summary>
     /// 현재 전투가 시작된 상태인지 나타냅니다.
     /// 씬 진입 시 항상 false로 초기화됩니다.
@@ -700,10 +708,14 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        if (IsSingleCrewSacrificeCard())
+        CardClickTarget requiredTarget =
+            GetRequiredCardClickTarget();
+        if (requiredTarget != CardClickTarget.Enemy)
         {
             Debug.LogWarning(
-                "[BattleManager] 선택한 카드는 선원을 클릭해야 합니다."
+                "[BattleManager] 선택한 카드는 " +
+                GetTargetGuide(requiredTarget) +
+                " 클릭해야 합니다."
             );
 
             return;
@@ -808,19 +820,14 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        if (IsSingleCrewSacrificeCard())
+        CardClickTarget requiredTarget =
+            GetRequiredCardClickTarget();
+        if (requiredTarget != CardClickTarget.Player)
         {
             Debug.LogWarning(
-                "[BattleManager] 선택한 카드는 선원을 클릭해야 합니다."
-            );
-
-            return;
-        }
-
-        if (RequiresHarpoonStackDamageTarget())
-        {
-            Debug.LogWarning(
-                "[BattleManager] 선택한 카드는 적을 클릭해야 합니다."
+                "[BattleManager] 선택한 카드는 " +
+                GetTargetGuide(requiredTarget) +
+                " 클릭해야 합니다."
             );
 
             return;
@@ -871,11 +878,15 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        if (targetCrew == null || !IsSingleCrewSacrificeCard())
+        CardClickTarget requiredTarget =
+            GetRequiredCardClickTarget();
+        if (targetCrew == null ||
+            requiredTarget != CardClickTarget.Crew)
         {
             Debug.LogWarning(
-                "[BattleManager] 선택한 카드는 단일 선원 " +
-                "희생 대상 카드가 아닙니다."
+                "[BattleManager] 선택한 카드는 " +
+                GetTargetGuide(requiredTarget) +
+                " 클릭해야 합니다."
             );
 
             return;
@@ -938,26 +949,55 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 선택된 카드가 적의 작살 스택을 기준으로 피해를 주는지 확인합니다.
+    /// 선택된 카드의 모든 효과를 기준으로 클릭해야 할 대상을 결정합니다.
+    /// 단일 선원 선택이 가장 우선이며, 적 효과가 하나라도 있으면
+    /// Self 효과가 함께 있어도 적 대상 카드로 처리합니다.
     /// </summary>
-    private bool RequiresHarpoonStackDamageTarget()
+    private CardClickTarget GetRequiredCardClickTarget()
     {
         if (selectedCardData == null ||
-            selectedCardData.effects == null)
+            selectedCardData.effects == null ||
+            selectedCardData.effects.Count == 0)
         {
-            return false;
+            return CardClickTarget.None;
+        }
+
+        if (IsSingleCrewSacrificeCard())
+        {
+            return CardClickTarget.Crew;
         }
 
         foreach (CardEffectData effect in selectedCardData.effects)
         {
-            if (effect.effectType ==
-                CardEffectType.DealDamageEqualToHarpoonerStack)
+            if (effect == null)
             {
-                return true;
+                continue;
+            }
+
+            if (effect.target == CardTargetType.Enemy ||
+                effect.target == CardTargetType.AllEnemies ||
+                effect.target == CardTargetType.RandomEnemy)
+            {
+                return CardClickTarget.Enemy;
             }
         }
 
-        return false;
+        return CardClickTarget.Player;
+    }
+
+    private string GetTargetGuide(CardClickTarget target)
+    {
+        switch (target)
+        {
+            case CardClickTarget.Player:
+                return "플레이어를";
+            case CardClickTarget.Enemy:
+                return "적을";
+            case CardClickTarget.Crew:
+                return "선원을";
+            default:
+                return "올바른 대상을";
+        }
     }
 
     /// <summary>

@@ -42,10 +42,16 @@ public class TurnManager : MonoBehaviour
     [SerializeField]
     private EnemySpawner enemySpawner;
 
+    [Header("턴 전환 배너")]
+    [SerializeField]
+    private TurnBannerUI turnBannerUI;
+
     /// <summary>
     /// 현재 플레이어 턴인지 반환합니다.
     /// </summary>
-    public bool IsPlayerTurn => isPlayerTurn;
+    public bool IsPlayerTurn =>
+        isPlayerTurn &&
+        (turnBannerUI == null || !turnBannerUI.IsPlaying);
 
     /// <summary>
     /// 현재 공격/방어 카드 사용 횟수입니다.
@@ -58,6 +64,11 @@ public class TurnManager : MonoBehaviour
     /// </summary>
     public int MaxAttackDefenseCardUseCount =>
         maxAttackDefenseCardUseCount;
+
+    private void Awake()
+    {
+        InitializeTurnBanner();
+    }
 
     private void Start()
     {
@@ -111,6 +122,13 @@ public class TurnManager : MonoBehaviour
         }
 
         UpdateAttackDefenseUseCountUI();
+
+        if (turnBannerUI != null)
+        {
+            StartCoroutine(
+                turnBannerUI.PlayBanner("내 턴")
+            );
+        }
 
         Debug.Log("[TurnManager] 플레이어 턴 시작");
     }
@@ -181,7 +199,14 @@ public class TurnManager : MonoBehaviour
     {
         Debug.Log("[TurnManager] 적 턴 시작");
 
-        yield return new WaitForSeconds(enemyTurnDelay);
+        if (turnBannerUI != null)
+        {
+            yield return turnBannerUI.PlayBanner("적 턴");
+        }
+        else
+        {
+            yield return new WaitForSeconds(enemyTurnDelay);
+        }
 
         ExecuteEnemyTurn();
 
@@ -193,6 +218,24 @@ public class TurnManager : MonoBehaviour
         Debug.Log("[TurnManager] 적 턴 종료");
 
         StartPlayerTurn();
+    }
+
+    private void InitializeTurnBanner()
+    {
+        if (turnBannerUI == null)
+        {
+            turnBannerUI = GetComponent<TurnBannerUI>();
+        }
+
+        if (turnBannerUI == null)
+        {
+            turnBannerUI = gameObject.AddComponent<TurnBannerUI>();
+        }
+
+        TMP_FontAsset font = attackDefenseUseCountText != null
+            ? attackDefenseUseCountText.font
+            : null;
+        turnBannerUI.Initialize(font);
     }
 
     /// <summary>

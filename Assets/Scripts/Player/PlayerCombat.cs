@@ -423,6 +423,38 @@ public class PlayerCombat : MonoBehaviour
         );
     }
 
+#if UNITY_EDITOR
+
+    /// <summary>
+    /// Editor에서 방어도, 선원과 불사 효과를 우회하고
+    /// 플레이어 사망 전환을 즉시 테스트합니다.
+    /// </summary>
+    public void TriggerDeathForTesting()
+    {
+        if (playerData == null)
+        {
+            Debug.LogError(
+                "[PlayerCombat] PlayerData가 없어 " +
+                "사망 테스트를 실행할 수 없습니다."
+            );
+            return;
+        }
+
+        if (PlayerDeathTransitionController.IsPlaying)
+        {
+            return;
+        }
+
+        playerData.TakeDamage(playerData.CurrentHP);
+        TryStartDeathTransition();
+
+        Debug.Log(
+            "[PlayerCombat] F9 테스트 단축키 - 플레이어 즉시 사망"
+        );
+    }
+
+#endif
+
     /// <summary>
     /// 플레이어가 치명적인 피해를 받았을 때
     /// 불사의 존재를 처리합니다.

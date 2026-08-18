@@ -5512,6 +5512,7 @@ GameObject:
   m_Component:
   - component: {fileID: 729106091}
   - component: {fileID: 729106090}
+  - component: {fileID: 2300000001}
   m_Layer: 0
   m_Name: TurnManager
   m_TagString: Untagged
@@ -5539,6 +5540,22 @@ MonoBehaviour:
   attackDefenseUseCountText: {fileID: 781886128}
   enemyTurnDelay: 0.7
   enemySpawner: {fileID: 843205407}
+  turnBannerUI: {fileID: 2300000001}
+--- !u!114 &2300000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 729106089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b941f201c55b4f5286289fd58db6fc01, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  unfoldDuration: 0.4
+  holdDuration: 0.5
+  foldDuration: 0.4
 --- !u!4 &729106091
 Transform:
   m_ObjectHideFlags: 0

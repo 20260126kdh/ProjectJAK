@@ -1650,3 +1650,70 @@ Rest 버튼 휴식 이미지 연출
 - 다음 휴식 단계 진입 시 휴식 이미지를 숨긴 상태로 초기화한다.
 - Rest와 Upgrade 버튼은 기존 중앙 위치보다 330px 아래에 표시한다.
 - Rest와 Upgrade 라벨은 Font Weight 700의 흰색 글씨로 표시한다.
+# 현재 작업 변경
+## 작업명
+전투 턴 전환 두루마리 배너
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 범위
+
+- `Assets/Scripts/UI/TurnBannerUI.cs`
+- `Assets/Scripts/Battle/Managers/TurnManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 적 턴과 플레이어 턴 시작 시 화면 중앙에 각각 `적 턴`, `내 턴` 문구를 표시한다.
+- 배너는 좌측에서 우측으로 0.4초 동안 펼쳐지고 0.5초 유지 후 0.4초 동안 접힌다.
+- 배너 재생 중 마우스와 키보드 전투 입력을 차단한다.
+- 적 턴 행동은 적 턴 배너가 완전히 종료된 뒤 실행한다.
+- UI 생성에 실패해도 기존 턴 흐름은 중단되지 않는다.
+# 현재 작업 변경
+## 작업명
+Editor 전용 플레이어 사망 테스트 단축키
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 범위
+
+- `Assets/Scripts/Scenes/BattleShortcutController.cs`
+- `Assets/Scripts/Player/PlayerCombat.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- Unity Editor 전투 중 F9를 누르면 플레이어 HP가 즉시 0이 된다.
+- 방어도, 선원, 무감각과 불사 효과를 우회하고 기존 사망 전환을 실행한다.
+- 사망 연출 재생 중에는 중복 실행하지 않는다.
+- 일시정지와 주요 전투 외 패널이 열린 상태에서는 실행하지 않는다.
+- 빌드 버전에는 테스트 단축키를 포함하지 않는다.
+# 현재 작업 변경
+## 작업명
+전체 카드 클릭 대상 검증
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 카드별 확인 필요
+
+## 수정 범위
+
+- `Assets/Scripts/Battle/Managers/BattleManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 카드 53장의 CSV와 CardData 대상 설정은 기존 값을 유지한다.
+- Enemy, AllEnemies, RandomEnemy 효과가 하나라도 있는 카드는 적 클릭으로만 사용한다.
+- Self 및 직접 선택이 필요 없는 아군 전체 효과 카드는 플레이어 클릭으로만 사용한다.
+- 단일 선원 희생 카드는 선원 클릭으로만 사용한다.
+- 잘못된 대상 클릭 시 카드, 사용 횟수와 상태 효과를 소모하지 않는다.

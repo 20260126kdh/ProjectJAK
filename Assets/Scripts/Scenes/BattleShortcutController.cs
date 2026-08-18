@@ -9,6 +9,7 @@ using UnityEngine;
 /// - D: 전체 덱 보기
 /// - A: 뽑을 패 더미 보기
 /// - S: 버림 패 더미 보기
+/// - F9: 플레이어 사망 연출 즉시 실행(Editor 전용)
 /// - F10: 현재 일반 전투 즉시 승리 처리(Editor 전용)
 ///
 /// Esc 입력은 이 클래스에서 처리하지 않습니다.
@@ -134,6 +135,11 @@ public class BattleShortcutController : MonoBehaviour
         }
 
 #if UNITY_EDITOR
+
+        if (HandlePlayerDeathTestInput())
+        {
+            return;
+        }
 
         if (HandleNormalBattleSkipInput())
         {
@@ -283,6 +289,33 @@ public class BattleShortcutController : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+
+    /// <summary>
+    /// F9 입력으로 플레이어 HP를 0으로 만들고
+    /// 기존 사망 전환 연출을 실행합니다.
+    /// </summary>
+    /// <returns>F9 입력을 감지했다면 true를 반환합니다.</returns>
+    private bool HandlePlayerDeathTestInput()
+    {
+        if (!Input.GetKeyDown(KeyCode.F9))
+        {
+            return false;
+        }
+
+        PlayerCombat playerCombat =
+            FindFirstObjectByType<PlayerCombat>();
+        if (playerCombat == null)
+        {
+            Debug.LogError(
+                "[BattleShortcutController] PlayerCombat을 찾지 못해 " +
+                "사망 테스트를 실행할 수 없습니다."
+            );
+            return true;
+        }
+
+        playerCombat.TriggerDeathForTesting();
+        return true;
+    }
 
     /// <summary>
     /// F10 입력으로 현재 일반 전투를 즉시 승리 처리합니다.
