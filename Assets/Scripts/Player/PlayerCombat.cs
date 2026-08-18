@@ -14,13 +14,16 @@ public class PlayerCombat : MonoBehaviour
         {
             redColor = new Color(0.42f, 0.015f, 0.02f, 1f),
             deathDelay = 0.35f,
-            harpoonTravelDuration = 0.58f,
+            harpoonTravelDuration = 0.30f,
             openingDuration = 0.28f,
             finishOpeningDuration = 0.20f,
             deathUiDelay = 0.16f,
             deathUiFadeDuration = 0.22f,
-            harpoonSize = new Vector2(300f, 120f),
+            impactHoldDuration = 0.12f,
+            impactSpreadDuration = 0.68f,
+            harpoonSize = new Vector2(560f, 280f),
             harpoonHeight = 0f,
+            impactOffset = new Vector2(0f, 40f),
             harpoonScreenMargin = 220f,
             finishOpeningLead = 0.55f
         };
@@ -419,7 +422,8 @@ public class PlayerCombat : MonoBehaviour
         }
 
         PlayerDeathTransitionController.Play(
-            deathTransitionSettings
+            deathTransitionSettings,
+            transform.position
         );
     }
 

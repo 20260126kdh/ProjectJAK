@@ -660,6 +660,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de451cb9c87178940a521789a66c4a97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deathTransitionSettings:
+    harpoonSprite: {fileID: 21300000, guid: d17fbc7b95584f98af2b21c5563a0206, type: 3}
+    deathTrailSprite: {fileID: 3651389932231331649, guid: 27d671f1c17cad74f8f099c2f1bcc99c, type: 3}
+    deathImpactSprite: {fileID: 3017395146850527875, guid: 0a2221e178f12304280208bf5fb40dc5, type: 3}
+    deathUiSprite: {fileID: 0}
+    deathPanelSprite: {fileID: 21300000, guid: d17fbc7b95584f98af2b21c5563a0205, type: 3}
+    deathCharacterSprite: {fileID: 21300000, guid: d17fbc7b95584f98af2b21c5563a0202, type: 3}
+    titleButtonNormalSprite: {fileID: 7783560308667545497, guid: ce64488984a5fd046a653faac2475194, type: 3}
+    titleButtonHoverSprite: {fileID: -1465613710737277889, guid: 4f9432f533b3cc34882bcfb020bbfdfa, type: 3}
+    titleButtonPressedSprite: {fileID: -1946412218954127471, guid: 09e26e70b5d210f4d85969ba3d54a19a, type: 3}
+    deathCharacterSize: {x: 620, y: 620}
+    deathCharacterPosition: {x: 20, y: 0}
+    redColor: {r: 0.42, g: 0.015, b: 0.02, a: 1}
+    deathDelay: 0.35
+    harpoonTravelDuration: 0.3
+    openingDuration: 0.28
+    finishOpeningDuration: 0.2
+    deathUiDelay: 0.16
+    deathUiFadeDuration: 0.22
+    impactHoldDuration: 0.12
+    impactSpreadDuration: 0.68
+    harpoonSize: {x: 560, y: 280}
+    harpoonHeight: 0
+    impactOffset: {x: 0, y: 40}
+    harpoonScreenMargin: 220
+    finishOpeningLead: 0.55
   playerData: {fileID: 0}
   currentBlock: 0
   damagedThisTurn: 0

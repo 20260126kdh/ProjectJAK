@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// 플레이어 사망 시 작살 이동, 지퍼형 적색 전환과
+/// 플레이어 사망 시 작살 충돌, 충돌점 중심의 적색 전환과
 /// 사망 UI 표시를 순서대로 처리합니다.
 /// </summary>
 public sealed class PlayerDeathTransitionController : MonoBehaviour
@@ -14,15 +14,23 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
     private const string TitleSceneName = "Main_TitleScene";
     private static bool isPlaying;
 
-    private DeathZipperGraphic zipperGraphic;
+    private DeathImpactSpreadGraphic impactSpreadGraphic;
     private RectTransform harpoonRect;
+    private CanvasGroup harpoonGroup;
+    private RectTransform harpoonTipPoint;
+    private RectTransform trailRect;
+    private CanvasGroup trailGroup;
+    private RectTransform impactEffectRect;
+    private CanvasGroup impactEffectGroup;
+    private Vector2 impactPoint;
+    private Vector2 visualImpactPoint;
     private GameObject deathPanel;
     private TMP_FontAsset interfaceFont;
     private float previousTimeScale = 1f;
     private bool isReturningToTitle;
 
     /// <summary>
-    /// 현재 지퍼 메시가 작살 통과 시간을 계산할 때 사용하는 이동 시간입니다.
+    /// 현재 사망 작살의 이동 시간입니다.
     /// </summary>
     public static float ActiveTravelDuration { get; private set; } = 0.55f;
 
@@ -35,7 +43,9 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
     /// 사망 전환 전용 Canvas를 생성하고 연출을 시작합니다.
     /// 중복 호출은 무시합니다.
     /// </summary>
-    public static void Play(PlayerDeathTransitionSettings settings)
+    public static void Play(
+        PlayerDeathTransitionSettings settings,
+        Vector3 playerWorldPosition)
     {
         if (isPlaying)
         {
@@ -52,10 +62,12 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
 
         PlayerDeathTransitionController controller =
             root.GetComponent<PlayerDeathTransitionController>();
-        controller.BuildAndPlay(settings);
+        controller.BuildAndPlay(settings, playerWorldPosition);
     }
 
-    private void BuildAndPlay(PlayerDeathTransitionSettings settings)
+    private void BuildAndPlay(
+        PlayerDeathTransitionSettings settings,
+        Vector3 playerWorldPosition)
     {
         isPlaying = true;
         ActiveTravelDuration = Mathf.Max(0.01f, settings.harpoonTravelDuration);
@@ -73,12 +85,15 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.matchWidthOrHeight = 0.5f;
 
-        zipperGraphic = CreateStretchGraphic<DeathZipperGraphic>(
-            "DeathRedOpening",
+        impactPoint = GetImpactPoint(playerWorldPosition, settings);
+
+        impactSpreadGraphic = CreateStretchGraphic<DeathImpactSpreadGraphic>(
+            "DeathImpactSpread",
             transform
         );
-        zipperGraphic.color = settings.redColor;
-        zipperGraphic.raycastTarget = true;
+        impactSpreadGraphic.color = settings.redColor;
+        impactSpreadGraphic.raycastTarget = true;
+        impactSpreadGraphic.SetSpread(impactPoint, 0f);
 
         CreateHarpoon(settings);
         CreateDeathPanel(settings);
@@ -90,16 +105,24 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         GameObject harpoon = new GameObject(
             "DeathHarpoon",
             typeof(RectTransform),
-            typeof(Image)
+            typeof(Image),
+            typeof(CanvasGroup)
         );
         harpoon.transform.SetParent(transform, false);
         harpoonRect = harpoon.GetComponent<RectTransform>();
-        harpoonRect.anchorMin = new Vector2(0f, 0.5f);
-        harpoonRect.anchorMax = new Vector2(0f, 0.5f);
-        harpoonRect.pivot = new Vector2(0.5f, 0.5f);
+        harpoonRect.anchorMin = new Vector2(0.5f, 0.5f);
+        harpoonRect.anchorMax = new Vector2(0.5f, 0.5f);
+        harpoonRect.pivot = new Vector2(1f, 0.5f);
         harpoonRect.sizeDelta = settings.harpoonSize;
-        harpoonRect.anchoredPosition =
-            new Vector2(-settings.harpoonScreenMargin, settings.harpoonHeight);
+        Vector2 startPoint = GetHarpoonStartPoint(settings);
+        harpoonRect.anchoredPosition = startPoint;
+        Vector2 direction = impactPoint - startPoint;
+        harpoonRect.localRotation = Quaternion.Euler(
+            0f,
+            0f,
+            Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg
+        );
+        harpoonGroup = harpoon.GetComponent<CanvasGroup>();
 
         Image image = harpoon.GetComponent<Image>();
         image.sprite = settings.harpoonSprite;
@@ -111,8 +134,199 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
 
         if (settings.harpoonSprite == null)
         {
-            harpoonRect.sizeDelta = new Vector2(180f, 18f);
+            image.color = Color.clear;
+            CreateFallbackHarpoon(harpoonRect);
         }
+
+        CreateHarpoonTipPoint(settings);
+        CreateTrailEffect(settings);
+        CreateImpactEffect(settings);
+    }
+
+    private void CreateHarpoonTipPoint(
+        PlayerDeathTransitionSettings settings)
+    {
+        GameObject tipPoint = new GameObject(
+            "HarpoonTipPoint",
+            typeof(RectTransform)
+        );
+        tipPoint.transform.SetParent(harpoonRect, false);
+        harpoonTipPoint = tipPoint.GetComponent<RectTransform>();
+        harpoonTipPoint.anchorMin = new Vector2(1f, 0.5f);
+        harpoonTipPoint.anchorMax = new Vector2(1f, 0.5f);
+        harpoonTipPoint.pivot = new Vector2(0.5f, 0.5f);
+        harpoonTipPoint.sizeDelta = Vector2.one;
+        harpoonTipPoint.anchoredPosition = new Vector2(
+            -GetHarpoonTipInset(settings),
+            0f
+        );
+    }
+
+    private void CreateTrailEffect(
+        PlayerDeathTransitionSettings settings)
+    {
+        if (settings.deathTrailSprite == null)
+        {
+            return;
+        }
+
+        GameObject trail = new GameObject(
+            "DeathHarpoonTrail",
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(CanvasGroup)
+        );
+        trail.transform.SetParent(harpoonRect, false);
+        trailRect = trail.GetComponent<RectTransform>();
+        trailRect.anchorMin = new Vector2(1f, 0.5f);
+        trailRect.anchorMax = new Vector2(1f, 0.5f);
+        trailRect.pivot = new Vector2(1f, 0.5f);
+        trailRect.sizeDelta = new Vector2(680f, 355f);
+        // 원본 트레일의 가시 중심이 이미지 중앙보다 아래에 있어
+        // 작살이 회전하면 이펙트가 화면 위로 벌어지므로 실제 가시 중심을 축에 맞춘다.
+        trailRect.anchoredPosition = new Vector2(
+            -GetHarpoonTipInset(settings),
+            82f
+        );
+
+        Image trailImage = trail.GetComponent<Image>();
+        trailImage.sprite = settings.deathTrailSprite;
+        trailImage.preserveAspect = true;
+        trailImage.raycastTarget = false;
+        trailGroup = trail.GetComponent<CanvasGroup>();
+        trailGroup.alpha = 0.82f;
+    }
+
+    private void CreateImpactEffect(PlayerDeathTransitionSettings settings)
+    {
+        if (settings.deathImpactSprite == null)
+        {
+            return;
+        }
+
+        GameObject impact = new GameObject(
+            "DeathHarpoonImpact",
+            typeof(RectTransform),
+            typeof(Image),
+            typeof(CanvasGroup)
+        );
+        impact.transform.SetParent(harpoonTipPoint, false);
+        impactEffectRect = impact.GetComponent<RectTransform>();
+        impactEffectRect.anchorMin = new Vector2(0.5f, 0.5f);
+        impactEffectRect.anchorMax = new Vector2(0.5f, 0.5f);
+        impactEffectRect.pivot = new Vector2(0.5f, 0.5f);
+        impactEffectRect.sizeDelta = new Vector2(150f, 150f);
+        impactEffectRect.anchoredPosition = Vector2.zero;
+
+        Image impactImage = impact.GetComponent<Image>();
+        impactImage.sprite = settings.deathImpactSprite;
+        impactImage.preserveAspect = true;
+        impactImage.raycastTarget = false;
+        impactEffectGroup = impact.GetComponent<CanvasGroup>();
+        impactEffectGroup.alpha = 0f;
+        impact.SetActive(false);
+    }
+
+    private static void CreateFallbackHarpoon(Transform parent)
+    {
+        CreateHarpoonPart(
+            "Shaft",
+            parent,
+            new Vector2(250f, 16f),
+            new Vector2(-125f, 0f),
+            0f,
+            new Color(0.18f, 0.08f, 0.035f, 1f)
+        );
+        CreateHarpoonPart(
+            "Head",
+            parent,
+            new Vector2(38f, 38f),
+            new Vector2(-14f, 0f),
+            45f,
+            new Color(0.72f, 0.72f, 0.68f, 1f)
+        );
+    }
+
+    private static void CreateHarpoonPart(
+        string objectName,
+        Transform parent,
+        Vector2 size,
+        Vector2 position,
+        float rotation,
+        Color color)
+    {
+        GameObject part = new GameObject(
+            objectName,
+            typeof(RectTransform),
+            typeof(Image)
+        );
+        part.transform.SetParent(parent, false);
+        RectTransform rect = part.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(1f, 0.5f);
+        rect.anchorMax = new Vector2(1f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = size;
+        rect.anchoredPosition = position;
+        rect.localRotation = Quaternion.Euler(0f, 0f, rotation);
+
+        Image image = part.GetComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
+    }
+
+    private static Vector2 GetImpactPoint(
+        Vector3 playerWorldPosition,
+        PlayerDeathTransitionSettings settings)
+    {
+        Camera worldCamera = Camera.main;
+        if (worldCamera == null || Screen.width <= 0 || Screen.height <= 0)
+        {
+            return new Vector2(-480f, -80f) + settings.impactOffset;
+        }
+
+        Vector3 screenPoint = worldCamera.WorldToScreenPoint(playerWorldPosition);
+        return new Vector2(
+            (screenPoint.x / Screen.width - 0.5f) * 1920f,
+            (screenPoint.y / Screen.height - 0.5f) * 1080f
+        ) + settings.impactOffset;
+    }
+
+    private static Vector2 GetHarpoonStartPoint(
+        PlayerDeathTransitionSettings settings)
+    {
+        return new Vector2(
+            960f + settings.harpoonScreenMargin,
+            540f + settings.harpoonScreenMargin
+        );
+    }
+
+    private static float GetHarpoonTipInset(
+        PlayerDeathTransitionSettings settings)
+    {
+        /*
+         * 작살 PNG의 실제 불투명 작살촉은 이미지 오른쪽 끝에서
+         * 원본 폭의 약 2.65% 안쪽에 있으므로 그만큼 보정합니다.
+         */
+        return settings.harpoonSprite != null
+            ? settings.harpoonSize.x * 0.0265f
+            : 0f;
+    }
+
+    private Vector2 GetVisualImpactPoint()
+    {
+        if (impactEffectRect != null)
+        {
+            return transform.InverseTransformPoint(
+                impactEffectRect.position
+            );
+        }
+
+        if (harpoonTipPoint == null)
+        {
+            return impactPoint;
+        }
+
+        return transform.InverseTransformPoint(harpoonTipPoint.position);
     }
 
     private void CreateDeathPanel(PlayerDeathTransitionSettings settings)
@@ -136,30 +350,37 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
 
         if (settings.deathUiSprite == null)
         {
-            CreateText(
-                "DeathTitle",
+            CreateMessagePanel(
+                "DeathTitlePanel",
                 panelRect,
                 "당신은 죽었습니다.",
-                72f,
-                new Vector2(0f, 120f),
-                interfaceFont
+                new Vector2(0f, 315f),
+                new Vector2(960f, 410f),
+                54f,
+                interfaceFont,
+                settings.deathPanelSprite
             );
 
             int stage = StageManager.Instance != null
                 ? StageManager.Instance.CurrentStage
                 : 1;
-            CreateText(
-                "FinalStage",
+            CreateMessagePanel(
+                "FinalStagePanel",
                 panelRect,
                 $"최종 진행 스테이지  {stage}",
+                new Vector2(0f, 125f),
+                new Vector2(680f, 290f),
                 38f,
-                new Vector2(0f, 15f),
-                interfaceFont
+                interfaceFont,
+                settings.deathPanelSprite
             );
+
+            CreateDeathCharacter(panelRect, settings);
 
             Button titleButton = CreateTitleButton(
                 panelRect,
-                interfaceFont
+                interfaceFont,
+                settings
             );
             titleButton.onClick.AddListener(ReturnToTitle);
         }
@@ -170,59 +391,167 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         group.interactable = false;
     }
 
+    private static void CreateMessagePanel(
+        string objectName,
+        Transform parent,
+        string content,
+        Vector2 position,
+        Vector2 size,
+        float fontSize,
+        TMP_FontAsset font,
+        Sprite panelSprite)
+    {
+        GameObject panel = new GameObject(
+            objectName,
+            typeof(RectTransform),
+            typeof(Image)
+        );
+        panel.transform.SetParent(parent, false);
+
+        RectTransform rect = panel.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta = size;
+        rect.anchoredPosition = position;
+
+        Image image = panel.GetComponent<Image>();
+        image.sprite = panelSprite;
+        image.preserveAspect = panelSprite != null;
+        image.color = panelSprite != null
+            ? Color.white
+            : new Color(0.015f, 0.012f, 0.012f, 0.96f);
+        image.raycastTarget = false;
+
+        CreateText(
+            objectName + "Label",
+            panel.transform,
+            content,
+            fontSize,
+            Vector2.zero,
+            font,
+            new Color(0.95f, 0.84f, 0.65f, 1f)
+        );
+    }
+
+    private static void CreateDeathCharacter(
+        Transform parent,
+        PlayerDeathTransitionSettings settings)
+    {
+        if (settings.deathCharacterSprite == null)
+        {
+            return;
+        }
+
+        GameObject character = new GameObject(
+            "DeathCharacter",
+            typeof(RectTransform),
+            typeof(Image)
+        );
+        character.transform.SetParent(parent, false);
+
+        RectTransform rect = character.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.zero;
+        rect.pivot = Vector2.zero;
+        rect.sizeDelta = settings.deathCharacterSize.sqrMagnitude > 0f
+            ? settings.deathCharacterSize
+            : new Vector2(520f, 360f);
+        rect.anchoredPosition = settings.deathCharacterPosition.sqrMagnitude > 0f
+            ? settings.deathCharacterPosition
+            : new Vector2(35f, 30f);
+
+        Image image = character.GetComponent<Image>();
+        image.sprite = settings.deathCharacterSprite;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+    }
+
     private IEnumerator PlaySequence(PlayerDeathTransitionSettings settings)
     {
-        zipperGraphic.SetOpening(-0.1f, settings.openingDuration, false);
         harpoonRect.gameObject.SetActive(false);
 
         yield return WaitRealtime(settings.deathDelay);
         harpoonRect.gameObject.SetActive(true);
 
         float elapsed = 0f;
-        float canvasWidth = 1920f;
-        float startX = -settings.harpoonScreenMargin;
-        float endX = canvasWidth + settings.harpoonScreenMargin;
+        Vector2 startPoint = GetHarpoonStartPoint(settings);
 
         while (elapsed < ActiveTravelDuration)
         {
             elapsed += Time.unscaledDeltaTime;
             float progress = Mathf.Clamp01(elapsed / ActiveTravelDuration);
-            harpoonRect.anchoredPosition = new Vector2(
-                Mathf.Lerp(startX, endX, progress),
-                settings.harpoonHeight
+            harpoonRect.anchoredPosition = Vector2.Lerp(
+                startPoint,
+                impactPoint,
+                progress
             );
-            zipperGraphic.SetOpening(
-                progress,
-                settings.openingDuration,
-                false
-            );
+            if (trailRect != null)
+            {
+                float pulse = 1f + Mathf.Sin(progress * Mathf.PI * 8f) * 0.06f;
+                trailRect.localScale = new Vector3(pulse, 1f, 1f);
+            }
             yield return null;
         }
 
+        harpoonRect.anchoredPosition = impactPoint;
+        visualImpactPoint = GetVisualImpactPoint();
+        StartCoroutine(FadeArrivalVisuals(settings.impactHoldDuration));
+        yield return SpreadImpact(settings);
         harpoonRect.gameObject.SetActive(false);
-        yield return FinishOpening(settings);
         yield return WaitRealtime(settings.deathUiDelay);
         yield return FadeDeathPanel(settings.deathUiFadeDuration);
     }
 
-    private IEnumerator FinishOpening(PlayerDeathTransitionSettings settings)
+    private IEnumerator FadeArrivalVisuals(float duration)
+    {
+        duration = Mathf.Max(0.01f, duration);
+        if (impactEffectRect != null)
+        {
+            impactEffectRect.gameObject.SetActive(true);
+        }
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+            harpoonGroup.alpha = 1f - progress;
+            if (trailGroup != null)
+            {
+                trailGroup.alpha = 0.82f * (1f - progress);
+            }
+            if (impactEffectGroup != null)
+            {
+                impactEffectGroup.alpha = Mathf.Sin(progress * Mathf.PI);
+                impactEffectRect.localScale = Vector3.one *
+                    Mathf.Lerp(0.65f, 1.25f, progress);
+            }
+            yield return null;
+        }
+
+        harpoonRect.gameObject.SetActive(false);
+        if (impactEffectRect != null)
+        {
+            impactEffectRect.gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator SpreadImpact(PlayerDeathTransitionSettings settings)
     {
         float elapsed = 0f;
-        float duration = Mathf.Max(0.01f, settings.finishOpeningDuration);
+        float duration = Mathf.Max(0.01f, settings.impactSpreadDuration);
 
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
-            float extraProgress = elapsed / duration;
-            zipperGraphic.SetOpening(
-                1f + extraProgress * settings.finishOpeningLead,
-                settings.openingDuration,
-                false
+            impactSpreadGraphic.SetSpread(
+                visualImpactPoint,
+                Mathf.Clamp01(elapsed / duration)
             );
             yield return null;
         }
 
-        zipperGraphic.SetOpening(2f, settings.openingDuration, true);
+        impactSpreadGraphic.SetSpread(visualImpactPoint, 1f);
     }
 
     private IEnumerator FadeDeathPanel(float duration)
@@ -344,7 +673,8 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         string content,
         float fontSize,
         Vector2 position,
-        TMP_FontAsset font)
+        TMP_FontAsset font,
+        Color? color = null)
     {
         GameObject textObject = new GameObject(
             objectName,
@@ -366,13 +696,16 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         }
         text.fontSize = fontSize;
         text.alignment = TextAlignmentOptions.Center;
-        text.color = Color.white;
+        text.color = color ?? Color.white;
+        text.outlineColor = new Color32(0, 0, 0, 255);
+        text.outlineWidth = 0.18f;
         text.raycastTarget = false;
     }
 
     private static Button CreateTitleButton(
         Transform parent,
-        TMP_FontAsset font)
+        TMP_FontAsset font,
+        PlayerDeathTransitionSettings settings)
     {
         GameObject buttonObject = new GameObject(
             "ReturnToTitleButton",
@@ -384,20 +717,31 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         RectTransform rect = buttonObject.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(420f, 86f);
-        rect.anchoredPosition = new Vector2(0f, -115f);
+        rect.sizeDelta = new Vector2(420f, 90f);
+        rect.anchoredPosition = new Vector2(0f, -145f);
 
         Image image = buttonObject.GetComponent<Image>();
-        image.color = new Color(0.08f, 0.05f, 0.06f, 0.92f);
+        image.sprite = settings.titleButtonNormalSprite;
+        image.color = settings.titleButtonNormalSprite != null
+            ? Color.white
+            : new Color(0.12f, 0.31f, 0.45f, 0.96f);
+
+        Button button = buttonObject.GetComponent<Button>();
+        button.transition = Selectable.Transition.SpriteSwap;
+        SpriteState spriteState = button.spriteState;
+        spriteState.highlightedSprite = settings.titleButtonHoverSprite;
+        spriteState.pressedSprite = settings.titleButtonPressedSprite;
+        button.spriteState = spriteState;
         CreateText(
             "Label",
             buttonObject.transform,
             "타이틀로 돌아가기",
             32f,
             Vector2.zero,
-            font
+            font,
+            new Color(0.115f, 0.519f, 0.390f, 1f)
         );
-        return buttonObject.GetComponent<Button>();
+        return button;
     }
 
     /// <summary>
@@ -438,7 +782,20 @@ public struct PlayerDeathTransitionSettings
 {
     [Header("교체 이미지")]
     public Sprite harpoonSprite;
+    public Sprite deathTrailSprite;
+    public Sprite deathImpactSprite;
     public Sprite deathUiSprite;
+    [Tooltip("사망 문구와 최종 스테이지에 공통으로 사용하는 프레임")]
+    public Sprite deathPanelSprite;
+    [Tooltip("왼쪽 아래에 표시할 현재 클래스의 사망 이미지")]
+    public Sprite deathCharacterSprite;
+    public Sprite titleButtonNormalSprite;
+    public Sprite titleButtonHoverSprite;
+    public Sprite titleButtonPressedSprite;
+
+    [Header("사망 캐릭터 배치")]
+    public Vector2 deathCharacterSize;
+    public Vector2 deathCharacterPosition;
 
     [Header("색상")]
     public Color redColor;
@@ -450,10 +807,86 @@ public struct PlayerDeathTransitionSettings
     [Min(0.01f)] public float finishOpeningDuration;
     [Min(0f)] public float deathUiDelay;
     [Min(0.01f)] public float deathUiFadeDuration;
+    [Min(0f)] public float impactHoldDuration;
+    [Min(0.01f)] public float impactSpreadDuration;
 
     [Header("작살 배치")]
     public Vector2 harpoonSize;
     public float harpoonHeight;
+    public Vector2 impactOffset;
     [Min(0f)] public float harpoonScreenMargin;
     [Min(0f)] public float finishOpeningLead;
+}
+
+/// <summary>
+/// 작살 충돌 지점을 중심으로 붉은 원이 화면 전체까지
+/// 확산되는 사망 전환 UI 메시를 그립니다.
+/// </summary>
+public sealed class DeathImpactSpreadGraphic : MaskableGraphic
+{
+    private const int SegmentCount = 96;
+    private Vector2 impactPoint;
+    private float spreadProgress;
+
+    /// <summary>
+    /// 확산 중심과 진행률을 갱신합니다.
+    /// </summary>
+    public void SetSpread(Vector2 center, float progress)
+    {
+        impactPoint = center;
+        spreadProgress = Mathf.Clamp01(progress);
+        SetVerticesDirty();
+    }
+
+    protected override void OnPopulateMesh(VertexHelper vertexHelper)
+    {
+        vertexHelper.Clear();
+        if (spreadProgress <= 0f)
+        {
+            return;
+        }
+
+        Rect rect = rectTransform.rect;
+        float radius = GetMaximumRadius(rect, impactPoint) *
+            Mathf.SmoothStep(0f, 1f, spreadProgress);
+        UIVertex vertex = UIVertex.simpleVert;
+        vertex.color = color;
+        vertex.position = impactPoint;
+        vertexHelper.AddVert(vertex);
+
+        for (int index = 0; index <= SegmentCount; index++)
+        {
+            float angle = Mathf.PI * 2f * index / SegmentCount;
+            vertex.position = impactPoint + new Vector2(
+                Mathf.Cos(angle),
+                Mathf.Sin(angle)
+            ) * radius;
+            vertexHelper.AddVert(vertex);
+            if (index > 0)
+            {
+                vertexHelper.AddTriangle(0, index, index + 1);
+            }
+        }
+    }
+
+    private static float GetMaximumRadius(Rect rect, Vector2 center)
+    {
+        float leftBottom = Vector2.Distance(
+            center,
+            new Vector2(rect.xMin, rect.yMin)
+        );
+        float leftTop = Vector2.Distance(
+            center,
+            new Vector2(rect.xMin, rect.yMax)
+        );
+        float rightBottom = Vector2.Distance(
+            center,
+            new Vector2(rect.xMax, rect.yMin)
+        );
+        float rightTop = Vector2.Distance(
+            center,
+            new Vector2(rect.xMax, rect.yMax)
+        );
+        return Mathf.Max(leftBottom, leftTop, rightBottom, rightTop) * 1.02f;
+    }
 }

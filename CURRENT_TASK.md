@@ -136,10 +136,14 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 
 ## 현재 상태
 
-구현 완료 / Unity Play Mode 확인 필요
+구현 및 이미지 연결 완료 / Unity Play Mode 확인 필요
 
 ## 수정 대상
 - `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `Assets/Art/UI/Death`
+- `Assets/Prefabs/Player/Captain.prefab`
+- `Assets/Prefabs/Player/Physique.prefab`
+- `Assets/Prefabs/Player/Technician.prefab`
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
 
@@ -1717,3 +1721,60 @@ Editor 전용 플레이어 사망 테스트 단축키
 - Self 및 직접 선택이 필요 없는 아군 전체 효과 카드는 플레이어 클릭으로만 사용한다.
 - 단일 선원 희생 카드는 선원 클릭으로만 사용한다.
 - 잘못된 대상 클릭 시 카드, 사용 횟수와 상태 효과를 소모하지 않는다.
+# 현재 작업 변경
+## 작업명
+사망 UI 재배치 및 사망 캐릭터 이미지 연결 준비
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 사망 제목, 최종 진행 스테이지, 타이틀 복귀 버튼이 기획 시안의 세로 배치로 표시된다.
+- CAP/PHY/TEC 사망 이미지가 각 클래스 Prefab에 연결되어 화면 왼쪽 아래에 표시된다.
+- 사망 문구와 최종 스테이지 칸은 `Death_UI.png` 프레임을 사용한다.
+- 프레임 위 글자는 밝은 아이보리색과 검은 외곽선으로 선명하게 표시된다.
+- 이미지 참조가 누락된 상태에서도 사망 UI가 오류 없이 표시된다.
+
+# 현재 작업 변경
+## 작업명
+플레이어 충돌형 사망 전환 연출
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Player/PlayerCombat.cs`
+- `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `Assets/Prefabs/Player/Captain.prefab`
+- `Assets/Prefabs/Player/Physique.prefab`
+- `Assets/Prefabs/Player/Technician.prefab`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 신규 작살 이미지가 화면 우측 위에서 0.3초 동안 이동하여 플레이어 위치에 정지한다.
+- 작살 충돌 지점에서 붉은 원이 퍼져 화면 전체를 덮는다.
+- 붉은 확산 시간은 0.68초를 사용한다.
+- 작살 크기는 560×280으로 표시한다.
+- 비행 중 현재 클래스의 공격 궤적 색상으로 꼬리를 표시한다.
+- 도착 시 클래스별 공격 충돌 섬광을 표시하고 작살과 꼬리를 0.12초 안에 제거한다.
+- 자동 분할 Sprite Pivot과 작살 PNG의 투명 여백을 보정해 작살촉, 충돌 섬광과 붉은 확산 중심을 일치시킨다.
+- 충돌 섬광은 `HarpoonTipPoint`의 자식으로, 꼬리는 작살의 자식으로 배치해 독립 좌표 계산을 사용하지 않는다.
+- 충돌 임팩트는 별도 위치 보정 없이 `HarpoonTipPoint` 로컬 원점에 고정하고, 붉은 확산도 같은 지점을 사용한다.
+- 비행 중 클래스 트레일은 원본 PNG의 가시 중심 편차를 반영해 작살 로컬 Y `+82` 지점에 배치한다.
+- 클래스 트레일의 오른쪽 끝은 `GetHarpoonTipInset` 값을 사용해 실제 작살촉과 같은 X 지점에 고정한다.
+- 충돌과 확산 이후 기존 사망 UI가 표시된다.
+- 타이틀 복귀 버튼은 메인 타이틀의 게임 시작 버튼과 같은 상태 이미지를 사용한다.
