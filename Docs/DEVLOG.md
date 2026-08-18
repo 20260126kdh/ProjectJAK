@@ -767,3 +767,9 @@
 - 추가 녹화에서 트레일이 로컬 X `-360`으로 밀려 있음을 확인하고, 트레일의 오른쪽 끝을 `GetHarpoonTipInset` 기준의 실제 작살촉 X 위치에 고정했다.
 - 자동 검증: C# 컴파일 확인 필요
 - 수동 검증: F9 사망 테스트로 UI 배치와 이미지 비연결 상태 확인 필요
+# 2026-08-18 게임 클리어 엔딩 영상
+
+- 제공된 8초 엔딩 영상을 H.264 Baseline, 24fps, BT.709 규격으로 변환해 `Assets/Resources/Video/Ending.mp4`에 추가했다.
+- 빈 `GameClearScene`에 `GameClearController`를 연결하고 전체 화면 영상 재생과 전투 BGM 정지를 구현했다.
+- 아리엘 처치 후 보상 화면 대신 게임 클리어 씬으로 이동하고, 영상 종료 후 메인 타이틀로 복귀하도록 연결했다.
+- `GameClearScene`을 Build Scene List에 등록했다.

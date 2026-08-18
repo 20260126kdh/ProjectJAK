@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class BattleManager : MonoBehaviour
 {
+    private const string GameClearSceneName = "GameClearScene";
+
     private enum CardClickTarget
     {
         None,
@@ -1523,6 +1525,10 @@ public class BattleManager : MonoBehaviour
                 Debug.Log(
                     "[BattleManager] 아리엘 처치 완료 - " +
                     "리워드 없이 게임 클리어"
+                );
+
+                ScreenFadeController.LoadBattleScene(
+                    GameClearSceneName
                 );
 
                 return;

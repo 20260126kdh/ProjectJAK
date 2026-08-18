@@ -1778,3 +1778,29 @@ Editor 전용 플레이어 사망 테스트 단축키
 - 클래스 트레일의 오른쪽 끝은 `GetHarpoonTipInset` 값을 사용해 실제 작살촉과 같은 X 지점에 고정한다.
 - 충돌과 확산 이후 기존 사망 UI가 표시된다.
 - 타이틀 복귀 버튼은 메인 타이틀의 게임 시작 버튼과 같은 상태 이미지를 사용한다.
+# 현재 작업 변경
+## 작업명
+게임 클리어 엔딩 영상 재생
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 범위
+
+- `Assets/Resources/Video/Ending.mp4`
+- `Assets/Scripts/Scenes/GameClearController.cs`
+- `Assets/Scripts/Battle/Managers/BattleManager.cs`
+- `Assets/Scenes/PlayScene/GameClearScene.unity`
+- `ProjectSettings/EditorBuildSettings.asset`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- Stage 3 최종 보스 아리엘 처치 시 보상 화면 없이 `GameClearScene`으로 이동한다.
+- 엔딩 영상은 전체 화면으로 한 번 재생하며 기존 전투 BGM은 정지한다.
+- 영상 재생이 끝나면 페이드 후 `Main_TitleScene`으로 이동한다.
+- Stage 1·2 보스와 모르바엘의 기존 보상 흐름은 유지한다.
+- 엔딩 영상은 H.264 Baseline, 24fps, BT.709 규격을 사용한다.
