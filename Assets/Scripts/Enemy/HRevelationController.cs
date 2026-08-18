@@ -153,18 +153,16 @@ public class HRevelationController : MonoBehaviour
             }
             else
             {
-                statusEffectHandler.AddStatusEffect(
+                statusEffectHandler.AddEnemyDebuffWithDurationStack(
                     StatusEffectType.Weaken,
                     1,
-                    1,
-                    false
+                    1
                 );
 
-                statusEffectHandler.AddStatusEffect(
+                statusEffectHandler.AddEnemyDebuffWithDurationStack(
                     StatusEffectType.Cripple,
                     1,
-                    1,
-                    false
+                    1
                 );
 
                 if (SFXManager.Instance != null)

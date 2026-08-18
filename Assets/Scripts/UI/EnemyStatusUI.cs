@@ -14,6 +14,15 @@ using UnityEngine;
 /// </summary>
 public class EnemyStatusUI : MonoBehaviour
 {
+    private const string TopBarBackgroundName =
+        "TopBarBackground";
+
+    private static readonly Color TopBarBackgroundColor =
+        new Color(0.45f, 0.45f, 0.45f, 0.85f);
+
+    private static readonly Vector2 TopBarBackgroundExpansion =
+        new Vector2(20f, 10f);
+
     [Header("상태 효과 UI 루트")]
     [SerializeField]
     private GameObject statusRoot;
@@ -41,6 +50,8 @@ public class EnemyStatusUI : MonoBehaviour
 
     private void Awake()
     {
+        ConfigureTopBarBackground();
+
         statusEffectHandler =
             GetComponentInParent<StatusEffectHandler>();
 
@@ -61,6 +72,57 @@ public class EnemyStatusUI : MonoBehaviour
                 this
             );
         }
+    }
+
+    /// <summary>
+    /// 상태·작살·Intent·방어도 UI 뒤에 공통 회색 배경을 표시합니다.
+    /// 체력바는 별도 루트이므로 배경 적용 대상에서 제외됩니다.
+    /// </summary>
+    private void ConfigureTopBarBackground()
+    {
+        Transform backgroundTransform =
+            transform.Find(TopBarBackgroundName);
+
+        GameObject backgroundObject;
+
+        if (backgroundTransform == null)
+        {
+            backgroundObject = new GameObject(
+                TopBarBackgroundName,
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image)
+            );
+
+            backgroundObject.layer = gameObject.layer;
+            backgroundObject.transform.SetParent(
+                transform,
+                false
+            );
+        }
+        else
+        {
+            backgroundObject =
+                backgroundTransform.gameObject;
+        }
+
+        backgroundObject.transform.SetAsFirstSibling();
+
+        RectTransform backgroundRect =
+            backgroundObject.GetComponent<RectTransform>();
+
+        backgroundRect.anchorMin = Vector2.zero;
+        backgroundRect.anchorMax = Vector2.one;
+        backgroundRect.anchoredPosition = Vector2.zero;
+        backgroundRect.sizeDelta = TopBarBackgroundExpansion;
+
+        Image backgroundImage =
+            backgroundObject.GetComponent<Image>();
+
+        backgroundImage.sprite = null;
+        backgroundImage.type = Image.Type.Simple;
+        backgroundImage.color = TopBarBackgroundColor;
+        backgroundImage.raycastTarget = false;
     }
 
     private void OnEnable()

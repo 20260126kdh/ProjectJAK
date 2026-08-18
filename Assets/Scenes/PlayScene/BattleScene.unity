@@ -455,7 +455,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -463,7 +463,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2907,7 +2907,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -260, y: 0}
+  m_AnchoredPosition: {x: -260, y: -330}
   m_SizeDelta: {x: 382.923, y: 220.723}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &379370664
@@ -7740,7 +7740,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   restPanel: {fileID: 69276178}
   battleManager: {fileID: 1757670132}
+  handCardParent: {fileID: 1286685306}
   upgradePanelUI: {fileID: 1093629281}
+  restBackgroundImage: {fileID: 69276180}
+  captainRestSprite: {fileID: 21300000, guid: a831f201c55b4f5286289fd58db6fc02, type: 3}
+  captainRestEndSprite: {fileID: 21300000, guid: a831f201c55b4f5286289fd58db6fc03, type: 3}
+  physiqueRestSprite: {fileID: 21300000, guid: a831f201c55b4f5286289fd58db6fc04, type: 3}
+  physiqueRestEndSprite: {fileID: 21300000, guid: a831f201c55b4f5286289fd58db6fc05, type: 3}
+  technicianRestSprite: {fileID: 21300000, guid: a831f201c55b4f5286289fd58db6fc06, type: 3}
+  technicianRestEndSprite: {fileID: 21300000, guid: a831f201c55b4f5286289fd58db6fc07, type: 3}
+  restImageDuration: 1
+  restFadeDuration: 0.3
+  restEndHoldDuration: 0.5
   restButton: {fileID: 379370664}
   upgradeButton: {fileID: 2087595275}
   nextBattleButton: {fileID: 916360635}
@@ -10958,10 +10969,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 379370663}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: -42}
+  m_SizeDelta: {x: 360, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1412235489
 MonoBehaviour:
@@ -10992,8 +11003,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -11012,7 +11023,7 @@ MonoBehaviour:
     rgba: 4294967295
   m_fontSize: 50
   m_fontSizeBase: 50
-  m_fontWeight: 400
+  m_fontWeight: 700
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
@@ -13170,10 +13181,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2087595274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: -42}
+  m_SizeDelta: {x: 360, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1781099298
 MonoBehaviour:
@@ -13204,8 +13215,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -13224,7 +13235,7 @@ MonoBehaviour:
     rgba: 4294967295
   m_fontSize: 50
   m_fontSizeBase: 50
-  m_fontWeight: 400
+  m_fontWeight: 700
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
@@ -14952,7 +14963,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 260, y: 0}
+  m_AnchoredPosition: {x: 260, y: -330}
   m_SizeDelta: {x: 382.923, y: 220.723}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2087595275

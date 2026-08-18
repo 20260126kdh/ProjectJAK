@@ -1530,6 +1530,78 @@ Button_UI 미적용 에셋 연결
 
 # 현재 작업 변경
 ## 작업명
+적 상단 UI 가시성 배경 칸 추가
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/UI/EnemyStatusUI.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 모든 적의 `TopBar` 280×55 영역 뒤에 300×65 크기의 중간 회색 배경 칸을 표시한다.
+- 기존 상단 UI 위치는 유지하고 배경만 좌우 10, 위아래 5만큼 확장한다.
+- 배경 칸은 상태 아이콘, 작살, Intent와 방어도 UI만 감싼다.
+- 적 체력바에는 배경 칸을 적용하지 않는다.
+- 배경 칸은 Raycast를 받지 않아 상태 아이콘 Hover와 전투 입력을 방해하지 않는다.
+- 일반 적과 보스를 포함한 기존 적 Prefab에 공통 적용한다.
+
+# 현재 작업 변경
+## 작업명
+메인 타이틀 배경 영상 적용
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+- `Assets/Resources/Video/Main_Title.mp4`
+- `Assets/Scripts/Scenes/Managers/TitleManager.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- `Main_Title.mp4`가 메인 타이틀의 전체 화면 배경으로 자연스럽게 반복 재생된다.
+- 영상은 기존 타이틀 버튼과 설정 UI보다 뒤에 표시된다.
+- 화면 비율이 달라도 빈 여백 없이 화면을 채운다.
+- 영상 오디오는 재생하지 않고 기존 `Main_Title.wav` BGM을 유지한다.
+- 영상은 H.264 Constrained Baseline, 고정 24fps와 BT.709 색 공간으로 인코딩한다.
+- Unity 임포트 시 프레임 타임스탬프와 Color Primaries 경고가 발생하지 않는다.
+- 원본 영상의 마지막 0.5초와 시작 0.5초를 교차 전환해 반복 경계의 화면 단절을 줄인다.
+- 교차 전환을 포함한 최종 재생 길이는 3.5초로 유지한다.
+- 새 게임, 이어하기, 설정과 종료 버튼의 기존 입력 흐름을 유지한다.
+
+# 현재 작업 변경
+## 작업명
+적이 부여하는 동일 디버프의 지속 턴 중첩
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Battle/StatusEffectHandler.cs`
+- `Assets/Scripts/Pattern/EnemyPatternExecutor.cs`
+- `Assets/Scripts/Enemy/HRevelationController.cs`
+- `Assets/Scripts/Enemy/Enemy.cs`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 여러 적이 플레이어에게 같은 지속형 디버프를 부여하면 디버프 수치는 처음 적용된 값을 유지한다.
+- 같은 디버프의 지속 턴은 각 적용량을 합산한다.
+- 약화 수치 1·1턴을 두 번 받으면 약화 수치 1·2턴이 된다.
+- 중독, 영구 효과, 버프와 플레이어가 적에게 부여하는 상태 효과의 기존 중첩 규칙은 유지한다.
+
+# 현재 작업 변경
+## 작업명
 3줄 이상 튜토리얼 대사 칸 높이 확장
 
 ## 현재 상태
@@ -1547,3 +1619,34 @@ Button_UI 미적용 에셋 연결
 - 1~2줄 대사로 전환하면 기존 높이로 자동 복구된다.
 - 확장 여부와 관계없이 대사는 프레임 중앙에 표시된다.
 - 초상화와 다음 버튼의 위치는 변경되지 않는다.
+# 현재 작업 변경
+## 작업명
+Rest 버튼 휴식 이미지 연출
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 범위
+
+- `Assets/Art/UI/Rest`
+- `Assets/Scripts/UI/RestPanelUI.cs`
+- `Assets/Scenes/PlayScene/BattleScene.unity`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 휴식 단계 진입 즉시 `HandCardParent`를 비활성화하고 다음 전투 시작 직전에 복구한다.
+- 휴식 패널은 Sorting Order 150으로 핸드 Canvas(101)보다 위에 표시한다.
+- 휴식 패널의 버튼 화면은 현재 직업의 `*_Rest` 이미지로 전투 UI와 핸드를 가린다.
+- Rest와 Upgrade 글씨는 각 버튼 이미지 아래에 표시한다.
+- 휴식 화면 최초 진입 시 직업별 `*_Rest` 이미지와 버튼을 표시한다.
+- Rest 버튼을 누르면 버튼을 숨기고 현재 직업의 `*_Rest` 이미지를 표시한다.
+- 1초 후 0.3초 페이드 아웃으로 화면을 검게 가리고 `*_Rest_End` 이미지로 교체한 뒤, 0.3초 페이드 인한다.
+- 페이드 인 완료 후 0.5초 뒤 사용 가능한 버튼을 다시 표시한다.
+- 강화 버튼과 강화 취소는 휴식 이미지 연출을 실행하지 않는다.
+- 다음 휴식 단계 진입 시 휴식 이미지를 숨긴 상태로 초기화한다.
+- Rest와 Upgrade 버튼은 기존 중앙 위치보다 330px 아래에 표시한다.
+- Rest와 Upgrade 라벨은 Font Weight 700의 흰색 글씨로 표시한다.

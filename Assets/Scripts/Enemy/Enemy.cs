@@ -610,11 +610,10 @@ public class Enemy : MonoBehaviour
 
         if (applyNoBlockNext)
         {
-            playerStatusEffectHandler.AddStatusEffect(
+            playerStatusEffectHandler.AddEnemyDebuffWithDurationStack(
                 StatusEffectType.NoBlock,
                 applyValue,
-                1,
-                false
+                1
             );
 
             Debug.Log(
@@ -625,11 +624,10 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            playerStatusEffectHandler.AddStatusEffect(
+            playerStatusEffectHandler.AddEnemyDebuffWithDurationStack(
                 StatusEffectType.Broken,
                 applyValue,
-                1,
-                false
+                1
             );
 
             Debug.Log(

@@ -261,12 +261,26 @@ public class EnemyPatternExecutor : MonoBehaviour
                 patternData.duration
             );
 
-        targetStatusHandler.AddStatusEffect(
-            patternData.statusType,
-            value,
-            duration,
-            patternData.isPermanent
-        );
+        if (patternData.targetType == EnemyPatternTargetType.Player &&
+            IsDurationStackingDebuff(patternData.statusType) &&
+            !patternData.isPermanent &&
+            duration > 0)
+        {
+            targetStatusHandler.AddEnemyDebuffWithDurationStack(
+                patternData.statusType,
+                value,
+                duration
+            );
+        }
+        else
+        {
+            targetStatusHandler.AddStatusEffect(
+                patternData.statusType,
+                value,
+                duration,
+                patternData.isPermanent
+            );
+        }
 
         Debug.Log(
             $"[EnemyPatternExecutor] 상태효과 실행 : " +
@@ -278,6 +292,29 @@ public class EnemyPatternExecutor : MonoBehaviour
         );
 
         return true;
+    }
+
+    /// <summary>
+    /// 적이 플레이어에게 부여할 때 수치 대신 지속 턴을 중첩하는
+    /// 일반 지속형 디버프인지 반환합니다.
+    /// </summary>
+    private bool IsDurationStackingDebuff(
+        StatusEffectType statusEffectType)
+    {
+        switch (statusEffectType)
+        {
+            case StatusEffectType.Weaken:
+            case StatusEffectType.Vulnerable:
+            case StatusEffectType.Cripple:
+            case StatusEffectType.NoBlock:
+            case StatusEffectType.Broken:
+            case StatusEffectType.Jinx:
+            case StatusEffectType.MightReduction:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     /// <summary>

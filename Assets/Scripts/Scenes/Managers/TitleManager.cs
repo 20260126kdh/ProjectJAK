@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Video;
 
 /// <summary>
 /// 메인 타이틀 화면을 관리합니다.
@@ -12,12 +13,77 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class TitleManager : MonoBehaviour
 {
+    private const string TitleVideoResourcePath =
+        "Video/Main_Title";
+
     [Header("Scene Settings")]
 
     [Tooltip("클래스 선택 씬 이름입니다.")]
     [SerializeField]
     private string classSelectScene =
         "ClassSelectScene";
+
+    private VideoPlayer titleVideoPlayer;
+
+    private void Awake()
+    {
+        PlayTitleBackgroundVideo();
+    }
+
+    /// <summary>
+    /// 타이틀 영상을 기존 UI 뒤의 카메라 배경으로 반복 재생합니다.
+    /// 영상 오디오는 사용하지 않고 기존 타이틀 BGM을 유지합니다.
+    /// </summary>
+    private void PlayTitleBackgroundVideo()
+    {
+        VideoClip titleVideoClip =
+            Resources.Load<VideoClip>(
+                TitleVideoResourcePath
+            );
+
+        if (titleVideoClip == null)
+        {
+            Debug.LogError(
+                $"[TitleManager] 타이틀 영상을 찾지 못했습니다: " +
+                $"Resources/{TitleVideoResourcePath}"
+            );
+
+            return;
+        }
+
+        Camera titleCamera = Camera.main;
+
+        if (titleCamera == null)
+        {
+            Debug.LogError(
+                "[TitleManager] 타이틀 영상을 출력할 Main Camera가 없습니다."
+            );
+
+            return;
+        }
+
+        titleVideoPlayer =
+            GetComponent<VideoPlayer>();
+
+        if (titleVideoPlayer == null)
+        {
+            titleVideoPlayer =
+                gameObject.AddComponent<VideoPlayer>();
+        }
+
+        titleVideoPlayer.playOnAwake = false;
+        titleVideoPlayer.source = VideoSource.VideoClip;
+        titleVideoPlayer.clip = titleVideoClip;
+        titleVideoPlayer.renderMode = VideoRenderMode.CameraFarPlane;
+        titleVideoPlayer.targetCamera = titleCamera;
+        titleVideoPlayer.targetCameraAlpha = 1f;
+        titleVideoPlayer.aspectRatio = VideoAspectRatio.FitOutside;
+        titleVideoPlayer.audioOutputMode = VideoAudioOutputMode.None;
+        titleVideoPlayer.isLooping = true;
+        titleVideoPlayer.skipOnDrop = true;
+        titleVideoPlayer.waitForFirstFrame = true;
+        titleVideoPlayer.Play();
+    }
 
     /// <summary>
     /// 새 게임 버튼에서 호출합니다.
