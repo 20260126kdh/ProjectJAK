@@ -105,7 +105,15 @@ public class ClassSelectManager : MonoBehaviour
     private Coroutine openDetailCoroutine;
     private VideoPlayer classVideoPlayer;
     private RawImage classVideoImage;
-    private AspectRatioFitter classVideoAspectFitter;
+    private RectTransform classVideoRect;
+    private RawImage classVideoBackground;
+    private AspectRatioFitter classVideoBackgroundAspectFitter;
+    private Material classVideoBlurMaterial;
+    private GameObject classVideoBorder;
+    private Image[] classVideoBorderEdges;
+
+    private const float PhysiqueVideoCenterX = 0.60f;
+    private const float TechnicianVideoCenterX = 0.59f;
 
     /// <summary>
     /// 현재 선택된 클래스를 반환합니다.
@@ -154,6 +162,11 @@ public class ClassSelectManager : MonoBehaviour
         {
             classVideoPlayer.prepareCompleted -= OnClassVideoPrepared;
             classVideoPlayer.errorReceived -= OnClassVideoError;
+        }
+
+        if (classVideoBlurMaterial != null)
+        {
+            Destroy(classVideoBlurMaterial);
         }
     }
 
@@ -485,32 +498,33 @@ public class ClassSelectManager : MonoBehaviour
             return;
         }
 
-        if (characterImage.GetComponent<RectMask2D>() == null)
+        Mask videoMask = characterImage.GetComponent<Mask>();
+        if (videoMask == null)
         {
-            characterImage.gameObject.AddComponent<RectMask2D>();
+            videoMask = characterImage.gameObject.AddComponent<Mask>();
         }
+        videoMask.showMaskGraphic = true;
 
         GameObject videoObject = new GameObject(
             "ClassVideo",
             typeof(RectTransform),
             typeof(CanvasRenderer),
-            typeof(RawImage),
-            typeof(AspectRatioFitter)
+            typeof(RawImage)
         );
 
-        RectTransform videoRect = videoObject.GetComponent<RectTransform>();
-        videoRect.SetParent(characterImage.rectTransform, false);
-        videoRect.anchorMin = new Vector2(0.5f, 0.5f);
-        videoRect.anchorMax = new Vector2(0.5f, 0.5f);
-        videoRect.anchoredPosition = Vector2.zero;
-        videoRect.sizeDelta = characterImage.rectTransform.rect.size;
+        classVideoRect = videoObject.GetComponent<RectTransform>();
+        classVideoRect.SetParent(characterImage.rectTransform, false);
+        classVideoRect.anchorMin = Vector2.zero;
+        classVideoRect.anchorMax = Vector2.one;
+        classVideoRect.anchoredPosition = Vector2.zero;
+        classVideoRect.sizeDelta = Vector2.zero;
 
         classVideoImage = videoObject.GetComponent<RawImage>();
         classVideoImage.raycastTarget = false;
         classVideoImage.color = Color.white;
 
-        classVideoAspectFitter = videoObject.GetComponent<AspectRatioFitter>();
-        classVideoAspectFitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+        InitializeClassVideoBorder();
+        InitializeClassVideoBackground();
 
         classVideoPlayer = gameObject.AddComponent<VideoPlayer>();
         classVideoPlayer.playOnAwake = false;
@@ -522,6 +536,153 @@ public class ClassSelectManager : MonoBehaviour
         classVideoPlayer.waitForFirstFrame = true;
         classVideoPlayer.prepareCompleted += OnClassVideoPrepared;
         classVideoPlayer.errorReceived += OnClassVideoError;
+    }
+
+    private void InitializeClassVideoBorder()
+    {
+        RectTransform characterRect = characterImage.rectTransform;
+        classVideoBorder = new GameObject(
+            "ClassVideoBorder",
+            typeof(RectTransform)
+        );
+
+        RectTransform borderRect =
+            classVideoBorder.GetComponent<RectTransform>();
+        borderRect.SetParent(characterRect.parent, false);
+        borderRect.anchorMin = characterRect.anchorMin;
+        borderRect.anchorMax = characterRect.anchorMax;
+        borderRect.pivot = characterRect.pivot;
+        borderRect.anchoredPosition = characterRect.anchoredPosition;
+        borderRect.sizeDelta = characterRect.sizeDelta;
+        borderRect.SetSiblingIndex(characterRect.GetSiblingIndex() + 1);
+
+        classVideoBorderEdges = new[]
+        {
+            CreateVideoBorderEdge(
+                "Top",
+                borderRect,
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0f, 4f)
+            ),
+            CreateVideoBorderEdge(
+                "Bottom",
+                borderRect,
+                new Vector2(0f, 0f),
+                new Vector2(1f, 0f),
+                new Vector2(0f, 4f)
+            ),
+            CreateVideoBorderEdge(
+                "Left",
+                borderRect,
+                new Vector2(0f, 0f),
+                new Vector2(0f, 1f),
+                new Vector2(4f, 0f)
+            ),
+            CreateVideoBorderEdge(
+                "Right",
+                borderRect,
+                new Vector2(1f, 0f),
+                new Vector2(1f, 1f),
+                new Vector2(4f, 0f)
+            )
+        };
+
+        classVideoBorder.SetActive(false);
+    }
+
+    private static Image CreateVideoBorderEdge(
+        string edgeName,
+        RectTransform parent,
+        Vector2 anchorMin,
+        Vector2 anchorMax,
+        Vector2 sizeDelta)
+    {
+        GameObject edgeObject = new GameObject(
+            edgeName,
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image)
+        );
+
+        RectTransform edgeRect = edgeObject.GetComponent<RectTransform>();
+        edgeRect.SetParent(parent, false);
+        edgeRect.anchorMin = anchorMin;
+        edgeRect.anchorMax = anchorMax;
+        edgeRect.anchoredPosition = Vector2.zero;
+        edgeRect.sizeDelta = sizeDelta;
+
+        Image edgeImage = edgeObject.GetComponent<Image>();
+        edgeImage.raycastTarget = false;
+        return edgeImage;
+    }
+
+    private void InitializeClassVideoBackground()
+    {
+        if (classDetailPanel == null)
+        {
+            Debug.LogError(
+                "[ClassSelectManager] 클래스 영상 배경을 배치할 상세 패널이 없습니다."
+            );
+            return;
+        }
+
+        GameObject backgroundObject = new GameObject(
+            "ClassVideoBackground",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(RawImage),
+            typeof(AspectRatioFitter)
+        );
+
+        RectTransform backgroundRect =
+            backgroundObject.GetComponent<RectTransform>();
+        backgroundRect.SetParent(classDetailPanel.transform, false);
+        backgroundRect.anchorMin = new Vector2(0.5f, 0.5f);
+        backgroundRect.anchorMax = new Vector2(0.5f, 0.5f);
+        backgroundRect.anchoredPosition = Vector2.zero;
+        backgroundRect.sizeDelta = new Vector2(1920f, 1080f);
+        backgroundRect.SetAsFirstSibling();
+
+        classVideoBackground = backgroundObject.GetComponent<RawImage>();
+        classVideoBackground.raycastTarget = false;
+
+        classVideoBackgroundAspectFitter =
+            backgroundObject.GetComponent<AspectRatioFitter>();
+        classVideoBackgroundAspectFitter.aspectMode =
+            AspectRatioFitter.AspectMode.EnvelopeParent;
+
+        Shader blurShader = Shader.Find("UI/Class Video Blur");
+        if (blurShader != null)
+        {
+            classVideoBlurMaterial = new Material(blurShader);
+            classVideoBackground.material = classVideoBlurMaterial;
+        }
+        else
+        {
+            Debug.LogError(
+                "[ClassSelectManager] 클래스 영상 블러 Shader를 찾을 수 없습니다."
+            );
+        }
+
+        GameObject overlayObject = new GameObject(
+            "ClassVideoDarkOverlay",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image)
+        );
+
+        RectTransform overlayRect = overlayObject.GetComponent<RectTransform>();
+        overlayRect.SetParent(classDetailPanel.transform, false);
+        overlayRect.anchorMin = Vector2.zero;
+        overlayRect.anchorMax = Vector2.one;
+        overlayRect.anchoredPosition = Vector2.zero;
+        overlayRect.sizeDelta = Vector2.zero;
+        overlayRect.SetSiblingIndex(1);
+
+        Image overlayImage = overlayObject.GetComponent<Image>();
+        overlayImage.color = new Color(0f, 0f, 0f, 0.28f);
+        overlayImage.raycastTarget = false;
     }
 
     private void PlayClassVideo(PlayerClass playerClass)
@@ -542,10 +703,29 @@ public class ClassSelectManager : MonoBehaviour
             return;
         }
 
+        ApplyClassVideoBorder(playerClass);
+
         classVideoPlayer.Stop();
         classVideoImage.texture = null;
         classVideoPlayer.clip = videoClip;
         classVideoPlayer.Prepare();
+    }
+
+    private void ApplyClassVideoBorder(PlayerClass playerClass)
+    {
+        if (classVideoBorder == null || classVideoBorderEdges == null)
+        {
+            return;
+        }
+
+        Color borderColor = GetClassVideoBorderColor(playerClass);
+
+        foreach (Image borderEdge in classVideoBorderEdges)
+        {
+            borderEdge.color = borderColor;
+        }
+
+        classVideoBorder.SetActive(true);
     }
 
     private static string GetClassVideoResourcePath(PlayerClass playerClass)
@@ -566,6 +746,24 @@ public class ClassSelectManager : MonoBehaviour
         }
     }
 
+    private static Color GetClassVideoBorderColor(PlayerClass playerClass)
+    {
+        switch (playerClass)
+        {
+            case PlayerClass.Physique:
+                return new Color(0.52f, 0.90f, 0.90f, 1f);
+
+            case PlayerClass.Technician:
+                return new Color(0.95f, 0.64f, 0.82f, 1f);
+
+            case PlayerClass.Captain:
+                return new Color(0.72f, 0.90f, 0.52f, 1f);
+
+            default:
+                return Color.white;
+        }
+    }
+
     private void OnClassVideoPrepared(VideoPlayer preparedPlayer)
     {
         if (preparedPlayer.clip == null || classVideoImage == null)
@@ -575,13 +773,77 @@ public class ClassSelectManager : MonoBehaviour
 
         classVideoImage.texture = preparedPlayer.texture;
 
-        if (classVideoAspectFitter != null && preparedPlayer.clip.height > 0)
+        if (classVideoBackground != null)
         {
-            classVideoAspectFitter.aspectRatio =
+            classVideoBackground.texture = preparedPlayer.texture;
+        }
+
+        if (preparedPlayer.clip.height > 0)
+        {
+            classVideoImage.uvRect = CalculateClassVideoUvRect(
+                preparedPlayer.clip,
+                selectedClass
+            );
+        }
+
+        if (classVideoBackgroundAspectFitter != null &&
+            preparedPlayer.clip.height > 0)
+        {
+            classVideoBackgroundAspectFitter.aspectRatio =
                 (float)preparedPlayer.clip.width / preparedPlayer.clip.height;
         }
 
         preparedPlayer.Play();
+    }
+
+    private Rect CalculateClassVideoUvRect(
+        VideoClip videoClip,
+        PlayerClass playerClass)
+    {
+        if (characterImage == null || videoClip.height == 0)
+        {
+            return new Rect(0f, 0f, 1f, 1f);
+        }
+
+        Rect viewport = characterImage.rectTransform.rect;
+        if (viewport.height <= 0f)
+        {
+            return new Rect(0f, 0f, 1f, 1f);
+        }
+
+        float sourceAspect = (float)videoClip.width / videoClip.height;
+        float viewportAspect = viewport.width / viewport.height;
+
+        if (sourceAspect > viewportAspect)
+        {
+            float visibleWidth = viewportAspect / sourceAspect;
+            float centerX = GetClassVideoCenterX(playerClass);
+            float left = Mathf.Clamp(
+                centerX - visibleWidth * 0.5f,
+                0f,
+                1f - visibleWidth
+            );
+            return new Rect(left, 0f, visibleWidth, 1f);
+        }
+
+        float visibleHeight = sourceAspect / viewportAspect;
+        float bottom = (1f - visibleHeight) * 0.5f;
+        return new Rect(0f, bottom, 1f, visibleHeight);
+    }
+
+    private static float GetClassVideoCenterX(PlayerClass playerClass)
+    {
+        switch (playerClass)
+        {
+            case PlayerClass.Physique:
+                return PhysiqueVideoCenterX;
+
+            case PlayerClass.Technician:
+                return TechnicianVideoCenterX;
+
+            default:
+                return 0.5f;
+        }
     }
 
     private static void OnClassVideoError(
@@ -604,6 +866,16 @@ public class ClassSelectManager : MonoBehaviour
         if (classVideoImage != null)
         {
             classVideoImage.texture = null;
+        }
+
+        if (classVideoBackground != null)
+        {
+            classVideoBackground.texture = null;
+        }
+
+        if (classVideoBorder != null)
+        {
+            classVideoBorder.SetActive(false);
         }
     }
 
