@@ -1961,3 +1961,31 @@ Editor 전용 플레이어 사망 테스트 단축키
 - 튜토리얼 역삼각형이 적 UI 전체 영역의 상단 중앙을 따라가도록 수정했다.
 - 같은 종 몬스터가 겹쳐도 지지직거리지 않도록 렌더 순서를 분리했다.
 - 임시 Editor 자동 적용 도구를 제거해 프리팹 값이 다시 덮어써지지 않게 했다.
+# 현재 작업 - 2스테이지 일반 몬스터 Spine 적용
+
+## 현재 단계
+
+- 2스테이지 일반 몬스터 프리팹 7종에 종별 Spine Idle 연결 및 초기 배치
+- F8로 2스테이지 첫 일반 전투에 진입하는 Editor 전용 테스트 단축키 추가
+- 기존 루트 SpriteRenderer의 높이와 바닥 위치를 기준으로 비율 왜곡 없이 배치
+- 누적 확대 문제를 제거하고 종별 고정 Scale, 바닥 위치와 EnemyUIRoot 위치로 2차 보정
+- 2스테이지 Play 화면 기준으로 모든 몬스터 접지점을 약 10~15px 위로 맞추고 화면 밖 UI를 종별 머리 위 위치로 하향 보정
+- Turtle 1·2와 Drowned 1·2만 몸과 UI를 함께 아래로 내려 앞쪽 나무 바닥에 접지
+- OldMermaid, JellyfishMermaid와 Drowned 1·2의 UI만 머리 위로 추가 이동
+- Drowned 1·2 UI를 머리 위 간격에 맞게 소폭 하향 미세 조정
+
+## 완료 상태
+
+- 2스테이지 일반 몬스터 Spine 적용 및 Play Mode 시각 확인 완료
+- 몬스터별 크기, floor 접지점, UI 위치와 1·2번 렌더 순서 저장 완료
+- 임시 `EnemySpinePrefabSetup` Editor 도구 제거 완료
+- F8 2스테이지 테스트 단축키 유지
+- 다음 단계에서 Unity Play 화면을 기준으로 몬스터별 크기, floor 위치와 UI 위치를 개별 보정
+
+## 수정 대상
+
+- `Assets/Prefabs/Enemy/NormalBattle/2Stage`
+- `Assets/Scripts/Scenes/BattleShortcutController.cs`
+- `Assets/Editor/EnemySpinePrefabSetup.cs` (적용 완료 후 제거할 임시 도구)
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`

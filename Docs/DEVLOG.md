@@ -837,3 +837,17 @@
 - 튜토리얼 대상 역삼각형이 적 UI의 실제 활성 Graphic Bounds 상단 중앙을 따라가도록 변경했다.
 - 사용자 Unity Play Mode 확인으로 몬스터 표시, UI 위치와 튜토리얼 화살표 동작을 검증했다.
 - 최종 프리팹 저장 후 임시 `EnemySpinePrefabSetup` Editor 도구를 제거했다.
+# 2026-08-19 2스테이지 일반 몬스터 Spine 초기 연결
+
+- 관련 경로: `Assets/Prefabs/Enemy/NormalBattle/2Stage`
+- Drowned 2개, JellyfishMermaid, OldMermaid, ShortFinnedSandfish, Turtle 2개 프리팹에 종별 Spine Idle을 연결하는 임시 Editor 도구를 추가했다.
+- 기존 루트 SpriteRenderer의 실제 높이와 하단을 기준으로 Spine 비율과 초기 위치를 계산하며 UI, 콜라이더와 전투 컴포넌트는 유지한다.
+- Unity Refresh 후 7개 프리팹 적용 결과와 Play Mode 시각 검증이 필요하다.
+- Editor Play Mode에서 F8을 누르면 진행도를 2스테이지 첫 일반 전투로 설정하고 기존 다음 전투 준비 흐름으로 즉시 전환하도록 테스트 단축키를 추가했다.
+- 첫 Play 화면에서 모든 2스테이지 Spine이 지나치게 작고 UI가 분리된 것을 확인해 종별 크기를 4~5.5배 확대하고, 바닥 접지와 UI 상단 간격을 실제 Spine Bounds 기준으로 다시 계산하도록 보정했다.
+- Bounds 기반 확대값이 누적되어 몬스터와 UI가 화면을 벗어난 문제를 확인하고, 반복 실행해도 변하지 않는 종별 고정 Transform 값으로 교체했다.
+- 2스테이지 floor의 실제 Play 화면을 기준으로 몬스터 접지점을 위로 통일하고 화면 위로 잘린 EnemyUIRoot를 종별 머리 높이에 맞게 낮췄다.
+- Play 화면에서 뒤쪽 난간 선에 떠 있던 Turtle과 Drowned만 몸과 UI를 함께 아래로 내려 앞쪽 나무 floor에 맞췄다.
+- OldMermaid, JellyfishMermaid와 Drowned의 UI가 머리와 겹치는 화면을 기준으로 해당 종의 EnemyUIRoot만 추가로 위로 이동했다.
+- Drowned UI가 머리에서 조금 멀어진 최종 화면을 기준으로 EnemyUIRoot만 소폭 아래로 미세 조정했다.
+- 사용자 Play Mode 확인 후 2스테이지 몬스터 7종의 크기, floor 접지점과 UI 위치를 확정하고 임시 Editor 적용 도구를 제거했다.
