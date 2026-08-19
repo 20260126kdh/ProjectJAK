@@ -851,3 +851,16 @@
 - OldMermaid, JellyfishMermaid와 Drowned의 UI가 머리와 겹치는 화면을 기준으로 해당 종의 EnemyUIRoot만 추가로 위로 이동했다.
 - Drowned UI가 머리에서 조금 멀어진 최종 화면을 기준으로 EnemyUIRoot만 소폭 아래로 미세 조정했다.
 - 사용자 Play Mode 확인 후 2스테이지 몬스터 7종의 크기, floor 접지점과 UI 위치를 확정하고 임시 Editor 적용 도구를 제거했다.
+- F8 테스트 키를 고정 2스테이지 이동에서 현재 기준 다음 스테이지 첫 일반 전투 이동으로 변경하고, 마지막 스테이지에서는 이동을 차단했다.
+# 2026-08-19 3스테이지 일반 몬스터 Spine 초기 연결
+
+- 관련 경로: `Assets/Prefabs/Enemy/NormalBattle/3Stage`
+- Edward, SeaBeast, Shipcollector, Templeguardian, Undeadcommander 프리팹에 각각의 Spine Idle을 연결하는 임시 Editor 도구를 추가했다.
+- 기존 루트 SpriteRenderer의 하단과 높이를 기준으로 Spine 비율을 유지한 초기 크기와 위치를 계산하며 UI, 콜라이더와 전투 컴포넌트는 유지한다.
+- Unity Refresh 후 5개 프리팹 적용 결과와 F8 3스테이지 Play Mode 시각 검증이 필요하다.
+- 사용자 Play 화면에서 크기와 위치가 정상임을 확인하고, 몬스터 본체는 유지한 채 5종 EnemyUIRoot만 실제 Spine 상단 Bounds 위로 재배치했다.
+- Spine 상단 Bounds가 5종 모두 같은 잘못된 UI 높이를 만든 문제를 확인해 종별 고정 UI 위치로 교체하고, Undeadcommander만 접지점을 유지하며 약 35% 확대했다.
+- Shipcollector UI가 머리에서 여전히 크게 떨어진 Play 화면을 기준으로 해당 EnemyUIRoot만 추가로 낮췄다.
+- 사용자 제공 이미지 순서에 따라 Shipcollector UI는 오른쪽, Templeguardian과 Edward UI는 아래, SeaBeast UI는 왼쪽 아래로 미세 조정하고 Undeadcommander는 유지했다.
+- 후속 Play 화면을 기준으로 Shipcollector UI는 왼쪽으로 재조정하고, Templeguardian과 Edward는 추가 하향, SeaBeast는 실제 머리 위치까지 크게 왼쪽 아래로 이동했다.
+- 사용자 Play Mode 확인 후 3스테이지 일반 몬스터 5종의 크기, floor 접지점과 UI 위치를 확정하고 임시 Editor 적용 도구를 제거했다.

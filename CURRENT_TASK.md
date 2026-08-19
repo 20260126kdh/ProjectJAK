@@ -139,6 +139,10 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 구현 및 이미지 연결 완료 / Unity Play Mode 확인 필요
 
 ## 수정 대상
+
+- 최종 이미지 순서에 따라 Shipcollector는 오른쪽, Templeguardian·Edward는 아래, SeaBeast는 왼쪽 아래로 UI 미세 조정
+- Undeadcommander UI 위치는 유지
+- 추가 화면 기준 Shipcollector는 왼쪽, Templeguardian·Edward는 아래, SeaBeast는 머리 쪽으로 크게 왼쪽 아래 조정
 - `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
 - `Assets/Art/UI/Death`
 - `Assets/Prefabs/Player/Captain.prefab`
@@ -146,6 +150,13 @@ Assets/Scripts 폴더 구조 정리 1단계 — Managers 역할별 분류
 - `Assets/Prefabs/Player/Technician.prefab`
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
+
+## 완료 상태
+
+- 3스테이지 일반 몬스터 Spine 적용 및 Play Mode 시각 확인 완료
+- 몬스터별 크기, floor 접지점과 EnemyUIRoot 위치 저장 완료
+- Undeadcommander 확대 및 접지 보정 완료
+- 임시 `EnemySpinePrefabSetup` Editor 도구 제거 완료
 
 ## 완료 조건
 
@@ -1980,6 +1991,11 @@ Editor 전용 플레이어 사망 테스트 단축키
 - 몬스터별 크기, floor 접지점, UI 위치와 1·2번 렌더 순서 저장 완료
 - 임시 `EnemySpinePrefabSetup` Editor 도구 제거 완료
 - F8 2스테이지 테스트 단축키 유지
+
+## 후속 수정
+
+- F8을 고정 2스테이지 이동에서 현재 기준 다음 스테이지 첫 일반 전투 이동으로 변경
+- 마지막 스테이지에서는 진행 상태를 변경하지 않고 경고만 출력
 - 다음 단계에서 Unity Play 화면을 기준으로 몬스터별 크기, floor 위치와 UI 위치를 개별 보정
 
 ## 수정 대상
@@ -1987,5 +2003,23 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `Assets/Prefabs/Enemy/NormalBattle/2Stage`
 - `Assets/Scripts/Scenes/BattleShortcutController.cs`
 - `Assets/Editor/EnemySpinePrefabSetup.cs` (적용 완료 후 제거할 임시 도구)
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+# 현재 작업 - 3스테이지 일반 몬스터 Spine 적용
+
+## 현재 단계
+
+- Edward, SeaBeast, Shipcollector, Templeguardian, Undeadcommander 프리팹에 종별 Spine Idle 연결
+- 기존 본체 SpriteRenderer 높이의 약 4배로 초기 크기를 설정하고 기존 하단 위치에 접지
+- F8로 3스테이지 진입 후 크기, floor 위치와 UI 위치 시각 보정 필요
+- Play 화면에서 크기와 floor 위치는 확정하고, Spine 상단 Bounds를 기준으로 5종 EnemyUIRoot만 머리 위로 재배치
+- 자동 Bounds UI 배치를 제거하고 몬스터별 고정 UI 위치로 재보정
+- Undeadcommander는 바닥 접지점을 유지하며 약 35% 확대
+- Shipcollector UI를 보물상자 머리 바로 위에 오도록 추가 하향 조정
+
+## 수정 대상
+
+- `Assets/Prefabs/Enemy/NormalBattle/3Stage`
+- `Assets/Editor/EnemySpinePrefabSetup.cs` (최종 적용 후 제거)
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`

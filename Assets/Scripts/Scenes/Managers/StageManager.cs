@@ -102,6 +102,11 @@ public class StageManager : MonoBehaviour
 
     public int CurrentStage => currentStage;
 
+    /// <summary>
+    /// 현재 게임에서 진행할 수 있는 최대 스테이지입니다.
+    /// </summary>
+    public int MaxStage => maxStage;
+
     public int CurrentBattleCount =>
         currentBattleCount;
 

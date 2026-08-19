@@ -9,7 +9,7 @@ using UnityEngine;
 /// - D: 전체 덱 보기
 /// - A: 뽑을 패 더미 보기
 /// - S: 버림 패 더미 보기
-/// - F8: 2스테이지 첫 일반 전투로 즉시 이동(Editor 전용)
+/// - F8: 다음 스테이지 첫 일반 전투로 즉시 이동(Editor 전용)
 /// - F9: 플레이어 사망 연출 즉시 실행(Editor 전용)
 /// - F10: 현재 일반 전투 즉시 승리 처리(Editor 전용)
 ///
@@ -137,7 +137,7 @@ public class BattleShortcutController : MonoBehaviour
 
 #if UNITY_EDITOR
 
-        if (HandleStage2TestInput())
+        if (HandleNextStageTestInput())
         {
             return;
         }
@@ -297,11 +297,11 @@ public class BattleShortcutController : MonoBehaviour
 #if UNITY_EDITOR
 
     /// <summary>
-    /// F8 입력으로 진행도를 2스테이지 첫 일반 전투로 변경하고
+    /// F8 입력으로 진행도를 다음 스테이지 첫 일반 전투로 변경하고
     /// 기존 다음 전투 준비 흐름을 실행합니다.
     /// </summary>
     /// <returns>F8 입력을 감지했다면 true를 반환합니다.</returns>
-    private bool HandleStage2TestInput()
+    private bool HandleNextStageTestInput()
     {
         if (!Input.GetKeyDown(KeyCode.F8))
         {
@@ -313,7 +313,7 @@ public class BattleShortcutController : MonoBehaviour
         {
             Debug.LogError(
                 "[BattleShortcutController] StageManager를 찾지 못해 " +
-                "2스테이지 테스트를 실행할 수 없습니다."
+                "다음 스테이지 테스트를 실행할 수 없습니다."
             );
             return true;
         }
@@ -322,13 +322,23 @@ public class BattleShortcutController : MonoBehaviour
         {
             Debug.LogError(
                 "[BattleShortcutController] BattleManager가 연결되지 않아 " +
-                "2스테이지 테스트를 실행할 수 없습니다."
+                "다음 스테이지 테스트를 실행할 수 없습니다."
             );
             return true;
         }
 
+        if (stageManager.CurrentStage >= stageManager.MaxStage)
+        {
+            Debug.LogWarning(
+                "[BattleShortcutController] 현재 마지막 스테이지이므로 " +
+                "F8 다음 스테이지 테스트를 실행하지 않습니다."
+            );
+            return true;
+        }
+
+        int nextStage = stageManager.CurrentStage + 1;
         bool restored = stageManager.RestoreProgress(
-            2,
+            nextStage,
             0,
             StagePhase.NormalBattle,
             0,
@@ -339,15 +349,15 @@ public class BattleShortcutController : MonoBehaviour
         if (!restored)
         {
             Debug.LogError(
-                "[BattleShortcutController] 2스테이지 테스트 진행도 설정에 " +
+                "[BattleShortcutController] 다음 스테이지 테스트 진행도 설정에 " +
                 "실패했습니다."
             );
             return true;
         }
 
         Debug.Log(
-            "[BattleShortcutController] F8 - " +
-            "2스테이지 첫 일반 전투로 이동"
+            $"[BattleShortcutController] F8 - " +
+            $"{nextStage}스테이지 첫 일반 전투로 이동"
         );
         battleManager.StartNextBattle();
         return true;
