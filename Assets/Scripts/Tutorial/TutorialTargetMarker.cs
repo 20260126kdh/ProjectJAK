@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 튜토리얼에서 카드 적용 대상의 머리 위를 따라가는 빨간 역삼각형입니다.
@@ -6,8 +7,11 @@ using UnityEngine;
 public sealed class TutorialTargetMarker : MonoBehaviour
 {
     private const float MarkerHeightOffset = 0.25f;
+    private const string EnemySpineVisualName = "SpineVisual";
 
     private Transform target;
+    private Renderer targetSpineRenderer;
+    private Graphic[] targetUiGraphics;
     private Renderer[] targetRenderers;
     private SpriteRenderer targetSpriteRenderer;
     private Vector2 positionOffset;
@@ -21,6 +25,18 @@ public sealed class TutorialTargetMarker : MonoBehaviour
         Vector2 markerOffset = default)
     {
         target = targetTransform;
+        Transform spineVisual = target != null
+            ? target.Find(EnemySpineVisualName)
+            : null;
+        targetSpineRenderer = spineVisual != null
+            ? spineVisual.GetComponent<Renderer>()
+            : null;
+        Transform enemyUiRoot = target != null
+            ? target.Find("EnemyUIRoot")
+            : null;
+        targetUiGraphics = enemyUiRoot != null
+            ? enemyUiRoot.GetComponentsInChildren<Graphic>(true)
+            : null;
         targetSpriteRenderer = spriteRenderer;
         positionOffset = markerOffset;
         targetRenderers = target != null
@@ -66,7 +82,20 @@ public sealed class TutorialTargetMarker : MonoBehaviour
     {
         Vector3 position = target.position;
 
-        if (targetSpriteRenderer != null &&
+        if (TryGetUiBounds(out Bounds uiBounds))
+        {
+            position.x = uiBounds.center.x;
+            position.y = uiBounds.max.y + MarkerHeightOffset;
+        }
+        else if (targetSpineRenderer != null &&
+            targetSpineRenderer.enabled &&
+            targetSpineRenderer.gameObject.activeInHierarchy)
+        {
+            Bounds spineBounds = targetSpineRenderer.bounds;
+            position.x = spineBounds.center.x;
+            position.y = spineBounds.max.y + MarkerHeightOffset;
+        }
+        else if (targetSpriteRenderer != null &&
             targetSpriteRenderer.enabled &&
             targetSpriteRenderer.gameObject.activeInHierarchy)
         {
@@ -87,6 +116,51 @@ public sealed class TutorialTargetMarker : MonoBehaviour
         position.y += positionOffset.y;
         position.z = -1f;
         transform.position = position;
+    }
+
+    /// <summary>
+    /// 적 UI에 실제로 표시 중인 Graphic만 합쳐 화살표 기준 영역을 구합니다.
+    /// Canvas 전체 크기나 비활성 상태 아이콘은 포함하지 않습니다.
+    /// </summary>
+    private bool TryGetUiBounds(out Bounds uiBounds)
+    {
+        uiBounds = default;
+        bool hasBounds = false;
+
+        if (targetUiGraphics == null)
+        {
+            return false;
+        }
+
+        Vector3[] corners = new Vector3[4];
+
+        foreach (Graphic graphic in targetUiGraphics)
+        {
+            if (graphic == null ||
+                !graphic.enabled ||
+                !graphic.gameObject.activeInHierarchy ||
+                graphic.rectTransform == null)
+            {
+                continue;
+            }
+
+            graphic.rectTransform.GetWorldCorners(corners);
+
+            foreach (Vector3 corner in corners)
+            {
+                if (!hasBounds)
+                {
+                    uiBounds = new Bounds(corner, Vector3.zero);
+                    hasBounds = true;
+                }
+                else
+                {
+                    uiBounds.Encapsulate(corner);
+                }
+            }
+        }
+
+        return hasBounds;
     }
 
     private bool TryGetCombinedRendererBounds(out Bounds combinedBounds)

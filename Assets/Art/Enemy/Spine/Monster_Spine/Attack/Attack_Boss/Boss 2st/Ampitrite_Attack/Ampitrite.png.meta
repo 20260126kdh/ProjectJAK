@@ -1,0 +1,180 @@
+fileFormatVersion: 2
+guid: 80ba0185a76b2ae4199b774f3b7e76bd
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -305754370052967233
+    second: Ampitrite_0
+  - first:
+      213: 7720432557343911915
+    second: Ampitrite_1
+  - first:
+      213: 5176944774987689407
+    second: Ampitrite_2
+  - first:
+      213: 7719606224691921361
+    second: Ampitrite_3
+  - first:
+      213: 7418574190377894103
+    second: Ampitrite_4
+  - first:
+      213: -6033683634783356826
+    second: Ampitrite_5
+  - first:
+      213: -849773742094349479
+    second: Ampitrite_6
+  - first:
+      213: 5561857678984754399
+    second: Ampitrite_7
+  - first:
+      213: 8434757088024613889
+    second: Ampitrite_8
+  - first:
+      213: -5915278342730586918
+    second: Ampitrite_9
+  - first:
+      213: -8715502316203421504
+    second: Ampitrite_10
+  - first:
+      213: 8601018060941641773
+    second: Ampitrite_11
+  - first:
+      213: 8031236169848221708
+    second: Ampitrite_12
+  - first:
+      213: -4137410220513572135
+    second: Ampitrite_13
+  - first:
+      213: -7216593622335125657
+    second: Ampitrite_14
+  - first:
+      213: -2468255119459844999
+    second: Ampitrite_15
+  - first:
+      213: -8421958386878971499
+    second: Ampitrite_16
+  - first:
+      213: -232074008067898686
+    second: Ampitrite_17
+  - first:
+      213: -1933035049597330134
+    second: Ampitrite_18
+  - first:
+      213: 2809493689353899927
+    second: Ampitrite_19
+  - first:
+      213: 7774305277687099632
+    second: Ampitrite_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
+  nPOTScale: 1
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 0
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  spriteSheet:
+    serializedVersion: 2
+    sprites: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

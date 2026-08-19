@@ -1,0 +1,17 @@
+undead_mermaid.png
+size:1696,839
+filter:Linear,Linear
+pma:true
+armL
+bounds:1217,32,447,303
+armR
+bounds:1217,337,477,500
+body
+bounds:693,294,522,543
+offsets:161,0,683,543
+hair
+bounds:693,2,290,419
+rotate:90
+tail
+bounds:2,15,822,689
+rotate:90

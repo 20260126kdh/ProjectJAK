@@ -1,0 +1,17 @@
+marmaidR.png
+size:1884,656
+filter:Linear,Linear
+pma:true
+armL
+bounds:1330,326,328,552
+offsets:335,551,1026,1538
+rotate:90
+armR
+bounds:1330,2,321,322
+offsets:7,637,1026,1538
+body
+bounds:874,15,454,639
+offsets:137,707,1026,1538
+tail
+bounds:2,14,870,640
+offsets:156,234,1026,1538

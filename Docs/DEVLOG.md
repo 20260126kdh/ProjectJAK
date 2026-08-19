@@ -800,9 +800,40 @@
 - 전체 화면 선택 방식에서 사용하지 않는 측면 카드 크기·간격 필드를 제거해 CS0414 경고를 정리했다.
 - 기존 상세 정보 UI와 Back, Confirm, ESC, Enter 입력 흐름은 유지했다.
 
+# 2026-08-19 몬스터 Spine 원본 Import
+
+- 관련 경로: `Assets/Art/Enemy/Spine`
+- `Monster_Spine.zip`의 PNG, SKEL, ATLAS 17세트를 프로젝트에 배치했다.
+- Atlas 파일은 Unity Spine Importer용 `.atlas.txt` 확장자로 정리했다.
+- Skeleton 파일은 Unity Spine Importer용 `.skel.bytes` 확장자로 정리했다.
+- SKEL 17개가 모두 Spine 4.3.23 데이터이며 프로젝트 Runtime 4.3 지원 범위에 포함되는 것을 확인했다.
+- PMA Atlas에 맞게 Spine Auto-Import Preset을 전환했다.
+- Atlas Asset, Material, SkeletonData Asset이 각각 17개 생성됐고 누락된 Meta와 고아 Meta가 없음을 확인했다.
+- 기존 몬스터 프리팹 연결은 변경하지 않았다.
+
+# 2026-08-19 1스테이지 일반 몬스터 Spine 적용
+
+- 관련 경로: `Assets/Prefabs/Enemy/NormalBattle/1Stage`
+- Goby 2개, Mermaid 1개, Mimic 2개, SeaCrab 2개, Thief 2개 프리팹에 종별 Spine Idle을 연결했다.
+- 기존 SpriteRenderer의 표시 Bounds와 Sorting Order를 기준으로 Spine 렌더러의 크기, 중심과 정렬 순서를 설정했다.
+- 기존 SpriteRenderer는 비활성화하고 Enemy 컴포넌트, 콜라이더와 UI 자식 참조는 유지했다.
+- 프리팹 9개 모두 SpineVisual, SkeletonData, SkeletonAnimation 1개와 비활성 SpriteRenderer 1개를 정적으로 확인했다.
+- 임시 Editor 적용 도구는 프리팹 저장 완료 후 제거했다.
+- Unity Play Mode에서 몬스터별 크기, 위치와 Idle 반복을 시각적으로 확인해야 한다.
+
 # 2026-08-19 모르바엘 전투 종료 순서 버그 수정
 
 - 관련 경로: `Assets/Scripts/Enemy/Enemy.cs`
 - 모르바엘이 먼저 사망해 전투 종료가 보류된 뒤 마지막 장송의 원혼이 사망하면 전투 종료 조건을 다시 검사하도록 수정했다.
 - 장송의 원혼을 비활성화한 다음 검사하여 사망한 원혼이 생존 적으로 계산되지 않도록 했다.
 - Unity 컴파일 및 Play Mode 재현 테스트가 필요하다.
+
+# 2026-08-19 1스테이지 일반 몬스터 Spine 시각 보정 완료
+
+- 1스테이지 Goby, Mermaid, Mimic, SeaCrab, Thief 프리팹 9개의 Spine 비율과 크기를 보정했다.
+- 종별 발, 꼬리와 상자 하단을 BattleScene 나무 floor에 맞추도록 개별 위치를 저장했다.
+- `EnemyUIRoot` 위치를 프리팹별로 조정해 몬스터 머리 위에 일정한 간격으로 표시했다.
+- 두 몬스터가 겹칠 때 Spine 메시 정렬이 흔들리지 않도록 1·2번 프리팹의 Sorting Order를 분리했다.
+- 튜토리얼 대상 역삼각형이 적 UI의 실제 활성 Graphic Bounds 상단 중앙을 따라가도록 변경했다.
+- 사용자 Unity Play Mode 확인으로 몬스터 표시, UI 위치와 튜토리얼 화살표 동작을 검증했다.
+- 최종 프리팹 저장 후 임시 `EnemySpinePrefabSetup` Editor 도구를 제거했다.

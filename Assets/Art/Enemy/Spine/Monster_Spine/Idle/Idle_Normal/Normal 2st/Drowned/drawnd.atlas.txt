@@ -1,0 +1,17 @@
+drawnd.png
+size:939,1155
+filter:Linear,Linear
+pma:true
+armL
+bounds:2,12,284,507
+rotate:90
+armR
+bounds:585,2,336,557
+body
+bounds:2,661,492,619
+rotate:90
+legL
+bounds:2,298,361,581
+rotate:90
+lsgR
+bounds:623,561,314,592

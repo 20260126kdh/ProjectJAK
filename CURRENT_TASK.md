@@ -1858,6 +1858,58 @@ Editor 전용 플레이어 사망 테스트 단축키
 
 # 현재 작업 변경
 ## 작업명
+몬스터 Spine 소스 적용 1단계 - 원본 Import
+
+## 현재 상태
+
+원본 Import 및 자동 생성 에셋 확인 완료 / 몬스터 프리팹 연결 전
+
+## 수정 범위
+
+- `Assets/Art/Enemy/Spine`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- ZIP의 PNG, SKEL, ATLAS 파일 17세트를 적 전용 Spine 폴더에 배치한다.
+- Atlas 확장자를 Unity Spine Importer가 인식하는 `.atlas.txt`로 사용한다.
+- Skeleton 확장자를 Unity Spine Importer가 인식하는 `.skel.bytes`로 사용한다.
+- 모든 SKEL 데이터가 프로젝트 Spine Runtime 4.3과 호환되는지 확인한다.
+- Atlas Asset, Material, SkeletonData Asset이 각각 17개 생성됐는지 확인한다.
+- 이 단계에서는 기존 몬스터 프리팹을 변경하지 않는다.
+
+# 현재 작업 변경
+## 작업명
+몬스터 Spine 소스 적용 2단계 - 1스테이지 일반 몬스터
+
+## 현재 상태
+
+프리팹 9개 Spine 연결 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 범위
+
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Goby1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Goby2.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Mermaid.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Mimic1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Mimic2.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/SeaCrab1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/SeaCrab2.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Thief1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Thief2.prefab`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 1스테이지 일반 몬스터 9개가 각 종에 맞는 Spine Idle을 반복 재생한다.
+- 기존 SpriteRenderer의 표시 범위를 기준으로 Spine 크기와 중심을 맞춘다.
+- 기존 SpriteRenderer만 비활성화하고 전투 로직, 콜라이더와 UI 참조는 유지한다.
+- 같은 종의 1·2 변형 프리팹은 동일한 SkeletonData를 사용한다.
+
+# 현재 작업 변경
+## 작업명
 모르바엘보다 장송의 원혼을 나중에 처치할 때 전투가 종료되지 않는 문제 수정
 
 ## 현재 상태
@@ -1875,3 +1927,37 @@ Editor 전용 플레이어 사망 테스트 단축키
 - 모르바엘을 먼저 처치한 뒤 남은 장송의 원혼을 모두 처치하면 전투가 정상 종료된다.
 - 장송의 원혼을 먼저 처치하고 모르바엘을 나중에 처치하는 기존 진행은 유지된다.
 - 살아 있는 다른 적이 있으면 장송의 원혼 사망만으로 전투가 종료되지 않는다.
+
+# 현재 작업 변경
+## 작업명
+1스테이지 일반 몬스터 Spine 시각 보정 마무리
+
+## 현재 상태
+
+구현 완료 / 사용자 Unity Play Mode 확인 완료
+
+## 최종 수정 범위
+
+- `Assets/Art/Enemy/Spine`
+- `Assets/Editor/SpineSettings.asset`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Goby1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Goby2.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Mermaid.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Mimic1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Mimic2.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/SeaCrab1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/SeaCrab2.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Thief1.prefab`
+- `Assets/Prefabs/Enemy/NormalBattle/1Stage/Thief2.prefab`
+- `Assets/Scripts/Tutorial/TutorialTargetMarker.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 결과
+
+- 1스테이지 일반 몬스터 9개에 종별 Spine Idle을 적용했다.
+- 몬스터별 크기와 바닥 위치를 BattleScene의 나무 floor에 맞췄다.
+- 몬스터별 UI 위치를 개별 보정하고 머리 위에 간격을 두어 배치했다.
+- 튜토리얼 역삼각형이 적 UI 전체 영역의 상단 중앙을 따라가도록 수정했다.
+- 같은 종 몬스터가 겹쳐도 지지직거리지 않도록 렌더 순서를 분리했다.
+- 임시 Editor 자동 적용 도구를 제거해 프리팹 값이 다시 덮어써지지 않게 했다.

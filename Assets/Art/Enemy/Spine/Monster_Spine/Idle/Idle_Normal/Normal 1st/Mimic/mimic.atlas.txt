@@ -1,0 +1,15 @@
+mimic.png
+size:871,1106
+filter:Linear,Linear
+pma:true
+armL
+bounds:2,26,303,192
+armR
+bounds:459,2,342,217
+body
+bounds:2,220,884,455
+offsets:1,1,886,457
+rotate:90
+head
+bounds:459,221,883,410
+rotate:90
