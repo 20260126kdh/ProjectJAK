@@ -779,8 +779,6 @@ public class DeckManager : MonoBehaviour
         drawPile.Clear();
         discardPile.Clear();
 
-        SortCurrentDeckByCardName();
-
         Debug.Log(
             $"[DeckManager] 저장 덱 복원 완료: " +
             $"{currentDeck.Count}장 / " +

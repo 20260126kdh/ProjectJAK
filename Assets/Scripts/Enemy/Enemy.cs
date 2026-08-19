@@ -1140,6 +1140,30 @@ public class Enemy : MonoBehaviour
 
             gameObject.SetActive(false);
 
+            /*
+             * 모르바엘이 먼저 사망한 경우에는 당시 살아 있던 원혼 때문에
+             * 전투 종료가 보류됩니다. 원혼은 메인 EnemySpawner 목록에 없으므로
+             * 마지막 원혼 사망 시 여기서 종료 조건을 다시 확인해야 합니다.
+             */
+            if (battleManager == null)
+            {
+                battleManager =
+                    FindFirstObjectByType<BattleManager>();
+            }
+
+            if (battleManager != null)
+            {
+                battleManager.CheckBattleEnd();
+            }
+            else
+            {
+                Debug.LogError(
+                    "[Enemy] 장송의 원혼 사망 후 전투 종료를 검사할 " +
+                    "BattleManager를 찾지 못했습니다.",
+                    this
+                );
+            }
+
             Debug.Log(
                 $"[Enemy] 장송의 원혼 사망 처리 완료 : {name}",
                 this
