@@ -2205,3 +2205,38 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `Assets/Tests/Editor/Polish/PolishSingleBattleControllerTests.cs`
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 7단계
+
+## 목표
+
+- 단일 전투의 플레이어 턴마다 공개 정보와 AutoPlayer 행동을 JSON 기록 구조에 연결한다.
+- 같은 턴의 여러 카드 행동은 하나의 턴 기록에 순서대로 누적한다.
+- 판단 이유, 위험도, 예상 피해와 실제 행동 전달 결과를 함께 기록한다.
+- Run 시작과 다음 전투 연결은 후속 단계로 분리한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishTestLogger.cs`
+- `Assets/Scripts/Testing/Polish/PolishTurnRecordBuilder.cs`
+- `Assets/Scripts/Testing/Polish/PolishSingleBattleController.cs`
+- `Assets/Tests/Editor/Polish/PolishTurnRecordBuilderTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 8단계
+
+## 목표
+
+- Editor Play Mode의 현재 전투에서 F7로 인간형 자동 테스트를 시작한다.
+- 현재 클래스, 스테이지, 전투와 Seed를 포함한 수동 Run 기록을 생성한다.
+- 전투 종료 시 JSON과 요약 CSV를 PolishTestResults 폴더에 저장한다.
+- 보상 선택과 다음 전투 이동은 후속 단계로 분리한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Scenes/BattleShortcutController.cs`
+- `Assets/Scripts/Testing/Polish/PolishManualBattleTestRunner.cs`
+- `Assets/Tests/Editor/Polish/PolishManualBattleTestRunnerTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`

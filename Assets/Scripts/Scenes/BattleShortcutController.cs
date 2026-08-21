@@ -9,6 +9,7 @@ using UnityEngine;
 /// - D: 전체 덱 보기
 /// - A: 뽑을 패 더미 보기
 /// - S: 버림 패 더미 보기
+/// - F7: 현재 전투 인간형 자동 테스트 시작(Editor 전용)
 /// - F8: 다음 스테이지 첫 일반 전투로 즉시 이동(Editor 전용)
 /// - F9: 플레이어 사망 연출 즉시 실행(Editor 전용)
 /// - F10: 현재 일반 전투 즉시 승리 처리(Editor 전용)
@@ -136,6 +137,11 @@ public class BattleShortcutController : MonoBehaviour
         }
 
 #if UNITY_EDITOR
+
+        if (HandlePolishBattleTestInput())
+        {
+            return;
+        }
 
         if (HandleNextStageTestInput())
         {
@@ -295,6 +301,21 @@ public class BattleShortcutController : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+
+    /// <summary>
+    /// F7 입력으로 현재 전투의 인간형 자동 테스트와 결과 기록을 시작합니다.
+    /// </summary>
+    /// <returns>F7 입력을 감지했다면 true를 반환합니다.</returns>
+    private bool HandlePolishBattleTestInput()
+    {
+        if (!Input.GetKeyDown(KeyCode.F7))
+        {
+            return false;
+        }
+
+        PolishManualBattleTestRunner.TryStartCurrentBattle();
+        return true;
+    }
 
     /// <summary>
     /// F8 입력으로 진행도를 다음 스테이지 첫 일반 전투로 변경하고

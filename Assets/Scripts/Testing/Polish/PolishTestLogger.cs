@@ -263,11 +263,16 @@ public class PolishTurnRecord
     public int block;
     public int harpoonStack;
     public int crewCount;
+    public string dangerLevel;
+    public int expectedIncomingDamage;
     public List<string> hand = new List<string>();
     public List<string> enemyIntents = new List<string>();
+    public List<string> enemyStates = new List<string>();
     public List<string> buffs = new List<string>();
     public List<string> debuffs = new List<string>();
     public List<string> actions = new List<string>();
+    public List<string> executionResults = new List<string>();
+    public List<string> decisionReasons = new List<string>();
     public string observation;
 }
 

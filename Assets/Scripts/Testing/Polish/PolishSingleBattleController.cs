@@ -22,6 +22,7 @@ public class PolishSingleBattleController : MonoBehaviour
 {
     [SerializeField] private PolishBattleObserver observer;
     [SerializeField] private PolishHumanActionExecutor actionExecutor;
+    [SerializeField] private PolishTestLogger testLogger;
     [SerializeField] private float actionInterval = 0.35f;
     [SerializeField] private float battleTimeout = 180f;
     [SerializeField] private int maxActionCount = 300;
@@ -32,6 +33,9 @@ public class PolishSingleBattleController : MonoBehaviour
     private int actionCount;
     private float startedAt;
     private bool isRunning;
+    private bool wasPlayerTurn;
+    private int playerTurnNumber;
+    private PolishTurnRecord currentTurnRecord;
     private PolishSingleBattleOutcome outcome;
 
     /// <summary>
@@ -70,6 +74,9 @@ public class PolishSingleBattleController : MonoBehaviour
 
         decisionEngine = new PolishHumanDecisionEngine(decisionSeed);
         actionCount = 0;
+        playerTurnNumber = 0;
+        wasPlayerTurn = false;
+        currentTurnRecord = null;
         startedAt = Time.unscaledTime;
         outcome = PolishSingleBattleOutcome.InProgress;
         isRunning = true;
@@ -90,6 +97,7 @@ public class PolishSingleBattleController : MonoBehaviour
         }
 
         isRunning = false;
+        FlushTurnRecord();
 
         if (outcome == PolishSingleBattleOutcome.InProgress)
         {
@@ -151,20 +159,42 @@ public class PolishSingleBattleController : MonoBehaviour
 
             if (outcome != PolishSingleBattleOutcome.InProgress)
             {
+                FlushTurnRecord();
                 isRunning = false;
                 battleRoutine = null;
                 yield break;
             }
 
-            if (!snapshot.isPlayerTurn || handManager.IsCardFlowBusy)
+            if (!snapshot.isPlayerTurn)
+            {
+                wasPlayerTurn = false;
+                yield return null;
+                continue;
+            }
+
+            if (handManager.IsCardFlowBusy)
             {
                 yield return null;
                 continue;
             }
 
+            if (!wasPlayerTurn)
+            {
+                playerTurnNumber++;
+                currentTurnRecord = PolishTurnRecordBuilder.Create(
+                    snapshot,
+                    playerTurnNumber);
+                wasPlayerTurn = true;
+            }
+
             PolishHumanDecision decision = decisionEngine.Decide(snapshot);
             PolishActionExecutionResult executionResult =
                 actionExecutor.Execute(decision);
+            PolishTurnRecordBuilder.AppendAction(
+                currentTurnRecord,
+                decision,
+                executionResult,
+                snapshot);
             if (executionResult != PolishActionExecutionResult.Success)
             {
                 Debug.LogError(
@@ -172,12 +202,18 @@ public class PolishSingleBattleController : MonoBehaviour
                     $"{executionResult}",
                     this);
                 outcome = PolishSingleBattleOutcome.ExecutionError;
+                FlushTurnRecord();
                 isRunning = false;
                 battleRoutine = null;
                 yield break;
             }
 
             actionCount++;
+            if (decision.decisionType == PolishDecisionType.EndTurn)
+            {
+                FlushTurnRecord();
+                wasPlayerTurn = false;
+            }
             yield return new WaitForSecondsRealtime(
                 Mathf.Max(0.05f, actionInterval));
         }
@@ -195,6 +231,22 @@ public class PolishSingleBattleController : MonoBehaviour
             actionExecutor = GetComponent<PolishHumanActionExecutor>();
         }
 
+        if (testLogger == null)
+        {
+            testLogger = FindFirstObjectByType<PolishTestLogger>();
+        }
+
         handManager = FindFirstObjectByType<HandManager>();
+    }
+
+    private void FlushTurnRecord()
+    {
+        if (currentTurnRecord == null)
+        {
+            return;
+        }
+
+        testLogger?.RecordTurn(currentTurnRecord);
+        currentTurnRecord = null;
     }
 }
