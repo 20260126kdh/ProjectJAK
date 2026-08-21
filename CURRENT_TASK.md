@@ -2023,3 +2023,42 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `Assets/Editor/EnemySpinePrefabSetup.cs` (최종 적용 후 제거)
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
+# 현재 작업 - 사슬 투창 취약 지속 턴 중첩 수정
+
+## 목표
+
+- 같은 턴에 `PHY_ATK_002`를 같은 적에게 두 번 사용하면 취약 40%는 유지하고 지속 턴이 `2 → 4`로 중첩된다.
+- 약화, 취약, 손상, 미끄러짐, 부러짐처럼 강도가 고정된 디버프는 카드로 재부여할 때 지속 턴을 합산한다.
+- 힘 감소, 중독과 수치형 상태 효과의 기존 수치 중첩 규칙은 유지한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Battle/StatusEffectHandler.cs`
+- `Assets/Scripts/Cards/CardEffectExecutor.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+# 현재 작업 - 적 약화 종료 후 Intent 피해 표시 갱신
+
+## 목표
+
+- 강도의 약화 지속 턴이 0이 되어 제거되면 다음 공격 Intent를 즉시 정상 수치로 갱신한다.
+- 힘, 약화 등 적의 공격 피해에 영향을 주는 상태 효과가 변경될 때 현재 패턴 Intent를 다시 계산한다.
+- 실제 적 공격 처리와 패턴 진행 순서는 변경하지 않는다.
+
+## 수정 범위
+
+- `Assets/Scripts/UI/EnemyIntentUI.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+# 현재 작업 - 전체 핵심 로직 50회 회귀 테스트
+
+## 목표
+
+- 카드 데이터, 적 패턴, 일반 적 프리팹, 상태 중첩, 피해 계산과 Intent 이벤트 연결을 각각 50회 반복 검증한다.
+- 실패 시 항목과 반복 회차를 Console에 기록하며 발견된 문제는 자동 수정하지 않는다.
+
+## 수정 범위
+
+- `Assets/Editor/ProjectRegressionTestRunner.cs` (결과 확인 후 제거)
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`

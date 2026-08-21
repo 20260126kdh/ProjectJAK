@@ -34,6 +34,7 @@ public class EnemyIntentUI : MonoBehaviour
 
     private EnemyPatternController patternController;
     private Enemy ownerEnemy;
+    private StatusEffectHandler statusEffectHandler;
 
     /// <summary>
     /// 현재 피해 Intent에 표시할 문자열입니다.
@@ -87,6 +88,13 @@ public class EnemyIntentUI : MonoBehaviour
                 GetComponentInParent<Enemy>();
         }
 
+        if (statusEffectHandler == null &&
+            ownerEnemy != null)
+        {
+            statusEffectHandler =
+                ownerEnemy.GetComponent<StatusEffectHandler>();
+        }
+
         if (patternController == null)
         {
             Debug.LogWarning(
@@ -107,34 +115,45 @@ public class EnemyIntentUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 패턴 컨트롤러의 Intent 변경 이벤트를 연결합니다.
+    /// 패턴 진행과 적 상태 효과 변경 이벤트를 연결합니다.
     /// </summary>
     private void Subscribe()
     {
-        if (patternController == null)
+        if (patternController != null)
         {
-            return;
+            patternController.IntentChanged -=
+                RefreshIntent;
+
+            patternController.IntentChanged +=
+                RefreshIntent;
         }
 
-        patternController.IntentChanged -=
-            RefreshIntent;
+        if (statusEffectHandler != null)
+        {
+            statusEffectHandler.StatusEffectsChanged -=
+                RefreshIntent;
 
-        patternController.IntentChanged +=
-            RefreshIntent;
+            statusEffectHandler.StatusEffectsChanged +=
+                RefreshIntent;
+        }
     }
 
     /// <summary>
-    /// 패턴 컨트롤러의 Intent 변경 이벤트를 해제합니다.
+    /// 패턴 진행과 적 상태 효과 변경 이벤트를 해제합니다.
     /// </summary>
     private void Unsubscribe()
     {
-        if (patternController == null)
+        if (patternController != null)
         {
-            return;
+            patternController.IntentChanged -=
+                RefreshIntent;
         }
 
-        patternController.IntentChanged -=
-            RefreshIntent;
+        if (statusEffectHandler != null)
+        {
+            statusEffectHandler.StatusEffectsChanged -=
+                RefreshIntent;
+        }
     }
 
     /// <summary>

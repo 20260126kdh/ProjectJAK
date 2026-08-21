@@ -74,10 +74,10 @@ public class StatusEffectHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// 적이 플레이어에게 부여하는 지속형 디버프를 추가합니다.
+    /// 효과 강도가 고정된 지속형 상태 효과를 추가합니다.
     /// 같은 효과가 이미 있다면 수치는 유지하고 지속 턴만 합산합니다.
     /// </summary>
-    public void AddEnemyDebuffWithDurationStack(
+    public void AddStatusEffectWithDurationStack(
         StatusEffectType statusEffectType,
         int value,
         int remainingTurn)
@@ -107,6 +107,22 @@ public class StatusEffectHandler : MonoBehaviour
             value,
             Mathf.Max(0, remainingTurn),
             false
+        );
+    }
+
+    /// <summary>
+    /// 적이 플레이어에게 부여하는 지속형 디버프를 추가합니다.
+    /// 기존 호출부 호환성을 유지하며 지속 턴 중첩 공통 로직을 사용합니다.
+    /// </summary>
+    public void AddEnemyDebuffWithDurationStack(
+        StatusEffectType statusEffectType,
+        int value,
+        int remainingTurn)
+    {
+        AddStatusEffectWithDurationStack(
+            statusEffectType,
+            value,
+            remainingTurn
         );
     }
 

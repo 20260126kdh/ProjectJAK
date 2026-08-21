@@ -1861,12 +1861,23 @@ public class CardEffectExecutor : MonoBehaviour
             remainingTurn = 0;
         }
 
-        statusEffectHandler.AddStatusEffect(
-            effect.statusEffectType,
-            effect.value,
-            remainingTurn,
-            isPermanent
-        );
+        if (IsFixedStrengthDurationDebuff(effect.statusEffectType))
+        {
+            statusEffectHandler.AddStatusEffectWithDurationStack(
+                effect.statusEffectType,
+                effect.value,
+                remainingTurn
+            );
+        }
+        else
+        {
+            statusEffectHandler.AddStatusEffect(
+                effect.statusEffectType,
+                effect.value,
+                remainingTurn,
+                isPermanent
+            );
+        }
 
         Debug.Log(
             $"[CardEffectExecutor] 상태 효과 부여 : " +
@@ -1875,6 +1886,26 @@ public class CardEffectExecutor : MonoBehaviour
             $"지속 턴 : {remainingTurn} / " +
             $"영구 여부 : {isPermanent}"
         );
+    }
+
+    /// <summary>
+    /// 효과 강도는 고정되고 남은 지속 턴만 중첩되는 디버프인지 반환합니다.
+    /// </summary>
+    private bool IsFixedStrengthDurationDebuff(
+        StatusEffectType statusEffectType)
+    {
+        switch (statusEffectType)
+        {
+            case StatusEffectType.Weaken:
+            case StatusEffectType.Vulnerable:
+            case StatusEffectType.Cripple:
+            case StatusEffectType.NoBlock:
+            case StatusEffectType.Broken:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     /// <summary>
