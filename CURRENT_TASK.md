@@ -2104,3 +2104,87 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `CURRENT_TASK.md`
 - `Docs/GAME_DESIGN.md`
 - `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 1단계
+
+## 목표
+
+- 클래스별 50 Run, 총 150 Run의 ID와 Seed 발급 기반을 만든다.
+- Run, 전투, 턴과 사망 상세 데이터를 JSON 및 CSV로 기록한다.
+- 실제 게임 실행과 AutoPlayer는 연결하지 않고 테스트 계측 기반만 추가한다.
+- 게임 밸런스, 카드 데이터와 전투 규칙은 변경하지 않는다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishTestSeedController.cs`
+- `Assets/Scripts/Testing/Polish/PolishTestLogger.cs`
+- `Assets/Scripts/Testing/Polish/PolishTestRunCoordinator.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 2단계
+
+## 목표
+
+- 동일 입력의 Run Seed와 Unity 난수열이 반복 재현되는지 검증한다.
+- Run, Battle, Turn과 Death 기록의 JSON 저장 및 CSV 누적을 검증한다.
+- `PHY-001` Run ID와 Seed 발급이 반복 재현되는지 확인한다.
+- 실제 사용자 기록 폴더가 아닌 테스트 전용 임시 폴더만 사용한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishTestLogger.cs`
+- `Assets/Tests/Editor/Polish/PolishTestFoundationTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 3단계
+
+## 목표
+
+- AutoPlayer가 실제 UI에서 확인 가능한 현재 전투 정보만 읽도록 관찰 계층을 분리한다.
+- HP, Block, 손패, 사용 가능 상태, Intent, 상태 효과, 작살과 선원 정보를 복사한다.
+- 다음 드로우, 보상, RNG와 미래 패턴 정보는 스냅샷에 포함하지 않는다.
+- 이번 단계에서는 카드 선택이나 턴 진행을 수행하지 않는다.
+
+## 수정 범위
+
+- `Assets/Scripts/UI/EnemyIntentUI.cs`
+- `Assets/Scripts/Testing/Polish/PolishVisibleBattleSnapshot.cs`
+- `Assets/Scripts/Testing/Polish/PolishBattleObserver.cs`
+- `Assets/Tests/Editor/Polish/PolishBattleObserverTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 4단계
+
+## 목표
+
+- 공개 전투 스냅샷만 사용해 한 번에 한 행동을 선택하는 공통 판단 엔진을 만든다.
+- Intent 피해와 HP·Block으로 위험도를 평가하고 생존, 처치와 합리적인 동점 선택을 처리한다.
+- 게임 RNG와 분리된 결정용 난수로 같은 Seed의 판단을 재현한다.
+- 실제 카드 클릭과 턴 진행은 후속 단계로 분리한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishHumanDecision.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanDecisionEngine.cs`
+- `Assets/Tests/Editor/Polish/PolishHumanDecisionEngineTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 5단계
+
+## 목표
+
+- 공통 판단 엔진이 선택한 단일 행동을 기존 전투 입력 경로로 전달한다.
+- 카드 선택, 대상 지정과 턴 종료 시 기존 검증과 전투 연출을 우회하지 않는다.
+- 잘못된 손패 또는 대상 정보는 전투 상태를 변경하지 않고 실패 결과로 반환한다.
+- 반복 실행과 행동 간 대기는 다음 단계로 분리한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishHumanActionExecutor.cs`
+- `Assets/Tests/Editor/Polish/PolishHumanActionExecutorTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`

@@ -35,6 +35,14 @@ public class EnemyIntentUI : MonoBehaviour
     private EnemyPatternController patternController;
     private Enemy ownerEnemy;
     private StatusEffectHandler statusEffectHandler;
+    private readonly List<string> visibleIntentTexts = new List<string>();
+
+    /// <summary>
+    /// 현재 Intent UI에 실제로 생성된 아이콘의 표시 문자열입니다.
+    /// 피해, 방어, 버프와 디버프 순서를 유지합니다.
+    /// </summary>
+    public IReadOnlyList<string> VisibleIntentTexts =>
+        visibleIntentTexts.AsReadOnly();
 
     /// <summary>
     /// 현재 피해 Intent에 표시할 문자열입니다.
@@ -164,6 +172,7 @@ public class EnemyIntentUI : MonoBehaviour
     {
         FindReferences();
         ClearGeneratedIcons();
+        visibleIntentTexts.Clear();
 
         if (!CanRefreshIntent())
         {
@@ -275,6 +284,7 @@ public class EnemyIntentUI : MonoBehaviour
             if (wasCreated)
             {
                 createdIconCount++;
+                visibleIntentTexts.Add($"Damage:{damageDisplayText}");
             }
         }
 
@@ -289,6 +299,7 @@ public class EnemyIntentUI : MonoBehaviour
             if (wasCreated)
             {
                 createdIconCount++;
+                visibleIntentTexts.Add($"Block:{totalBlock}");
             }
         }
 
@@ -308,6 +319,7 @@ public class EnemyIntentUI : MonoBehaviour
             if (wasCreated)
             {
                 createdIconCount++;
+                visibleIntentTexts.Add($"Buff:{buffDisplayText}");
             }
         }
 
@@ -327,6 +339,7 @@ public class EnemyIntentUI : MonoBehaviour
             if (wasCreated)
             {
                 createdIconCount++;
+                visibleIntentTexts.Add($"Debuff:{debuffDisplayText}");
             }
         }
 
