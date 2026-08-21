@@ -2188,3 +2188,20 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `Assets/Tests/Editor/Polish/PolishHumanActionExecutorTests.cs`
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
+
+# 현재 작업 - 인간형 150 Run 폴리싱 테스트 6단계
+
+## 목표
+
+- 공개 정보 관찰, 판단과 행동 실행을 단일 전투 동안 반복한다.
+- 플레이어 턴과 손패 연출 종료를 기다린 뒤에만 다음 행동을 전달한다.
+- 승리, 사망, 제한 시간과 최대 행동 수 도달 시 자동 진행을 정지한다.
+- 보상 선택과 다음 전투 진입은 후속 단계로 분리한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Cards/Managers/HandManager.cs`
+- `Assets/Scripts/Testing/Polish/PolishSingleBattleController.cs`
+- `Assets/Tests/Editor/Polish/PolishSingleBattleControllerTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`

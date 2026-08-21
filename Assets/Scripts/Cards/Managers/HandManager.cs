@@ -223,6 +223,16 @@ public class HandManager : MonoBehaviour
     public bool IsPreserveMode => isPreserveMode;
 
     /// <summary>
+    /// 드로우, 버림 또는 셔플 연출 때문에 손패 입력을 받을 수 없는 상태인지 반환합니다.
+    /// 자동 테스트가 실제 플레이어와 동일한 입력 가능 시점을 기다릴 때 사용합니다.
+    /// </summary>
+    public bool IsCardFlowBusy =>
+        isDrawAnimationPlaying ||
+        isDiscardAnimationPlaying ||
+        discardMoveTestCoroutine != null ||
+        shuffleVfxTestCoroutine != null;
+
+    /// <summary>
     /// 버림 더미 UI 위치를 월드 좌표로 변환하여 도착 VFX를 한 번 재생합니다.
     /// 카드 이동 및 버림 데이터는 변경하지 않습니다.
     /// </summary>
