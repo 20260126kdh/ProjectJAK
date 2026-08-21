@@ -25,14 +25,23 @@ public class EnemyStatusIconUI : MonoBehaviour,
     [SerializeField]
     private TMP_Text turnText;
 
+    [Header("Hover 팝업 배경")]
+    [SerializeField]
+    private Sprite buffPassivePopupSprite;
+
+    [SerializeField]
+    private Sprite debuffPopupSprite;
+
     private StatusEffectType statusEffectType;
     private StatusEffectData currentStatusEffect;
     private GameObject tooltipObject;
     private RectTransform tooltipRectTransform;
+    private Image tooltipBackgroundImage;
     private TMP_Text tooltipText;
 
-    private const float TooltipWidth = 300f;
-    private const float TooltipHeight = 120f;
+    private const float TooltipWidth = 360f;
+    private const float TooltipMinimumHeight = 132f;
+    private const float TooltipVerticalPadding = 56f;
     private static readonly Vector2 TooltipOffset = new Vector2(18f, -18f);
 
     /// <summary>
@@ -173,12 +182,14 @@ public class EnemyStatusIconUI : MonoBehaviour,
         tooltipObject.transform.SetParent(rootCanvas.transform, false);
 
         tooltipRectTransform = tooltipObject.GetComponent<RectTransform>();
-        tooltipRectTransform.sizeDelta = new Vector2(TooltipWidth, TooltipHeight);
+        tooltipRectTransform.sizeDelta = new Vector2(TooltipWidth, TooltipMinimumHeight);
         tooltipRectTransform.pivot = new Vector2(0f, 1f);
 
-        Image backgroundImage = tooltipObject.GetComponent<Image>();
-        backgroundImage.color = new Color(0f, 0f, 0f, 0.9f);
-        backgroundImage.raycastTarget = false;
+        tooltipBackgroundImage = tooltipObject.GetComponent<Image>();
+        tooltipBackgroundImage.sprite = GetPopupSprite(statusEffectType);
+        tooltipBackgroundImage.type = Image.Type.Sliced;
+        tooltipBackgroundImage.color = Color.white;
+        tooltipBackgroundImage.raycastTarget = false;
 
         GameObject textObject = new GameObject(
             "TooltipText",
@@ -191,8 +202,8 @@ public class EnemyStatusIconUI : MonoBehaviour,
         RectTransform textRectTransform = textObject.GetComponent<RectTransform>();
         textRectTransform.anchorMin = Vector2.zero;
         textRectTransform.anchorMax = Vector2.one;
-        textRectTransform.offsetMin = new Vector2(14f, 10f);
-        textRectTransform.offsetMax = new Vector2(-14f, -10f);
+        textRectTransform.offsetMin = new Vector2(34f, 28f);
+        textRectTransform.offsetMax = new Vector2(-34f, -28f);
 
         tooltipText = textObject.GetComponent<TMP_Text>();
         if (valueText != null)
@@ -247,6 +258,7 @@ public class EnemyStatusIconUI : MonoBehaviour,
         localPosition += TooltipOffset;
 
         Rect canvasRect = canvasRectTransform.rect;
+        float tooltipHeight = tooltipRectTransform.rect.height;
         localPosition.x = Mathf.Clamp(
             localPosition.x,
             canvasRect.xMin,
@@ -254,7 +266,7 @@ public class EnemyStatusIconUI : MonoBehaviour,
         );
         localPosition.y = Mathf.Clamp(
             localPosition.y,
-            canvasRect.yMin + TooltipHeight,
+            canvasRect.yMin + tooltipHeight,
             canvasRect.yMax
         );
 
@@ -275,10 +287,83 @@ public class EnemyStatusIconUI : MonoBehaviour,
                 ? $"남은 턴: {currentStatusEffect.remainingTurn}"
                 : "조건 충족 시 제거";
 
+        string valueText = GetStatusEffectValueText(
+            statusEffectType,
+            currentStatusEffect.value);
+
         tooltipText.text =
-            $"<b>{GetStatusEffectName(statusEffectType)}</b>\n" +
+            $"<color=#F4D36B><b>{GetStatusEffectName(statusEffectType)}</b></color>\n" +
             $"{GetStatusEffectDescription(statusEffectType)}\n" +
-            $"현재 수치: {currentStatusEffect.value} · {durationText}";
+            $"<color=#D7E6F5>{valueText} · {durationText}</color>";
+
+        tooltipText.ForceMeshUpdate();
+        float preferredHeight = Mathf.Max(
+            TooltipMinimumHeight,
+            tooltipText.preferredHeight + TooltipVerticalPadding);
+        tooltipRectTransform.sizeDelta = new Vector2(
+            TooltipWidth,
+            preferredHeight);
+
+        if (tooltipBackgroundImage != null)
+        {
+            tooltipBackgroundImage.sprite = GetPopupSprite(statusEffectType);
+        }
+    }
+
+    /// <summary>
+    /// 상태 효과 분류에 맞는 Hover 팝업 배경을 반환합니다.
+    /// </summary>
+    private Sprite GetPopupSprite(StatusEffectType effectType)
+    {
+        return IsDebuff(effectType)
+            ? debuffPopupSprite
+            : buffPassivePopupSprite;
+    }
+
+    /// <summary>
+    /// 상태 효과가 플레이어에게 불리한 디버프인지 반환합니다.
+    /// </summary>
+    private bool IsDebuff(StatusEffectType effectType)
+    {
+        switch (effectType)
+        {
+            case StatusEffectType.Weaken:
+            case StatusEffectType.Vulnerable:
+            case StatusEffectType.Cripple:
+            case StatusEffectType.NoBlock:
+            case StatusEffectType.Broken:
+            case StatusEffectType.Jinx:
+            case StatusEffectType.Paralyze:
+            case StatusEffectType.Toxic:
+            case StatusEffectType.Exit:
+            case StatusEffectType.MightReduction:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// 상태 효과 수치를 실제 게임 효과가 드러나는 문장으로 반환합니다.
+    /// </summary>
+    private string GetStatusEffectValueText(
+        StatusEffectType effectType,
+        int value)
+    {
+        switch (effectType)
+        {
+            case StatusEffectType.Might: return $"공격 피해 +{value}";
+            case StatusEffectType.Guard: return $"획득 방어도 +{value}";
+            case StatusEffectType.Resist: return "받는 피해 -30%";
+            case StatusEffectType.Weaken: return "주는 피해 -40%";
+            case StatusEffectType.Vulnerable: return "받는 피해 +40%";
+            case StatusEffectType.Cripple: return "획득 방어도 -30%";
+            case StatusEffectType.Paralyze: return $"속도 -{value}";
+            case StatusEffectType.Toxic: return $"턴 종료 피해 {value}";
+            case StatusEffectType.MightReduction: return $"공격 피해 -{value}";
+            default: return "효과 적용 중";
+        }
     }
 
     private void HideTooltip()

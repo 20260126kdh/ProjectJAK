@@ -2062,3 +2062,19 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `Assets/Editor/ProjectRegressionTestRunner.cs` (결과 확인 후 제거)
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
+
+# 현재 작업 - 상태 효과 Hover 팝업 가독성 개선
+
+## 목표
+
+- 플레이어와 적이 공유하는 상태 효과 Hover 팝업에 신규 프레임 이미지를 적용한다.
+- 디버프는 Red, 버프와 패시브는 Blue 배경으로 구분한다.
+- 효과 설명, 실제 수치와 지속 시간을 명시하고 내용 길이에 따라 팝업 높이를 확장한다.
+
+## 수정 범위
+
+- `Assets/Art/UI/Popup`
+- `Assets/Scripts/UI/EnemyStatusIconUI.cs`
+- `Assets/Prefabs/Enemy/EnemyStatusIcon.prefab`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`

@@ -298,6 +298,8 @@ MonoBehaviour:
   iconImage: {fileID: 3897557384220812161}
   valueText: {fileID: 3027021860579662785}
   turnText: {fileID: 1821392813528858553}
+  buffPassivePopupSprite: {fileID: 21300000, guid: b1af67260dd84dd7a122e637e888209b, type: 3}
+  debuffPopupSprite: {fileID: 21300000, guid: c2bd78371ee94ee8b233f748f99931ac, type: 3}
 --- !u!1 &6757013939026397081
 GameObject:
   m_ObjectHideFlags: 0
