@@ -2078,3 +2078,29 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `Assets/Prefabs/Enemy/EnemyStatusIcon.prefab`
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
+
+# 현재 작업 - 1스테이지 이동 맵 1단계
+
+## 목표
+
+- 첨부된 깨끗한 항구 맵을 1스테이지 배경으로 사용한다.
+- 노란색으로 표시된 좌측 하단 지점에 선택 클래스 캐릭터를 생성한다.
+- 전체 맵 고정 카메라에서 WASD로 캐릭터를 이동할 수 있게 한다.
+- 전투 지점, 이동 경계와 차단물은 다음 단계에서 연결한다.
+
+## 완료 상태
+
+- `StageMapScene` 생성과 Build Settings 등록 완료
+- 선택 클래스 외형 생성과 WASD 이동 Play Mode 확인 완료
+- 임시 `StageMapSceneSetup` Editor 도구 제거 완료
+- 이동 경계, 차단물과 전투 진입은 후속 단계 대기
+
+## 수정 범위
+
+- `Assets/Art/Map/Stage1_Map.png`
+- `Assets/Scenes/PlayScene/StageMapScene.unity`
+- `Assets/Scripts/Map/StageMapPlayerController.cs`
+- `ProjectSettings/EditorBuildSettings.asset`
+- `CURRENT_TASK.md`
+- `Docs/GAME_DESIGN.md`
+- `Docs/DEVLOG.md`
