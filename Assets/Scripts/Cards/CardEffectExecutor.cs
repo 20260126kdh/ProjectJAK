@@ -733,6 +733,11 @@ public class CardEffectExecutor : MonoBehaviour
         int totalDamage =
             finalDamage + harpoonBonusDamage;
 
+        if (totalDamage > 0)
+        {
+            BattleCameraMotion.PlayPlayerAttack();
+        }
+
         /*
          * 적의 취약과 장송의 가호는
          * Enemy.TakeDamage() 내부에서 적용됩니다.
@@ -1035,6 +1040,11 @@ public class CardEffectExecutor : MonoBehaviour
 
         int stackDamage =
             Mathf.Max(0, harpoonController.CurrentHarpoonStack);
+
+        if (stackDamage > 0)
+        {
+            BattleCameraMotion.PlayPlayerAttack();
+        }
 
         int blockBeforeDamage = targetEnemy.CurrentBlock;
         int actualDamage = targetEnemy.TakeDamage(stackDamage);

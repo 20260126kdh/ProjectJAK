@@ -648,6 +648,14 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log("[BattleManager] SelectCard 호출됨");
 
+        if (IsRevelationSelectionPending())
+        {
+            Debug.LogWarning(
+                "[BattleManager] 계시를 먼저 선택해야 합니다."
+            );
+            return;
+        }
+
         if (!isBattleStarted)
         {
             Debug.LogWarning(
@@ -1173,6 +1181,14 @@ public class BattleManager : MonoBehaviour
             $"isBattleStarted : {isBattleStarted}"
         );
 
+        if (IsRevelationSelectionPending())
+        {
+            Debug.LogWarning(
+                "[BattleManager] 계시를 먼저 선택해야 카드를 사용할 수 있습니다."
+            );
+            return false;
+        }
+
         if (!isBattleStarted)
         {
             Debug.LogWarning(
@@ -1224,6 +1240,15 @@ public class BattleManager : MonoBehaviour
         }
 
         return turnManager.CanUseCard(selectedCardData);
+    }
+
+    /// <summary>
+    /// 전투 시작 시 반드시 완료해야 하는 계시 선택이 남아 있는지 확인합니다.
+    /// </summary>
+    private bool IsRevelationSelectionPending()
+    {
+        return hRevelationPanelUI != null &&
+               hRevelationPanelUI.IsPanelOpen;
     }
 
     /// <summary>

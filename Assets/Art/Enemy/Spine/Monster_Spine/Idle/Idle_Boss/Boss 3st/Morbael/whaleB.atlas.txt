@@ -1,0 +1,13 @@
+whaleB.png
+size:1339,1083
+filter:Linear,Linear
+pma:true
+armB
+bounds:531,880,201,504
+rotate:90
+armU
+bounds:2,897,184,527
+rotate:90
+body
+bounds:2,2,876,1335
+rotate:90

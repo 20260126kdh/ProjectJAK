@@ -378,6 +378,11 @@ public class PlayerCombat : MonoBehaviour
                 playerAnimationController.PlayHit();
             }
 
+            if (actualHealthDamage > 0)
+            {
+                BattleCameraMotion.PlayPlayerHit();
+            }
+
             Debug.Log(
                 $"[PlayerCombat] 플레이어 체력 피해 : " +
                 $"요청 피해 {amount} / " +

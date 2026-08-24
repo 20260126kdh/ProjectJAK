@@ -1,3 +1,4 @@
+#if UNITY_EDITOR || POLISH_SIMULATION_BUILD
 using System.Collections;
 using UnityEngine;
 
@@ -372,3 +373,4 @@ public class PolishSingleBattleController : MonoBehaviour
         deathRecorded = true;
     }
 }
+#endif

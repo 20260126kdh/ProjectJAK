@@ -107,6 +107,11 @@ public class StageManager : MonoBehaviour
     /// </summary>
     public int MaxStage => maxStage;
 
+    /// <summary>
+    /// 한 스테이지에서 보스전 진입 전에 완료해야 하는 일반 전투 수입니다.
+    /// </summary>
+    public int MaxBattleCount => maxBattleCount;
+
     public int CurrentBattleCount =>
         currentBattleCount;
 

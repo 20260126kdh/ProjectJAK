@@ -9,6 +9,10 @@ using UnityEngine;
 /// - D: 전체 덱 보기
 /// - A: 뽑을 패 더미 보기
 /// - S: 버림 패 더미 보기
+/// - F1: 1스테이지 보스전으로 즉시 이동(Editor 전용)
+/// - F2: 2스테이지 보스전으로 즉시 이동(Editor 전용)
+/// - F3: 3스테이지 모르바엘 보스전으로 즉시 이동(Editor 전용)
+/// - F4: 3스테이지 아리엘 진 보스전으로 즉시 이동(Editor 전용)
 /// - F7: 현재 전투 인간형 자동 테스트 시작(Editor 전용)
 /// - F8: 다음 스테이지 첫 일반 전투로 즉시 이동(Editor 전용)
 /// - F9: 플레이어 사망 연출 즉시 실행(Editor 전용)
@@ -137,6 +141,11 @@ public class BattleShortcutController : MonoBehaviour
         }
 
 #if UNITY_EDITOR
+
+        if (HandleBossBattleJumpInput())
+        {
+            return;
+        }
 
         if (HandlePolishBattleTestInput())
         {
@@ -301,6 +310,80 @@ public class BattleShortcutController : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+
+    /// <summary>
+    /// F1~F4 입력으로 각 스테이지의 보스 진행 상태를 복원하고
+    /// 기존 다음 전투 준비 흐름을 통해 해당 보스전을 시작합니다.
+    /// </summary>
+    /// <returns>보스 점프 입력을 감지했다면 true를 반환합니다.</returns>
+    private bool HandleBossBattleJumpInput()
+    {
+        int targetStage;
+        int targetBossSequence;
+        string bossLabel;
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            targetStage = 1;
+            targetBossSequence = 0;
+            bossLabel = "1스테이지 보스";
+        }
+        else if (Input.GetKeyDown(KeyCode.F2))
+        {
+            targetStage = 2;
+            targetBossSequence = 0;
+            bossLabel = "2스테이지 보스";
+        }
+        else if (Input.GetKeyDown(KeyCode.F3))
+        {
+            targetStage = 3;
+            targetBossSequence = 0;
+            bossLabel = "3스테이지 모르바엘";
+        }
+        else if (Input.GetKeyDown(KeyCode.F4))
+        {
+            targetStage = 3;
+            targetBossSequence = 1;
+            bossLabel = "3스테이지 아리엘 진 보스";
+        }
+        else
+        {
+            return false;
+        }
+
+        StageManager stageManager = StageManager.Instance;
+        if (stageManager == null || battleManager == null)
+        {
+            Debug.LogError(
+                "[BattleShortcutController] StageManager 또는 BattleManager가 " +
+                "연결되지 않아 보스전 점프를 실행할 수 없습니다."
+            );
+            return true;
+        }
+
+        bool restored = stageManager.RestoreProgress(
+            targetStage,
+            stageManager.MaxBattleCount,
+            StagePhase.BossBattle,
+            targetBossSequence,
+            string.Empty,
+            false
+        );
+
+        if (!restored)
+        {
+            Debug.LogError(
+                $"[BattleShortcutController] {bossLabel} 진행도 설정에 실패했습니다."
+            );
+            return true;
+        }
+
+        Debug.Log(
+            $"[BattleShortcutController] 보스전 점프 - {bossLabel}"
+        );
+        battleManager.StartNextBattle();
+        return true;
+    }
 
     /// <summary>
     /// F7 입력으로 현재 전투의 인간형 자동 테스트와 결과 기록을 시작합니다.

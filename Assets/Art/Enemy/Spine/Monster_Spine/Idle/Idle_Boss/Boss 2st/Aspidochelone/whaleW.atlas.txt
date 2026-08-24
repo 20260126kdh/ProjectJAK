@@ -1,0 +1,15 @@
+whaleW.png
+size:2067,855
+filter:Linear,Linear
+pma:true
+armB
+bounds:1607,74,187,365
+rotate:90
+armF
+bounds:1180,174,425,679
+body
+bounds:2,2,851,1176
+offsets:0,120,851,1296
+rotate:90
+head
+bounds:1607,263,458,590

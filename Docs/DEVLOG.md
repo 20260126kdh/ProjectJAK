@@ -1154,3 +1154,155 @@
 - 호버 카드를 최상단에 배치하고 클릭·복귀 시 원래 계층과 배율을 복원하도록 처리했다.
 - `Assembly-CSharp` 빌드 결과 오류 0개, 기존 프로젝트 경고 4개를 확인했다.
 - Unity Play Mode 시각 확인 필요.
+
+# 2026-08-24 - 플레이어 공격·피격 카메라 모션
+
+- 관련 경로: `BattleCameraMotion.cs`, `CardEffectExecutor.cs`, `PlayerCombat.cs`
+- 플레이어 공격 시 카메라가 적 방향으로 짧게 전진하고 약하게 줌인한 뒤 복귀하도록 추가했다.
+- 공격 시작 프레임에 플레이어 구도로 즉시 컷하고, 검은 시네마틱 바, 0.18배 슬로모션, 창 방향 후반 가속 추적, 타격 정지·대각선 충격, 백색 플래시·붉은 잔상, 이중 반동 복귀 순서로 강화했다.
+- 카드가 요청한 피해량을 기준으로 찌르기와 타격 충격을 85~160% 범위에서 조절하고 같은 프레임에는 가장 강한 공격만 재생하도록 했다.
+- 자동 시뮬레이션에서는 시네마틱 UI와 슬로모션을 생략하며, 일시정지 및 연출 완료·중단·비활성화 시 기존 시간 배율과 화면 상태를 복원하도록 했다.
+- `PlayerAnimationController`에 공격 애니메이션 길이의 정규화 시점을 사용하는 `AttackImpactCueReached` 이벤트를 추가했다.
+- 클로즈업 강조 직후 기존 시간 배율을 복원하고, 공격 큐 이후에만 창 방향 추적과 타격 화면 효과를 재생하도록 카메라와 Spine 애니메이션을 동기화했다.
+- 피격 카메라의 기존 이동 거리와 재생 시간은 유지했다.
+- 플레이어가 실제 HP 피해를 받으면 왼쪽 반동과 약한 세로 흔들림 후 복귀하도록 추가했다.
+- 방어도·선원이 전부 막은 공격, 독·계시·카드 비용 체력 감소 및 선원 공격에는 피격 모션을 적용하지 않았다.
+- 같은 프레임의 다단 공격은 한 번으로 합치고 새 연출 시작과 비활성화 시 원래 위치·줌을 복원한다.
+- 신규 파일을 포함한 임시 C# 프로젝트 빌드 결과 오류 0개, 기존 프로젝트 경고 4개를 확인했다.
+- Unity Play Mode 체감 및 시각 확인 필요.
+- 공격 카메라 연출은 애니메이션과의 조화를 검토한 뒤 전체 제거하고, 플레이어 피격 반동만 유지했다.
+- 공격 애니메이션 큐, 슬로모션, 시네마틱 바, 타격 플래시와 공격 측 카메라 호출을 함께 제거했다.
+- 이후 공격 시 오른쪽으로 짧게 이동하고 약한 세로 움직임 후 약 0.2초에 복귀하는 기본 카메라 반동만 적용했다.
+- 확대, 시간 배율 변경, 화면 기울기, 별도 시네마틱 UI는 사용하지 않았다.
+
+# 2026-08-24 - 기본 이미지가 없는 버튼 UI 정리
+
+- 관련 씬: `BattleScene.unity`, `Class_SelectScene.unity`, `Main_TitleScene.unity`
+- 사용자에게 보이는 기본 uGUI 버튼 20개에 기존 버튼 이미지를 적용하고 전환 방식을 `SpriteSwap`으로 통일했다.
+- 일반 버튼에는 타이틀 버튼 이미지를, 다음 전투 버튼에는 전용 Normal·Hover·Pressed 이미지를 적용했다.
+- 버튼 문구를 밝은 크림색 굵은 글씨로 정리하고 기존 위치, 크기와 OnClick 연결은 유지했다.
+- 클래스 선택 배너의 투명 클릭 영역 3개, 개발용 `CrewSummonTestButton`, 퍼즈 패널의 환경설정 버튼은 대상에서 제외했다.
+- Unity Play Mode 시각 및 클릭 동작 확인 필요.
+
+# 2026-08-24 - 2스테이지 Amphitrite 보스 Spine 적용 준비
+
+- 관련 경로: `BossSpinePrefabSetup.cs`, `Amphitrite.prefab`
+- Amphitrite 대기 SkeletonData를 기존 보스 Spine 자동 설정 목록에 추가했다.
+- 원본 Bounds를 기준으로 비율 유지, 바닥선 정렬과 중심 보정을 수행하는 공통 계산 로직을 분리했다.
+- Amphitrite는 전용 목표 높이, 가로·바닥 오프셋과 Enemy UI 위치를 사용하도록 구성했다.
+- 1스테이지 보스의 기존 전용 배치 값은 유지했다.
+- `Assembly-CSharp-Editor` 빌드 결과 오류 0개, 경고 0개를 확인했다.
+- Unity에서 자동 적용 후 2스테이지 보스전 시각 확인 필요.
+
+# 2026-08-24 - 스테이지별 보스전 점프 단축키
+
+- 관련 경로: `BattleShortcutController.cs`, `StageManager.cs`
+- Editor Play Mode에서 F1은 1스테이지, F2는 2스테이지 보스전으로 이동하도록 추가했다.
+- F3은 3스테이지 모르바엘, F4는 아리엘 진 보스전으로 직접 이동하도록 추가했다.
+- 스테이지의 최대 일반 전투 수와 보스 진행 순서를 `RestoreProgress()`에 설정한 뒤 기존 전투 시작 흐름을 재사용한다.
+- `StageManager.MaxBattleCount` 읽기 전용 속성을 추가했다.
+- `Assembly-CSharp` 빌드 결과 오류 0개, 기존 직렬화 경고 4개를 확인했다.
+- Unity Play Mode에서 F1~F4 보스 구성, 배경과 BGM 확인 필요.
+
+# 2026-08-24 - 계시 선택 전 전투 행동 잠금
+
+- 관련 경로: `BattleManager.cs`, `TurnManager.cs`, `StartingDeckUI.cs`
+- 계시 패널이 열린 동안 손패 선택, 카드 사용과 턴 종료를 차단했다.
+- 전체 덱, 뽑을 패와 버림 패 패널도 계시 선택 완료 전에는 열리지 않도록 했다.
+- 계시 선택으로 패널이 닫히면 기존 입력이 즉시 다시 허용된다.
+- `Assembly-CSharp` 빌드 결과 오류 0개, 기존 직렬화 경고 4개를 확인했다.
+- Unity Play Mode에서 계시 선택 전후 클릭 및 단축키 확인 필요.
+
+# 2026-08-24 - 3스테이지 모르바엘 Spine 적용 준비
+
+- 관련 경로: `Idle_Boss/Boss 3st/Morbael`, `BossSpinePrefabSetup.cs`, `Morbael.prefab`
+- 전달 압축 내부의 `Morbael.zip`에서 atlas, png와 skel 원본을 Unity Spine 확장자로 추출했다.
+- 모르바엘 전용 목표 높이, 바닥·가로 오프셋과 Enemy UI 위치를 설정했다.
+- 프리팹 루트의 비균등 스케일을 보정하고 Spine Bounds 최저점을 바닥선에 맞추도록 구성했다.
+- SkeletonData 생성 전 자동 검사에서는 오류를 출력하지 않고, 수동 적용 시에만 누락 경로를 보고하도록 정리했다.
+- `Assembly-CSharp-Editor` 빌드 결과 오류 0개, 경고 0개를 확인했다.
+- Unity Spine 임포트와 3스테이지 모르바엘 보스전 시각 확인 필요.
+
+# 2026-08-24 - 2스테이지 Aspidochelone Spine 적용 준비
+
+- 관련 경로: `Idle_Boss/Boss 2st/Aspidochelone`, `BossSpinePrefabSetup.cs`, `Aspidochelone.prefab`
+- 전달 압축 내부의 `sphidokel.zip`을 Aspidochelone 소스로 확인하고 whaleW 원본을 Unity Spine 확장자로 추출했다.
+- Aspidochelone 전용 목표 높이, 바닥·가로 오프셋과 Enemy UI 위치를 설정했다.
+- 기존 Amphitrite와 확정된 모르바엘 배치 값은 유지했다.
+- `Assembly-CSharp-Editor` 빌드 결과 오류 0개, 경고 0개를 확인했다.
+- Unity Spine 임포트와 2스테이지 보스전 시각 확인 필요.
+# 2026-08-24 아리엘 진 보스 Spine 적용
+
+- F4가 기존 아리엘 진 보스전 점프 단축키로 연결되어 있음을 확인했다.
+- `Ariel.zip`의 atlas, png, skel 원본을 `Idle_Boss/Boss 3st/Ariel`에 추가했다.
+- `BossSpinePrefabSetup.cs`에 아리엘 프리팹, SkeletonData, 전용 크기·바닥·UI 위치 설정을 추가했다.
+- Unity Spine 임포트와 F4 Play Mode 시각 검증이 필요하다.
+- Play Mode 피드백에 따라 아리엘 목표 높이를 2.52로 확대하고 바닥 보정을 -0.65로 내렸다. EnemyUIRoot 위치는 변경하지 않았다.
+- 아리엘 크기와 이미지 위치를 고정하고 EnemyUIRoot의 Y 위치를 0.95에서 1.15로 조정했다.
+# 2026-08-24 암피트리테 공격 Spine 적용
+
+- 암피트리테 피해 패턴 실행 시 전용 공격 SkeletonData를 한 번 재생하도록 연결했다.
+- 공격 종료 후 기존 대기 SkeletonData와 Idle 반복 상태로 자동 복귀하도록 구성했다.
+- 대기·공격 원본 Bounds를 개별 계산하여 동일한 목표 높이와 전투 바닥선을 유지하도록 했다.
+- 다른 적은 공격 Spine 컨트롤러가 없어 기존 표현과 전투 로직을 유지한다.
+# 2026-08-24 1스테이지 몬스터 Attack·Hit 이미지 적용
+
+- Thief, Goby, Mermaid, SeaCrab, Mimic의 공격·피격 PNG를 추가했다.
+- 공격 패턴에는 Attack 이미지를, 실제 HP 피해에는 Hit 이미지를 표시하도록 연결했다.
+- 피격 표현이 공격 표현보다 우선하며 연출 종료 후 기존 대기 Spine으로 복귀하도록 구성했다.
+- 기존 대기 Spine의 Bounds를 기준으로 이미지 비율과 바닥선을 자동 정렬하는 Editor 설정 도구를 추가했다.
+- Unity 6에서 상태 PNG의 투명 여백 때문에 캐릭터가 작아지는 문제를 알파 픽셀 Bounds 계산으로 수정했다.
+# 2026-08-24 2스테이지 몬스터 Attack·Hit 이미지 적용
+
+- Drowned, JellyfishMermaid, UndeadMermaid, Sawfish, Turtle의 공격·피격 PNG를 추가했다.
+- 2스테이지 일반 몬스터 프리팹 7개를 전투 이미지 자동 설정 도구에 연결했다.
+- OldMermaid와 ShortFinnedSandfish는 제공된 UndeadMermaid와 Sawfish 소스에 각각 대응했다.
+- 1스테이지에서 수정한 알파 픽셀 Bounds 기반 크기·바닥 정렬 방식을 그대로 적용했다.
+# 2026-08-24 3스테이지 몬스터 Attack·Hit 이미지 적용
+
+- Edward, Templeguardian, Undeadcommander, SeaBeast, Shipcollector의 공격·피격 PNG를 추가했다.
+- 3스테이지 일반 몬스터 프리팹 5개를 전투 이미지 자동 설정 도구에 연결했다.
+- 제공된 파일명의 불필요한 공백과 밑줄을 정리해 프로젝트 경로를 통일했다.
+- 기존 알파 픽셀 Bounds 기반 크기·바닥 정렬과 피격 우선순위를 동일하게 적용했다.
+# 2026-08-24 지원 보스 Attack·Hit 이미지 적용
+
+- ShipwreckCrab, Aspidochelone, Morbael의 공격·피격 PNG 6개를 추가했다.
+- 제공 파일의 Shipcrab과 Asphidokel 명칭을 실제 프리팹 ID에 맞춰 정리했다.
+- 세 보스 프리팹을 기존 Attack·Hit 전환 및 알파 Bounds 자동 정렬 시스템에 연결했다.
+- 기존 대기 Spine, EnemyUIRoot와 보스 전투 로직은 변경하지 않았다.
+# 2026-08-24 캡틴 선원 소형 체력바 UI
+
+- 선원 체력 변경 이벤트와 전용 `CrewHealthUI`를 추가했다.
+- 선원 머리 위에 숫자와 상태 아이콘이 없는 작은 월드 체력바를 배치하도록 구성했다.
+- 체력 비율을 Clamp01로 제한하고 RectMask2D로 붉은 Fill이 테두리를 넘지 않게 했다.
+- 기존 선원 피해 분배, 성장, 회복과 플레이어 효과 공유 규칙은 변경하지 않았다.
+- Play Mode 피드백에 따라 체력바를 몬스터 체력바의 약 2/3 크기로 확대하고, 선원 PNG 알파 Bounds를 기준으로 머리 위치를 보정했다.
+# 2026-08-24 캡틴 선원 체력 UI 보정
+
+- `CrewHealthUI`에 현재/최대 체력 텍스트 갱신 추가
+- 선원 체력바에 `HP_Case_0` 프레임 적용
+- Single Sprite에서 `HP_Case_0` 이름 탐색이 실패하던 로더를 메인 Sprite 우선 방식으로 수정
+- Unity 6에서 폐기 예정인 TMP 줄바꿈 API를 `textWrappingMode`로 교체
+- 빨간 체력 Fill이 `HP_Case`를 덮던 계층 구조를 분리하고 프레임을 상단에 표시
+- 선원 체력 Fill을 프레임 내부의 고정 크기로 제한하고 케이스를 조금 확대
+- 체력 Fill의 세로 높이를 14에서 8로 줄여 프레임 위아래 돌출 제거
+- 선원 전체 스프라이트 중심에서 두건 중심에 맞도록 X 위치 보정
+- 빨간 체력 Fill의 마스크 및 비율 제한 유지
+- Unity 메뉴 적용 및 Play Mode 시각 검증 필요
+# 2026-08-24 플레이어 전투 HUD 개편
+
+- 플레이어 HP/방어도를 적 UI 디자인 기반의 하단 HUD로 변경
+- 체력 Fill을 케이스 내부 RectMask2D로 제한
+- 흰색 마스크 그래픽을 투명 처리하고 `HP_Bar_0` 서브 스프라이트를 직접 사용하도록 수정
+- 플레이어 체력 Fill 마스크를 500 x 52로 확대해 케이스 내부에 검은 투명 띠가 남지 않도록 보정
+- HP/방어도 텍스트 자동 축소 및 영역 초과 방지
+- 기존 왼쪽 상단 HP/Block 텍스트 비활성화
+- 손패, 공격/방어 카운트, 버프/디버프 표시를 위로 이동
+- 플레이어 HUD를 왼쪽 상단으로 옮기고 방어도 아이콘을 체력바 오른쪽 6px 간격으로 재배치
+- 손패를 기존 Y 160 위치로 복원하고 반복 적용 시 위치 누적을 제거
+- 공격/방어 카운트와 상태 효과를 120px 위로, 방어도 아이콘을 체력바 쪽으로 30px 이동
+- 카드 카운트와 상태 효과가 체력바에 가까워진 부분을 50px 아래로 재조정
+# 2026-08-24 일반 Player 빌드 컴파일 오류 수정
+
+- 일반 빌드에서 제외되는 `PolishSpecialChoiceAutomationController`를 참조하던 테스트 컨트롤러 조건 수정
+- `PolishSingleBattleController`를 `UNITY_EDITOR || POLISH_SIMULATION_BUILD` 범위로 제한

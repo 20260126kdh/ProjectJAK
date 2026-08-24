@@ -775,6 +775,16 @@ public class Enemy : MonoBehaviour
                 currentHP
             );
 
+        if (actualHealthDamage > 0)
+        {
+            EnemyCombatVisualController combatVisualController =
+                GetComponent<EnemyCombatVisualController>();
+            if (combatVisualController != null)
+            {
+                combatVisualController.PlayHit();
+            }
+        }
+
         NotifyHealthChanged();
 
 

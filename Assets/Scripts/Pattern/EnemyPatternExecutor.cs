@@ -24,6 +24,9 @@ public class EnemyPatternExecutor : MonoBehaviour
     [SerializeField]
     private FuneralSpiritSpawner funeralSpiritSpawner;
 
+    private EnemySpineAnimationController spineAnimationController;
+    private EnemyCombatVisualController combatVisualController;
+
     private void Awake()
     {
         TryFindReferences();
@@ -145,6 +148,16 @@ public class EnemyPatternExecutor : MonoBehaviour
             $"반복 횟수 {repeatCount}",
             this
         );
+
+        if (spineAnimationController != null)
+        {
+            spineAnimationController.PlayAttack();
+        }
+
+        if (combatVisualController != null)
+        {
+            combatVisualController.PlayAttack();
+        }
 
         for (int i = 0;
              i < repeatCount;
@@ -462,6 +475,18 @@ public class EnemyPatternExecutor : MonoBehaviour
         {
             playerCombat =
                 FindFirstObjectByType<PlayerCombat>();
+        }
+
+        if (spineAnimationController == null)
+        {
+            spineAnimationController =
+                GetComponent<EnemySpineAnimationController>();
+        }
+
+        if (combatVisualController == null)
+        {
+            combatVisualController =
+                GetComponent<EnemyCombatVisualController>();
         }
 
         TryFindFuneralSpiritSpawner();

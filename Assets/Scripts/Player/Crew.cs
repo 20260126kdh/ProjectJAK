@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -35,6 +36,11 @@ public class Crew : MonoBehaviour
     public bool IsAlive => currentHP > 0;
 
     /// <summary>
+    /// 현재 체력과 최대 체력이 변경될 때 발생합니다.
+    /// </summary>
+    public event Action<int, int> HealthChanged;
+
+    /// <summary>
     /// 소환 직후 선원을 초기화합니다.
     /// 현재 체력과 최대 체력은 모두 1로 시작합니다.
     /// </summary>
@@ -44,6 +50,8 @@ public class Crew : MonoBehaviour
 
         maxHP = 1;
         currentHP = 1;
+
+        NotifyHealthChanged();
 
         Debug.Log(
             $"[Crew] 소환수 초기화 : {currentHP}/{maxHP}"
@@ -63,6 +71,8 @@ public class Crew : MonoBehaviour
 
         maxHP++;
         currentHP++;
+
+        NotifyHealthChanged();
 
         Debug.Log(
             $"[Crew] 턴 성장 : {currentHP}/{maxHP}"
@@ -86,6 +96,11 @@ public class Crew : MonoBehaviour
         currentHP = Mathf.Min(currentHP + amount, maxHP);
 
         int healedAmount = currentHP - previousHP;
+
+        if (healedAmount > 0)
+        {
+            NotifyHealthChanged();
+        }
 
         Debug.Log(
             $"[Crew] 체력 회복 : {healedAmount} / " +
@@ -119,6 +134,8 @@ public class Crew : MonoBehaviour
 
         currentHP -= absorbedDamage;
 
+        NotifyHealthChanged();
+
         int remainingDamage = damage - absorbedDamage;
 
         Debug.Log(
@@ -144,6 +161,8 @@ public class Crew : MonoBehaviour
         maxHP = Mathf.Max(1, maxHealth);
         currentHP = Mathf.Clamp(currentHealth, 0, maxHP);
 
+        NotifyHealthChanged();
+
         Debug.Log(
             $"[Crew] 체력 설정 : {currentHP}/{maxHP}"
         );
@@ -165,6 +184,8 @@ public class Crew : MonoBehaviour
         {
             currentHP = maxHP;
         }
+
+        NotifyHealthChanged();
 
         Debug.Log(
             $"[Crew] 최대 체력 설정 : {currentHP}/{maxHP}"
@@ -194,5 +215,10 @@ public class Crew : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    private void NotifyHealthChanged()
+    {
+        HealthChanged?.Invoke(currentHP, maxHP);
     }
 }

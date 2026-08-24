@@ -106,6 +106,11 @@ public class StartingDeckUI : MonoBehaviour
     /// </summary>
     public void ShowCurrentDeck()
     {
+        if (IsRevelationSelectionPending())
+        {
+            return;
+        }
+
         if (!ValidateDeckManager())
         {
             return;
@@ -134,6 +139,11 @@ public class StartingDeckUI : MonoBehaviour
     /// </summary>
     public void ShowDrawPile()
     {
+        if (IsRevelationSelectionPending())
+        {
+            return;
+        }
+
         if (!ValidateDeckManager())
         {
             return;
@@ -162,6 +172,11 @@ public class StartingDeckUI : MonoBehaviour
     /// </summary>
     public void ShowDiscardPile()
     {
+        if (IsRevelationSelectionPending())
+        {
+            return;
+        }
+
         if (!ValidateDeckManager())
         {
             return;
@@ -183,6 +198,24 @@ public class StartingDeckUI : MonoBehaviour
         Debug.Log(
             "[StartingDeckUI] 버림 패 더미 보기"
         );
+    }
+
+    /// <summary>
+    /// 계시 선택이 완료되기 전에는 다른 전투 패널을 열지 않도록 확인합니다.
+    /// </summary>
+    private bool IsRevelationSelectionPending()
+    {
+        HRevelationPanelUI revelationPanel =
+            FindFirstObjectByType<HRevelationPanelUI>();
+        if (revelationPanel == null || !revelationPanel.IsPanelOpen)
+        {
+            return false;
+        }
+
+        Debug.LogWarning(
+            "[StartingDeckUI] 계시를 먼저 선택해야 덱을 확인할 수 있습니다."
+        );
+        return true;
     }
 
     /// <summary>

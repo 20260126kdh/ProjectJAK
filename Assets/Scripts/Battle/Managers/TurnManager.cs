@@ -138,6 +138,16 @@ public class TurnManager : MonoBehaviour
     /// </summary>
     public void EndPlayerTurnAndStartNextTurn()
     {
+        HRevelationPanelUI revelationPanel =
+            FindFirstObjectByType<HRevelationPanelUI>();
+        if (revelationPanel != null && revelationPanel.IsPanelOpen)
+        {
+            Debug.LogWarning(
+                "[TurnManager] 계시를 먼저 선택해야 턴을 종료할 수 있습니다."
+            );
+            return;
+        }
+
         TutorialManager tutorialManager =
             FindFirstObjectByType<TutorialManager>();
 
