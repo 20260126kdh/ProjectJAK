@@ -55,6 +55,10 @@ public class ClassSelectManager : MonoBehaviour
     private float detailContentDelay = 0.2f;
 
     [SerializeField]
+    [Min(0f)]
+    private float detailPanelOpenDelay = 0.4f;
+
+    [SerializeField]
     private Vector2 selectedCardSize = new Vector2(1180f, 660f);
 
     [SerializeField]
@@ -111,6 +115,8 @@ public class ClassSelectManager : MonoBehaviour
     private Material classVideoBlurMaterial;
     private GameObject classVideoBorder;
     private Image[] classVideoBorderEdges;
+    private Image selectionBackground;
+    private CanvasGroup classDetailCanvasGroup;
 
     private const float PhysiqueVideoCenterX = 0.60f;
     private const float TechnicianVideoCenterX = 0.59f;
@@ -151,6 +157,7 @@ public class ClassSelectManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        InitializeSelectionBackground();
         InitializeSelectionCards();
         InitializeClassVideo();
         ResetSelection();
@@ -226,8 +233,8 @@ public class ClassSelectManager : MonoBehaviour
         selectedClass = playerClass;
         selectedClassInfo = classInfo;
 
+        ResetSelectionCardHover();
         ShowClassInfo(classInfo);
-        ApplySelectedCardLayout(playerClass);
         ScheduleDetailPanelOpen();
     }
 
@@ -248,12 +255,23 @@ public class ClassSelectManager : MonoBehaviour
         classDetailPanel.SetActive(true);
         classDetailPanel.transform.SetAsLastSibling();
 
+        classDetailCanvasGroup = classDetailPanel.GetComponent<CanvasGroup>();
+        if (classDetailCanvasGroup == null)
+        {
+            classDetailCanvasGroup = classDetailPanel.AddComponent<CanvasGroup>();
+        }
+
+        classDetailCanvasGroup.alpha = 0f;
+        classDetailCanvasGroup.interactable = false;
+        classDetailCanvasGroup.blocksRaycasts = false;
+
         RectTransform detailRect =
             classDetailPanel.GetComponent<RectTransform>();
 
         if (detailRect != null)
         {
-            detailRect.localScale = Vector3.one * detailPanelScale;
+            detailRect.localScale =
+                Vector3.one * detailPanelScale * 0.96f;
         }
     }
 
@@ -281,19 +299,67 @@ public class ClassSelectManager : MonoBehaviour
 
     private IEnumerator OpenDetailPanelAfterTransition()
     {
-        if (cardTransitionDuration > 0f)
+        if (detailPanelOpenDelay > 0f)
         {
-            yield return new WaitForSecondsRealtime(cardTransitionDuration);
-        }
-
-        if (detailContentDelay > 0f)
-        {
-            yield return new WaitForSecondsRealtime(detailContentDelay);
+            yield return new WaitForSecondsRealtime(detailPanelOpenDelay);
         }
 
         OpenDetailPanel();
+
+        RectTransform detailRect = classDetailPanel != null
+            ? classDetailPanel.GetComponent<RectTransform>()
+            : null;
+        float transitionDuration = Mathf.Max(
+            0.2f,
+            cardTransitionDuration + detailContentDelay
+        );
+        float elapsed = 0f;
+
+        while (elapsed < transitionDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float normalized = Mathf.Clamp01(elapsed / transitionDuration);
+            float eased = 1f - Mathf.Pow(1f - normalized, 3f);
+
+            if (classDetailCanvasGroup != null)
+            {
+                classDetailCanvasGroup.alpha = eased;
+            }
+
+            if (detailRect != null)
+            {
+                float scale = Mathf.Lerp(0.96f, 1f, eased) * detailPanelScale;
+                detailRect.localScale = Vector3.one * scale;
+            }
+
+            yield return null;
+        }
+
+        if (classDetailCanvasGroup != null)
+        {
+            classDetailCanvasGroup.alpha = 1f;
+            classDetailCanvasGroup.interactable = true;
+            classDetailCanvasGroup.blocksRaycasts = true;
+        }
+
         SetConfirmButtonInteractable(true);
         openDetailCoroutine = null;
+    }
+
+    private void ResetSelectionCardHover()
+    {
+        if (selectionCards == null)
+        {
+            return;
+        }
+
+        foreach (ClassSelectionCardUI card in selectionCards)
+        {
+            if (card != null)
+            {
+                card.ResetHover();
+            }
+        }
     }
 
     /// <summary>
@@ -907,22 +973,38 @@ public class ClassSelectManager : MonoBehaviour
             return;
         }
 
+        physiqueFrameSprite = LoadClassSelectSprite(
+            physiqueFrameSprite,
+            "UI/ClassSelect/Class_Banner_PHY"
+        );
+        technicianFrameSprite = LoadClassSelectSprite(
+            technicianFrameSprite,
+            "UI/ClassSelect/Class_Banner_TEC"
+        );
+        captainFrameSprite = LoadClassSelectSprite(
+            captainFrameSprite,
+            "UI/ClassSelect/Class_Banner_CAP"
+        );
+
         selectionCards = new[]
         {
             InitializeCard(
                 physiqueButton,
                 physiqueFrameSprite,
-                new Color(0.48f, 0.10f, 0.10f, 0.94f)
+                new Color(0.48f, 0.10f, 0.10f, 0.94f),
+                "PHYSIQUE"
             ),
             InitializeCard(
                 technicianButton,
                 technicianFrameSprite,
-                new Color(0.05f, 0.36f, 0.18f, 0.94f)
+                new Color(0.05f, 0.36f, 0.18f, 0.94f),
+                "TECHNICIAN"
             ),
             InitializeCard(
                 captainButton,
                 captainFrameSprite,
-                new Color(0.28f, 0.10f, 0.48f, 0.94f)
+                new Color(0.28f, 0.10f, 0.48f, 0.94f),
+                "CAPTAIN"
             )
         };
 
@@ -930,10 +1012,92 @@ public class ClassSelectManager : MonoBehaviour
             selectionCards[1].DefaultPosition;
     }
 
+    /// <summary>
+    /// 클래스 선택 화면 뒤에 공용 배경을 배치합니다.
+    /// 상세 화면은 기존 클래스 영상 배경을 사용하므로 선택 목록에서만 노출됩니다.
+    /// </summary>
+    private void InitializeSelectionBackground()
+    {
+        if (physiqueButton == null)
+        {
+            return;
+        }
+
+        Canvas selectionCanvas = physiqueButton.GetComponentInParent<Canvas>();
+        if (selectionCanvas == null)
+        {
+            Debug.LogError(
+                "[ClassSelectManager] 클래스 선택 Canvas를 찾을 수 없습니다."
+            );
+            return;
+        }
+
+        Sprite backgroundSprite = Resources.Load<Sprite>(
+            "UI/ClassSelect/Class_Select_Background"
+        );
+
+        if (backgroundSprite == null)
+        {
+            Debug.LogError(
+                "[ClassSelectManager] 클래스 선택 배경을 찾을 수 없습니다."
+            );
+            return;
+        }
+
+        GameObject backgroundObject = new GameObject(
+            "ClassSelectBackground",
+            typeof(RectTransform),
+            typeof(CanvasRenderer),
+            typeof(Image),
+            typeof(AspectRatioFitter)
+        );
+
+        RectTransform backgroundRect =
+            backgroundObject.GetComponent<RectTransform>();
+        backgroundRect.SetParent(selectionCanvas.transform, false);
+        backgroundRect.anchorMin = new Vector2(0.5f, 0.5f);
+        backgroundRect.anchorMax = new Vector2(0.5f, 0.5f);
+        backgroundRect.anchoredPosition = Vector2.zero;
+        backgroundRect.sizeDelta = Vector2.zero;
+        backgroundRect.SetAsFirstSibling();
+
+        selectionBackground = backgroundObject.GetComponent<Image>();
+        selectionBackground.sprite = backgroundSprite;
+        selectionBackground.color = Color.white;
+        selectionBackground.raycastTarget = false;
+
+        AspectRatioFitter aspectFitter =
+            backgroundObject.GetComponent<AspectRatioFitter>();
+        aspectFitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+        aspectFitter.aspectRatio =
+            backgroundSprite.rect.width / backgroundSprite.rect.height;
+    }
+
+    private static Sprite LoadClassSelectSprite(
+        Sprite assignedSprite,
+        string resourcePath)
+    {
+        if (assignedSprite != null)
+        {
+            return assignedSprite;
+        }
+
+        Sprite loadedSprite = Resources.Load<Sprite>(resourcePath);
+        if (loadedSprite == null)
+        {
+            Debug.LogError(
+                $"[ClassSelectManager] 클래스 선택 이미지를 찾을 수 없습니다: {resourcePath}"
+            );
+        }
+
+        return loadedSprite;
+    }
+
     private ClassSelectionCardUI InitializeCard(
         Button button,
         Sprite frameSprite,
-        Color fallbackColor)
+        Color fallbackColor,
+        string className)
     {
         ClassSelectionCardUI card =
             button.GetComponent<ClassSelectionCardUI>();
@@ -946,7 +1110,8 @@ public class ClassSelectManager : MonoBehaviour
         card.Initialize(
             button,
             frameSprite,
-            fallbackColor
+            fallbackColor,
+            className
         );
 
         return card;
