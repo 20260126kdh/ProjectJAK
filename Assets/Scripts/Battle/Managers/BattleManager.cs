@@ -22,6 +22,12 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private bool isBattleStarted;
 
+    /// <summary>
+    /// 전투 종료 후 보상 처리를 기다리는 외부 자동 테스트가
+    /// 실제 전투 종료 완료 여부를 확인할 때 사용합니다.
+    /// </summary>
+    public bool IsBattleStarted => isBattleStarted;
+
     [Header("Hand Manager")]
     [SerializeField]
     private HandManager handManager;

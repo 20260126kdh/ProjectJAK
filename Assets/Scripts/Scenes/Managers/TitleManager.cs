@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
+#if POLISH_SIMULATION_BUILD
+using System.Collections;
+#endif
 
 /// <summary>
 /// 메인 타이틀 화면을 관리합니다.
@@ -25,10 +28,62 @@ public class TitleManager : MonoBehaviour
 
     private VideoPlayer titleVideoPlayer;
 
+#if UNITY_EDITOR
+
+    private void Update()
+    {
+        bool isShiftPressed = Input.GetKey(KeyCode.LeftShift) ||
+                              Input.GetKey(KeyCode.RightShift);
+        if (isShiftPressed && Input.GetKeyDown(KeyCode.F7))
+        {
+            PolishCampaignController.TryStartFromTitle(
+                this, true, PlayerClass.Physique);
+        }
+        else if (isShiftPressed && Input.GetKeyDown(KeyCode.F8))
+        {
+            PolishCampaignController.TryStartFromTitle(
+                this, true, PlayerClass.Technician);
+        }
+        else if (isShiftPressed && Input.GetKeyDown(KeyCode.F9))
+        {
+            PolishCampaignController.TryStartFromTitle(
+                this, true, PlayerClass.Captain);
+        }
+        else if (!isShiftPressed && Input.GetKeyDown(KeyCode.F7))
+        {
+            PolishCampaignController.TryStartFromTitle(this);
+        }
+    }
+
+#endif
+
     private void Awake()
     {
         PlayTitleBackgroundVideo();
     }
+
+#if POLISH_SIMULATION_BUILD
+    private IEnumerator Start()
+    {
+        if (!PolishSimulationCommandLine.IsSimulationRequested)
+        {
+            yield break;
+        }
+
+        float startedAt = Time.realtimeSinceStartup;
+        while ((StageManager.Instance == null || GameManager.Instance == null) &&
+               Time.realtimeSinceStartup - startedAt < 10f)
+        {
+            yield return null;
+        }
+
+        if (!PolishSimulationCommandLine.TryStart(this))
+        {
+            Debug.LogError("[TitleManager] 독립 시뮬레이션 시작에 실패했습니다.", this);
+            Application.Quit(2);
+        }
+    }
+#endif
 
     /// <summary>
     /// 타이틀 영상을 기존 UI 뒤의 카메라 배경으로 반복 재생합니다.
@@ -175,4 +230,33 @@ public class TitleManager : MonoBehaviour
             classSelectScene
         );
     }
+
+#if UNITY_EDITOR || POLISH_SIMULATION_BUILD
+
+    /// <summary>
+    /// 폴리싱 자동 테스트를 위해 사용자 저장 파일은 유지하고
+    /// 런타임 진행도만 초기화한 뒤 클래스 선택 씬으로 이동합니다.
+    /// </summary>
+    /// <returns>필수 Manager를 초기화하고 씬 이동을 시작했다면 true</returns>
+    public bool StartPolishTestGame()
+    {
+        if (string.IsNullOrWhiteSpace(classSelectScene) ||
+            StageManager.Instance == null ||
+            GameManager.Instance == null ||
+            GameManager.Instance.PlayerData == null)
+        {
+            Debug.LogError(
+                "[TitleManager] 폴리싱 테스트 시작에 필요한 설정이 없습니다.",
+                this);
+            return false;
+        }
+
+        ContinueLoadContext.Clear();
+        StageManager.Instance.ResetProgress();
+        GameManager.Instance.InitializeGame();
+        SceneManager.LoadScene(classSelectScene);
+        return true;
+    }
+
+#endif
 }

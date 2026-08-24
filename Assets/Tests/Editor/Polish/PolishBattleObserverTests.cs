@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEngine;
 
 /// <summary>
 /// AutoPlayer 공개 정보 스냅샷에 미래 정보가 노출되지 않는지 검증합니다.
@@ -55,5 +56,43 @@ public class PolishBattleObserverTests
         Assert.AreEqual(
             typeof(System.Collections.Generic.IReadOnlyList<>),
             property.PropertyType.GetGenericTypeDefinition());
+    }
+
+    [Test]
+    public void ResolveRequiredTarget_UsesExactCardEffectTargets()
+    {
+        CardData enemySkill = ScriptableObject.CreateInstance<CardData>();
+        enemySkill.effects.Add(new CardEffectData
+        {
+            effectType = CardEffectType.ApplyStatus,
+            target = CardTargetType.Enemy
+        });
+        CardData selfSkill = ScriptableObject.CreateInstance<CardData>();
+        selfSkill.effects.Add(new CardEffectData
+        {
+            effectType = CardEffectType.GainBlock,
+            target = CardTargetType.Self
+        });
+        CardData crewSkill = ScriptableObject.CreateInstance<CardData>();
+        crewSkill.effects.Add(new CardEffectData
+        {
+            effectType = CardEffectType.Sacrifice,
+            target = CardTargetType.Undead,
+            value = 1
+        });
+
+        Assert.AreEqual(
+            PolishDecisionTarget.Enemy,
+            PolishBattleObserver.ResolveRequiredTarget(enemySkill));
+        Assert.AreEqual(
+            PolishDecisionTarget.Player,
+            PolishBattleObserver.ResolveRequiredTarget(selfSkill));
+        Assert.AreEqual(
+            PolishDecisionTarget.Crew,
+            PolishBattleObserver.ResolveRequiredTarget(crewSkill));
+
+        UnityEngine.Object.DestroyImmediate(enemySkill);
+        UnityEngine.Object.DestroyImmediate(selfSkill);
+        UnityEngine.Object.DestroyImmediate(crewSkill);
     }
 }

@@ -2240,3 +2240,361 @@ Editor 전용 플레이어 사망 테스트 단축키
 - `Assets/Tests/Editor/Polish/PolishManualBattleTestRunnerTests.cs`
 - `CURRENT_TASK.md`
 - `Docs/DEVLOG.md`
+
+# 현재 작업 - F7 자동 전투 카드 대상 판정 반복 수정
+
+## 목표
+
+- 카드 효과 기준 실제 클릭 대상을 공개 손패 스냅샷에 포함한다.
+- 인간형 판단기가 설명 추측보다 실제 카드 대상 규칙을 우선한다.
+- 카드 또는 턴 종료 입력이 거부되면 성공으로 처리하지 않고 자동 테스트를 오류 종료한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishVisibleBattleSnapshot.cs`
+- `Assets/Scripts/Testing/Polish/PolishBattleObserver.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanDecisionEngine.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanActionExecutor.cs`
+- 관련 Editor 테스트
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - 타이틀 F7 전체 폴리싱 캠페인 1단계
+
+## 목표
+
+- 타이틀 화면 F7로 클래스별 50회, 총 150 Run 세션을 시작한다.
+- 사용자 저장 파일을 삭제하지 않고 테스트 런타임 진행도만 초기화한다.
+- 첫 Physique Run을 발급하고 클래스 선택 화면에서 자동 선택·확정한다.
+- BattleScene 진입 후에는 다음 단계 연결 전까지 대기한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Scenes/Managers/TitleManager.cs`
+- `Assets/Scripts/Testing/Polish/PolishTestRunCoordinator.cs`
+- `Assets/Scripts/Testing/Polish/PolishCampaignController.cs`
+- `Assets/Scripts/Testing/Polish/PolishTestSessionState.cs`
+- 관련 Editor 테스트
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - F7 클래스 선택 및 튜토리얼 자동화
+
+## 목표
+
+- 실제 클래스 선택 씬에서 현재 Run 클래스를 자동 선택·확정한다.
+- 시작 덱 확인과 첫 전투 튜토리얼의 대화, 카드 사용, 보존, 턴 종료를 자동 진행한다.
+- 튜토리얼 완료 후 기존 단일 전투 자동 컨트롤러로 인계한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishCampaignController.cs`
+- `Assets/Scripts/Testing/Polish/PolishTutorialAutomationController.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - F7 일반 전투 보상 자동화
+
+## 목표
+
+- 자동 전투 승리 후 생성된 보상 카드 중 희귀도가 높은 카드를 선택한다.
+- 실제 보상 선택과 Continue 경로를 통해 덱에 추가한다.
+- 일반 진행이면 다음 전투 준비를 기다린 뒤 자동 전투를 다시 시작한다.
+- 휴식 및 보스 분기는 후속 단계 작업을 위해 대기한다.
+
+## 수정 범위
+
+- `Assets/Scripts/UI/RewardPanelUI.cs`
+- `Assets/Scripts/Testing/Polish/PolishCampaignController.cs`
+- `Assets/Scripts/Testing/Polish/PolishRewardAutomationController.cs`
+- 관련 Editor 테스트
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - F7 휴식·강화·보스전 진입 자동화
+
+## 목표
+
+- 체력이 부족하면 휴식을 사용하고 이미지 연출 완료까지 기다린다.
+- 강화 가능한 카드 중 희귀도가 높은 카드를 실제 UI 경로로 강화한다.
+- 휴식 단계를 완료하고 보스 몬스터 생성 후 자동 전투를 재시작한다.
+
+## 수정 범위
+
+- `Assets/Scripts/UI/RestPanelUI.cs`
+- `Assets/Scripts/UI/UpgradePanelUI.cs`
+- `Assets/Scripts/Testing/Polish/PolishCampaignController.cs`
+- `Assets/Scripts/Testing/Polish/PolishRestAutomationController.cs`
+- 관련 Editor 테스트
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - F7 실제 보존 입력 경로 적용
+
+## 목표
+
+- 자동 플레이어가 TurnManager를 직접 호출하지 않고 실제 보존 UI 흐름으로 턴을 종료한다.
+- 공개 손패에서 최대 한 장만 보존하고 나머지는 기존 버림 연출과 버림 덱 이동을 수행한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishHumanDecision.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanDecisionEngine.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanActionExecutor.cs`
+- `Assets/Scripts/Testing/Polish/PolishTutorialAutomationController.cs`
+- 관련 Editor 테스트
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - F7 상황 판단 보존
+
+## 목표
+
+- 공개 카드 희귀도, 강화 여부, 종류와 예상 피해를 절대 점수로 평가한다.
+- 가치 기준 미달이면 남은 손패가 있어도 빈 보존을 선택한다.
+- 동점 후보는 Run 판단 Seed로 선택해 재현 가능성과 사람다운 변동성을 함께 유지한다.
+
+## 수정 범위
+
+- `Assets/Scripts/Testing/Polish/PolishVisibleBattleSnapshot.cs`
+- `Assets/Scripts/Testing/Polish/PolishBattleObserver.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanDecision.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanDecisionEngine.cs`
+- 관련 Editor 테스트
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+# 현재 작업 - F7 클래스별 50 Run 자동 반복 및 보고서
+
+## 목표
+
+- Physique, Technician, Captain 순서로 각 50 Run을 자동 실행한다.
+- 클리어, 사망, 오류 뒤 사용자 저장을 건드리지 않고 다음 Run을 시작한다.
+- Run·클래스 요약, 오류 목록과 최종 Markdown 보고서를 세션 폴더에 저장한다.
+- 총 150 Run 완료 시 Unity 알림으로 결과 파일 위치를 안내한다.
+
+# 현재 작업 - F7 특수 선택 패널 자동화
+
+## 목표
+
+- 스테이지 2 계시 패널이 열리면 일반 전투 입력을 멈춘다.
+- 현재 생존 상태와 기존 선택을 기준으로 실제 계시 버튼을 누르고 전투를 재개한다.
+
+# 현재 작업 - F7 자동 테스트 4배속
+
+## 목표
+
+- F7 캠페인 동안 전투·턴·연출을 4배속으로 진행한다.
+- 완료, 중단 또는 Controller 제거 시 기존 게임 배속을 복원한다.
+- UI 준비 확인은 실시간 대기를 유지해 자동 입력 안정성을 보존한다.
+# 현재 작업 변경
+## 작업명
+자동 플레이 카드 조합 판단 1단계
+
+## 현재 상태
+구현 완료 / Unity 컴파일 및 Editor Test 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Testing/Polish/PolishVisibleBattleSnapshot.cs`
+- `Assets/Scripts/Testing/Polish/PolishBattleObserver.cs`
+- `Assets/Scripts/Testing/Polish/PolishHumanDecisionEngine.cs`
+- `Assets/Tests/Editor/Polish/PolishHumanDecisionEngineTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+- 현재 손패의 실제 카드 효과를 복사한 공개 정보만 사용한다.
+- 최대 4장, 단계별 상위 24개 조합을 비교한다.
+- 취약 후 공격, 힘 후 다단 공격, 작살 부여 후 소비 순서를 우선한다.
+- 실제 카드 한 장 사용 후에는 실제 전투 상태를 다시 관찰한다.
+- 미래 드로우와 비공개 RNG는 예측하지 않는다.
+# 현재 작업 변경
+## 작업명
+30분 목표 고속 자동 테스트 모드
+
+## 현재 상태
+구현 완료 / Unity Play Mode 확인 필요
+
+## 완료 조건
+- F7 일반 모드는 기존 4배속과 입력 간격을 유지한다.
+- Shift+F7은 20배속과 프레임 단위 자동 입력을 사용한다.
+- 다음 Run 전환의 고정 실시간 대기를 고속 모드에서 제거한다.
+- 결과 보고서에 실행 모드와 실제 소요 시간을 기록한다.
+- 게임 판단, Seed, 오류 기록과 150 Run 구성은 두 모드가 동일하다.
+# 현재 작업 변경
+## 작업명
+클래스별 50회 고속 테스트 1단계
+
+## 현재 상태
+구현 완료 / Unity Play Mode 속도 측정 필요
+
+## 완료 조건
+- Shift+F7은 피지크, Shift+F8은 테크니션, Shift+F9는 캡틴을 각각 50회 실행한다.
+- 선택 클래스 50회가 끝나면 다음 클래스로 넘어가지 않고 정지한다.
+- 고속 모드에서는 카메라, 영상, 오디오와 Renderer 출력을 비활성화한다.
+- UI 객체와 실제 게임 로직은 유지해 기존 전투 규칙을 그대로 검증한다.
+- 결과 보고서에 대상 클래스, 50회 진행도와 실제 시간을 기록한다.
+# 현재 작업 변경
+## 작업명
+자동 플레이 기록 기반 판단·사망·보상 안정화
+
+## 현재 상태
+구현 완료 / Unity Play Mode 재현 확인 필요
+
+## 완료 조건
+- 즉시 사망하는 체력 소모 카드를 선택하지 않는다.
+- 체력 소모 후 예정 피해를 버티지 못하면 강하게 감점한다.
+- 예정 피해가 없는 턴에는 순수 즉시 방어 카드를 사용하지 않는다.
+- 사망 시 스테이지, 전투, 턴, 직전 피해 추정, Intent, 손패, 상태와 최근 행동을 기록한다.
+- 적 HP가 0이 된 뒤 BattleManager 전투 종료가 끝나기 전 보상 자동화를 시작하지 않는다.
+- 보상 Timeout 시 Phase, 패널, 카드 수, 전투 상태와 Encounter를 기록한다.
+# 현재 작업 변경
+## 작업명
+고속 테스트 PHY-003 정지 원인 수정
+
+## 현재 상태
+구현 완료 / Unity Play Mode 재검증 필요
+
+## 완료 조건
+- 고속 모드에서도 Main Camera 컴포넌트는 활성 상태를 유지한다.
+- 카메라 cullingMask를 0으로 설정해 실제 장면 출력만 생략한다.
+- 고속 모드의 보존 확정은 버림 VFX 없이 기존 완료 경로를 실행한다.
+- 동일 오류 메시지는 한 Run에서 한 번만 IssueSummary에 기록한다.
+- PHY-003이 반복 버림 연출 오류 없이 다음 Run으로 진행한다.
+# 현재 작업 변경
+## 작업명
+Stage 3 모르바엘 이후 아리엘 자동 전투 연결
+
+## 현재 상태
+구현 완료 / Unity Play Mode 재검증 필요
+
+## 완료 조건
+- 보상 이후 NormalBattle과 BossBattle 모두 다음 적 생성을 기다린다.
+- 모르바엘 보상 이후 생성된 아리엘에 자동 전투 Controller를 연결한다.
+- BossBattle 진행 대기 콜백이 발생해도 별도 안전 대기 경로로 연결한다.
+- Rest 분기는 기존 휴식 자동화로 유지한다.
+- PHY-003이 S3B6 연속 보스를 마치고 Run 결과를 저장한다.
+# 현재 작업 변경
+## 작업명
+자동 테스트 클래스별 30회 조정
+
+## 현재 상태
+구현 완료 / Unity Play Mode 확인 필요
+
+## 완료 조건
+- Shift+F7, Shift+F8, Shift+F9는 선택 클래스를 30회 실행하고 정지한다.
+- 일반 F7은 세 클래스를 각각 30회, 총 90회 실행한다.
+- 기존 1~30번 Run ID와 Seed 재현 규칙을 유지한다.
+- 결과 보고서와 완료 팝업에 30/30 또는 90/90을 표시한다.
+# 현재 작업 변경
+
+## 작업명
+
+폴리싱 자동 테스트 전투 승리 조기 판정 수정
+
+## 현재 상태
+
+구현 및 C# 정적 빌드 완료 / Unity Editor Test 및 Play Mode 재검증 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Testing/Polish/PolishSingleBattleController.cs`
+- `Assets/Tests/Editor/Polish/PolishSingleBattleControllerTests.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 화면에서 적이 잠시 0명이더라도 `BattleManager`가 전투 중이면 승리로 확정하지 않는다.
+- 실제 전투 종료 후에만 자동 전투 결과를 승리로 기록한다.
+- 전투 종료가 발생하지 않으면 기존 단일 전투 제한 시간으로 중단한다.
+- Physique 재실행에서 2스테이지 5번째 전투 이후 시간 초과가 재발하지 않는지 확인한다.
+# 현재 작업 변경
+
+## 작업명
+독립 시뮬레이터 빌드 분리 1단계 - 런타임 실행 경로
+
+## 현재 상태
+코드 구현 완료 / Unity 새 스크립트 Import 및 Editor 테스트 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Scenes/Managers/TitleManager.cs`
+- `Assets/Scripts/Core/SaveManager.cs`
+- `Assets/Scripts/Testing/Polish/PolishCampaignController.cs`
+- `Assets/Scripts/Testing/Polish/PolishCampaignReportWriter.cs`
+- `Assets/Scripts/Testing/Polish/PolishTutorialAutomationController.cs`
+- `Assets/Scripts/Testing/Polish/PolishRewardAutomationController.cs`
+- `Assets/Scripts/Testing/Polish/PolishRestAutomationController.cs`
+- `Assets/Scripts/Testing/Polish/PolishSpecialChoiceAutomationController.cs`
+- `Assets/Scripts/Testing/Polish/PolishTestLogger.cs`
+- `Assets/Scripts/Testing/Polish/PolishTestRunCoordinator.cs`
+- `Assets/Scripts/Testing/Polish/PolishTestSessionState.cs`
+- `Assets/Scripts/Testing/Polish/PolishSimulationCommandLine.cs`
+- `Assets/Tests/Editor/Polish/PolishTestFoundationTests.cs`
+- `Assets/Tests/Editor/Polish/PolishTestSessionStateTests.cs`
+
+## 완료 조건
+- `POLISH_SIMULATION_BUILD`이 정의된 빌드에서만 `-simulate` 자동 캠페인이 시작된다.
+- `-class`, `-runs`, `-speed`, `-output` 인수를 적용한다.
+- 시뮬레이터 저장 파일과 결과 폴더가 일반 플레이 데이터와 분리된다.
+- 최종 보고서 작성 후 시뮬레이터 프로세스가 자동 종료된다.
+- 일반 Editor F7 테스트와 일반 플레이 빌드 흐름은 기존 동작을 유지한다.
+
+## 다음 단계
+사용자가 `다음`이라고 하면 `Tools > Build > Simulation Build` 전용 빌드 메뉴를 추가한다.
+# 현재 작업 변경
+
+## 작업명
+독립 시뮬레이터 빌드 분리 2단계 - Editor 빌드 메뉴
+
+## 현재 상태
+구현 완료 / Unity 컴파일 및 실제 Windows 빌드 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Editor/PolishSimulationBuildMenu.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+- `Tools > Build > Simulation Build`에서 Windows 64비트 빌드를 생성한다.
+- 활성화된 Build Settings Scene만 포함한다.
+- 시뮬레이터 빌드에만 `POLISH_SIMULATION_BUILD`을 정의한다.
+- 일반 Player Settings와 일반 빌드의 Scripting Define은 변경하지 않는다.
+- 빌드 성공 후 실행 파일 위치와 명령줄 예시를 표시한다.
+
+## 다음 단계
+사용자가 `다음`이라고 하면 시뮬레이터 빌드를 생성하고 명령줄 실행을 확인한다.
+# 현재 작업 변경
+
+## 작업명
+독립 시뮬레이터 창 모드 적용
+
+## 현재 상태
+구현 완료 / 시뮬레이터 재빌드 및 실행 확인 필요
+
+## 수정 대상
+- `Assets/Scripts/Testing/Polish/PolishSimulationCommandLine.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+- `-simulate` 실행 시 1280×720 창 모드를 적용한다.
+- 일반 게임 빌드와 Unity Play Mode 화면 설정은 변경하지 않는다.
+# 현재 작업 변경
+
+## 작업명
+Shipcollector 본체 위치 조정
+
+## 현재 상태
+프리팹 수정 완료 / Stage 3 Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Prefabs/Enemy/NormalBattle/3Stage/Shipcollector.prefab`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+- Shipcollector의 `EnemyUIRoot` 위치는 유지한다.
+- `SpineVisual`만 왼쪽으로 0.35 이동한다.
+- 클릭 판정 Collider도 본체와 같은 거리만큼 이동한다.
+- 크기와 세로 위치는 유지한다.

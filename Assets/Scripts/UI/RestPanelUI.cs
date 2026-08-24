@@ -78,6 +78,27 @@ public class RestPanelUI : MonoBehaviour
     private Coroutine restImageCoroutine;
     private Image restTransitionImage;
 
+    /// <summary>
+    /// 현재 휴식 패널이 화면에 표시 중인지 반환합니다.
+    /// </summary>
+    public bool IsRestPanelOpen =>
+        restPanel != null && restPanel.activeSelf;
+
+    /// <summary>
+    /// 이번 휴식 단계에서 회복을 사용했는지 반환합니다.
+    /// </summary>
+    public bool HasRested => hasRested;
+
+    /// <summary>
+    /// 이번 휴식 단계에서 카드 강화를 완료했는지 반환합니다.
+    /// </summary>
+    public bool HasUpgraded => hasUpgraded;
+
+    /// <summary>
+    /// 휴식 이미지 전환 연출이 진행 중인지 반환합니다.
+    /// </summary>
+    public bool IsRestSequencePlaying => restImageCoroutine != null;
+
     private void Awake()
     {
         EnsureRestPanelSorting();

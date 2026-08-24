@@ -30,8 +30,27 @@ public class PolishVisibleCardSnapshot
     public string displayName;
     public string description;
     public string cardType;
+    public string rarity;
+    public bool hasRequiredTarget;
+    public PolishDecisionTarget requiredTarget;
     public bool isUpgraded;
     public bool isUsable;
+    public List<PolishVisibleCardEffectSnapshot> effects =
+        new List<PolishVisibleCardEffectSnapshot>();
+}
+
+/// <summary>
+/// 플레이어가 카드 상세 정보에서 확인할 수 있는 효과 한 줄입니다.
+/// 자동 판단은 원본 카드 데이터를 변경하지 않고 이 복사본만 사용합니다.
+/// </summary>
+[Serializable]
+public class PolishVisibleCardEffectSnapshot
+{
+    public CardEffectType effectType;
+    public StatusEffectType statusEffectType;
+    public int value;
+    public CardTargetType target;
+    public int repeatCount = 1;
 }
 
 /// <summary>

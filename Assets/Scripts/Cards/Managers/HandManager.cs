@@ -1955,6 +1955,19 @@ public class HandManager : MonoBehaviour
             return;
         }
 
+#if UNITY_EDITOR
+        /*
+         * 고속 폴리싱 테스트는 카드 버림 결과만 검증합니다.
+         * VFX와 화면 좌표 계산은 생략하되 실제 버림, Jinx 초기화와
+         * 턴 종료는 일반 경로와 같은 완료 메서드에서 처리합니다.
+         */
+        if (PolishCampaignController.IsFastModeRunning)
+        {
+            CompletePreserveConfirmation();
+            return;
+        }
+#endif
+
         if (
             discardPileTarget == null ||
             discardTransformVfxPrefab == null ||

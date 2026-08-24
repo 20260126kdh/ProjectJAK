@@ -30,12 +30,15 @@ public class PolishSingleBattleController : MonoBehaviour
     private Coroutine battleRoutine;
     private PolishHumanDecisionEngine decisionEngine;
     private HandManager handManager;
+    private PolishSpecialChoiceAutomationController specialChoiceController;
     private int actionCount;
     private float startedAt;
     private bool isRunning;
     private bool wasPlayerTurn;
     private int playerTurnNumber;
     private PolishTurnRecord currentTurnRecord;
+    private PolishTurnRecord lastCompletedTurnRecord;
+    private bool deathRecorded;
     private PolishSingleBattleOutcome outcome;
 
     /// <summary>
@@ -52,6 +55,15 @@ public class PolishSingleBattleController : MonoBehaviour
     /// 현재 전투에서 전달한 행동 수입니다.
     /// </summary>
     public int ActionCount => actionCount;
+
+    /// <summary>
+    /// 자동 테스트 모드에 맞춰 카드 행동 사이의 실시간 대기를 설정합니다.
+    /// </summary>
+    /// <param name="fastMode">30분 목표 고속 모드 여부</param>
+    public void ConfigureExecutionMode(bool fastMode)
+    {
+        actionInterval = fastMode ? 0.01f : 0.35f;
+    }
 
     /// <summary>
     /// 현재 열린 전투의 자동 진행을 시작합니다.
@@ -77,6 +89,8 @@ public class PolishSingleBattleController : MonoBehaviour
         playerTurnNumber = 0;
         wasPlayerTurn = false;
         currentTurnRecord = null;
+        lastCompletedTurnRecord = null;
+        deathRecorded = false;
         startedAt = Time.unscaledTime;
         outcome = PolishSingleBattleOutcome.InProgress;
         isRunning = true;
@@ -145,20 +159,57 @@ public class PolishSingleBattleController : MonoBehaviour
         return PolishSingleBattleOutcome.InProgress;
     }
 
+    /// <summary>
+    /// 화면에서 적이 사라진 뒤 실제 전투 종료 처리까지 반영하여 최종 결과를 판정합니다.
+    /// 적 교체나 소환 직전의 빈 프레임을 승리로 오인하지 않도록 BattleManager 상태를 우선합니다.
+    /// </summary>
+    /// <param name="evaluatedOutcome">화면 공개 정보로 먼저 판정한 결과</param>
+    /// <param name="isBattleStarted">BattleManager의 실제 전투 진행 상태</param>
+    /// <param name="elapsedSeconds">현재 전투의 실제 경과 시간</param>
+    /// <param name="timeoutSeconds">허용할 최대 경과 시간</param>
+    /// <returns>실제 전투 상태까지 반영한 최종 판정</returns>
+    public static PolishSingleBattleOutcome ResolveAuthoritativeOutcome(
+        PolishSingleBattleOutcome evaluatedOutcome,
+        bool isBattleStarted,
+        float elapsedSeconds,
+        float timeoutSeconds)
+    {
+        if (evaluatedOutcome != PolishSingleBattleOutcome.Victory ||
+            !isBattleStarted)
+        {
+            return evaluatedOutcome;
+        }
+
+        return elapsedSeconds >= timeoutSeconds
+            ? PolishSingleBattleOutcome.Timeout
+            : PolishSingleBattleOutcome.InProgress;
+    }
+
     private IEnumerator RunBattle()
     {
         while (true)
         {
             PolishVisibleBattleSnapshot snapshot = observer.Capture();
+            float elapsedSeconds = Time.unscaledTime - startedAt;
             outcome = EvaluateOutcome(
                 snapshot,
                 actionCount,
                 maxActionCount,
-                Time.unscaledTime - startedAt,
+                elapsedSeconds,
+                battleTimeout);
+            BattleManager battleManager = FindFirstObjectByType<BattleManager>();
+            outcome = ResolveAuthoritativeOutcome(
+                outcome,
+                battleManager != null && battleManager.IsBattleStarted,
+                elapsedSeconds,
                 battleTimeout);
 
             if (outcome != PolishSingleBattleOutcome.InProgress)
             {
+                if (outcome == PolishSingleBattleOutcome.Death)
+                {
+                    RecordDeath(snapshot);
+                }
                 FlushTurnRecord();
                 isRunning = false;
                 battleRoutine = null;
@@ -169,6 +220,13 @@ public class PolishSingleBattleController : MonoBehaviour
             {
                 wasPlayerTurn = false;
                 yield return null;
+                continue;
+            }
+
+            if (specialChoiceController != null &&
+                specialChoiceController.TryHandleOpenChoice(snapshot))
+            {
+                yield return new WaitForSecondsRealtime(0.2f);
                 continue;
             }
 
@@ -214,8 +272,15 @@ public class PolishSingleBattleController : MonoBehaviour
                 FlushTurnRecord();
                 wasPlayerTurn = false;
             }
-            yield return new WaitForSecondsRealtime(
-                Mathf.Max(0.05f, actionInterval));
+            if (actionInterval <= 0.01f)
+            {
+                yield return null;
+            }
+            else
+            {
+                yield return new WaitForSecondsRealtime(
+                    Mathf.Max(0.05f, actionInterval));
+            }
         }
     }
 
@@ -237,6 +302,8 @@ public class PolishSingleBattleController : MonoBehaviour
         }
 
         handManager = FindFirstObjectByType<HandManager>();
+        specialChoiceController =
+            FindFirstObjectByType<PolishSpecialChoiceAutomationController>();
     }
 
     private void FlushTurnRecord()
@@ -247,6 +314,61 @@ public class PolishSingleBattleController : MonoBehaviour
         }
 
         testLogger?.RecordTurn(currentTurnRecord);
+        lastCompletedTurnRecord = currentTurnRecord;
         currentTurnRecord = null;
+    }
+
+    private void RecordDeath(PolishVisibleBattleSnapshot snapshot)
+    {
+        if (deathRecorded || testLogger == null || snapshot == null)
+        {
+            return;
+        }
+
+        StageManager stageManager = StageManager.Instance;
+        EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
+        PolishTurnRecord sourceTurn = currentTurnRecord ?? lastCompletedTurnRecord;
+        PolishDeathRecord record = new PolishDeathRecord
+        {
+            stage = stageManager != null ? stageManager.CurrentStage : 0,
+            battle = stageManager != null ? stageManager.CurrentBattleCount + 1 : 0,
+            encounter = enemySpawner?.CurrentBattleData != null
+                ? enemySpawner.CurrentBattleData.BattleId
+                : string.Empty,
+            turn = sourceTurn != null ? sourceTurn.turn : playerTurnNumber,
+            hp = snapshot.playerHp,
+            block = snapshot.playerBlock,
+            lastDamage = sourceTurn != null
+                ? Mathf.Max(0, sourceTurn.hp + sourceTurn.block -
+                               snapshot.playerHp - snapshot.playerBlock)
+                : 0,
+            damageSource = sourceTurn != null
+                ? string.Join(" | ", sourceTurn.enemyIntents)
+                : string.Empty,
+            primaryCause = "IncomingDamage"
+        };
+
+        foreach (PolishVisibleCardSnapshot card in snapshot.hand)
+        {
+            if (card != null)
+            {
+                record.hand.Add($"{card.cardId}|{card.displayName}");
+            }
+        }
+        foreach (PolishVisibleStatusSnapshot status in snapshot.playerStatuses)
+        {
+            if (status != null)
+            {
+                record.statusEffects.Add(
+                    $"{status.type}|Value:{status.value}|Turn:{status.remainingTurn}");
+            }
+        }
+        if (sourceTurn != null)
+        {
+            record.recentActions.AddRange(sourceTurn.actions);
+        }
+
+        testLogger.RecordDeath(record);
+        deathRecorded = true;
     }
 }

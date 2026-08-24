@@ -69,11 +69,22 @@ public class SaveManager : MonoBehaviour
     /// <summary>
     /// 실제 저장 파일의 전체 경로입니다.
     /// </summary>
-    public string SaveFilePath =>
-        Path.Combine(
-            Application.persistentDataPath,
-            saveFileName
-        );
+    public string SaveFilePath
+    {
+        get
+        {
+            string activeSaveFileName = saveFileName;
+#if POLISH_SIMULATION_BUILD
+            if (PolishSimulationCommandLine.IsSimulationRequested)
+            {
+                activeSaveFileName = "simulation_" + saveFileName;
+            }
+#endif
+            return Path.Combine(
+                Application.persistentDataPath,
+                activeSaveFileName);
+        }
+    }
 
     /// <summary>
     /// 이어하기 가능한 유효한 저장 데이터가 있는지 반환합니다.

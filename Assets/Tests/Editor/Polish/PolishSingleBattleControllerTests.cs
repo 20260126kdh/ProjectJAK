@@ -29,6 +29,42 @@ public class PolishSingleBattleControllerTests
     }
 
     [Test]
+    public void ResolveAuthoritativeOutcome_NoEnemiesButBattleRunning_Waits()
+    {
+        Assert.AreEqual(
+            PolishSingleBattleOutcome.InProgress,
+            PolishSingleBattleController.ResolveAuthoritativeOutcome(
+                PolishSingleBattleOutcome.Victory,
+                true,
+                10f,
+                180f));
+    }
+
+    [Test]
+    public void ResolveAuthoritativeOutcome_BattleEnded_ReturnsVictory()
+    {
+        Assert.AreEqual(
+            PolishSingleBattleOutcome.Victory,
+            PolishSingleBattleController.ResolveAuthoritativeOutcome(
+                PolishSingleBattleOutcome.Victory,
+                false,
+                10f,
+                180f));
+    }
+
+    [Test]
+    public void ResolveAuthoritativeOutcome_BattleNeverEnds_ReturnsTimeout()
+    {
+        Assert.AreEqual(
+            PolishSingleBattleOutcome.Timeout,
+            PolishSingleBattleController.ResolveAuthoritativeOutcome(
+                PolishSingleBattleOutcome.Victory,
+                true,
+                180f,
+                180f));
+    }
+
+    [Test]
     public void EvaluateOutcome_ActionLimitReached_ReturnsTimeout()
     {
         PolishVisibleBattleSnapshot snapshot = CreateActiveSnapshot();

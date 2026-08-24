@@ -67,6 +67,17 @@ public class RewardPanelUI : MonoBehaviour
     /// </summary>
     private CardData selectedRewardCardData;
 
+    /// <summary>
+    /// 현재 전투 보상 패널이 화면에 표시 중인지 반환합니다.
+    /// </summary>
+    public bool IsRewardPanelOpen =>
+        rewardPanel != null && rewardPanel.activeSelf;
+
+    /// <summary>
+    /// 현재 화면에 생성된 보상 카드 UI를 읽기 전용으로 반환합니다.
+    /// </summary>
+    public IReadOnlyList<CardUI> RewardCardUIs => rewardCardUIs;
+
     private void Awake()
     {
         HideRewardPanel();

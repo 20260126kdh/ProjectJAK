@@ -58,16 +58,83 @@ public class PolishBattleObserver : MonoBehaviour
                 continue;
             }
 
-            snapshot.hand.Add(new PolishVisibleCardSnapshot
+            PolishVisibleCardSnapshot cardSnapshot = new PolishVisibleCardSnapshot
             {
                 cardId = card.cardID,
                 displayName = card.GetDisplayName(),
                 description = card.DisplayDescription,
                 cardType = card.cardType.ToString(),
+                rarity = card.cardRarity.ToString(),
+                hasRequiredTarget = true,
+                requiredTarget = ResolveRequiredTarget(card),
                 isUpgraded = card.IsUpgraded,
                 isUsable = turnManager == null || turnManager.CanUseCard(card)
-            });
+            };
+
+            if (card.effects != null)
+            {
+                foreach (CardEffectData effect in card.effects)
+                {
+                    if (effect == null)
+                    {
+                        continue;
+                    }
+
+                    cardSnapshot.effects.Add(new PolishVisibleCardEffectSnapshot
+                    {
+                        effectType = effect.effectType,
+                        statusEffectType = effect.statusEffectType,
+                        value = effect.value,
+                        target = effect.target,
+                        repeatCount = Mathf.Max(1, effect.repeatCount)
+                    });
+                }
+            }
+
+            snapshot.hand.Add(cardSnapshot);
         }
+    }
+
+    /// <summary>
+    /// 카드 효과의 공개된 사용 규칙을 기준으로 클릭해야 할 대상을 판정합니다.
+    /// BattleManager의 대상 우선순위와 동일하게 선원, 적, 플레이어 순서로 처리합니다.
+    /// </summary>
+    /// <param name="card">현재 손패에 공개된 카드 데이터</param>
+    /// <returns>카드를 사용할 때 클릭해야 할 대상</returns>
+    public static PolishDecisionTarget ResolveRequiredTarget(CardData card)
+    {
+        if (card == null || card.effects == null || card.effects.Count == 0)
+        {
+            return PolishDecisionTarget.None;
+        }
+
+        foreach (CardEffectData effect in card.effects)
+        {
+            if (effect != null &&
+                effect.effectType == CardEffectType.Sacrifice &&
+                effect.value == 1 &&
+                effect.target == CardTargetType.Undead)
+            {
+                return PolishDecisionTarget.Crew;
+            }
+        }
+
+        foreach (CardEffectData effect in card.effects)
+        {
+            if (effect == null)
+            {
+                continue;
+            }
+
+            if (effect.target == CardTargetType.Enemy ||
+                effect.target == CardTargetType.AllEnemies ||
+                effect.target == CardTargetType.RandomEnemy)
+            {
+                return PolishDecisionTarget.Enemy;
+            }
+        }
+
+        return PolishDecisionTarget.Player;
     }
 
     private static void CaptureEnemies(PolishVisibleBattleSnapshot snapshot)

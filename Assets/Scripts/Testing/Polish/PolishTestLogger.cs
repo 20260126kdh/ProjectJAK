@@ -16,6 +16,54 @@ public class PolishTestLogger : MonoBehaviour
     private PolishRunRecord currentRun;
     private PolishBattleRecord currentBattle;
     private string outputFolderOverride;
+    private string sessionOutputFolder;
+    private readonly HashSet<string> recordedIssueKeys = new HashSet<string>();
+
+    /// <summary>
+    /// 전체 자동 캠페인의 결과를 저장할 세션 폴더를 설정합니다.
+    /// </summary>
+    /// <param name="sessionId">결과를 구분할 세션 ID</param>
+    /// <param name="outputRootFolder">비어 있으면 기본 결과 폴더를 사용하는 루트 경로</param>
+    public void ConfigureSessionOutput(
+        string sessionId,
+        string outputRootFolder = null)
+    {
+        string rootFolder = string.IsNullOrWhiteSpace(outputRootFolder)
+            ? Path.Combine(Application.persistentDataPath, outputFolderName)
+            : outputRootFolder;
+        sessionOutputFolder = Path.Combine(
+            rootFolder,
+            sessionId ?? "Session_Unknown");
+        Directory.CreateDirectory(sessionOutputFolder);
+        Directory.CreateDirectory(Path.Combine(sessionOutputFolder, "Runs"));
+    }
+
+    /// <summary>
+    /// 현재 세션 결과 폴더입니다.
+    /// </summary>
+    public string SessionOutputFolder => sessionOutputFolder;
+
+    /// <summary>
+    /// 자동 실행 중 발견된 오류를 재현 Run 정보와 함께 기록합니다.
+    /// </summary>
+    public void RecordIssue(string runId, int seed, string message, string stackTrace)
+    {
+        string issueKey = $"{runId ?? string.Empty}|{message ?? string.Empty}";
+        if (!recordedIssueKeys.Add(issueKey))
+        {
+            return;
+        }
+
+        string path = Path.Combine(GetSummaryFolder(), "IssueSummary.csv");
+        bool writeHeader = !File.Exists(path);
+        using StreamWriter writer = new StreamWriter(path, true, new UTF8Encoding(true));
+        if (writeHeader)
+        {
+            writer.WriteLine("RunId,Seed,Message,StackTrace");
+        }
+        writer.WriteLine(string.Join(",", EscapeCsv(runId), seed,
+            EscapeCsv(message), EscapeCsv(stackTrace)));
+    }
 
     /// <summary>
     /// 현재 기록 중인 Run입니다.
@@ -44,6 +92,7 @@ public class PolishTestLogger : MonoBehaviour
     /// <param name="seed">Run 재현에 사용할 Seed</param>
     public void BeginRun(string runId, PlayerClass playerClass, int seed)
     {
+        recordedIssueKeys.Clear();
         currentRun = new PolishRunRecord
         {
             runId = runId,
@@ -165,15 +214,42 @@ public class PolishTestLogger : MonoBehaviour
         return outputFolder;
     }
 
+    private string GetSummaryFolder()
+    {
+        if (!string.IsNullOrWhiteSpace(outputFolderOverride))
+        {
+            Directory.CreateDirectory(outputFolderOverride);
+            return outputFolderOverride;
+        }
+        if (!string.IsNullOrWhiteSpace(sessionOutputFolder))
+        {
+            Directory.CreateDirectory(sessionOutputFolder);
+            return sessionOutputFolder;
+        }
+        return GetOutputFolder();
+    }
+
+    private string GetRunOutputFolder()
+    {
+        if (string.IsNullOrWhiteSpace(sessionOutputFolder) ||
+            !string.IsNullOrWhiteSpace(outputFolderOverride))
+        {
+            return GetOutputFolder();
+        }
+        string folder = Path.Combine(sessionOutputFolder, "Runs");
+        Directory.CreateDirectory(folder);
+        return folder;
+    }
+
     private void WriteRunJson(PolishRunRecord runRecord)
     {
-        string path = Path.Combine(GetOutputFolder(), $"{runRecord.runId}.json");
+        string path = Path.Combine(GetRunOutputFolder(), $"{runRecord.runId}.json");
         File.WriteAllText(path, JsonUtility.ToJson(runRecord, true), Encoding.UTF8);
     }
 
     private void AppendRunCsv(PolishRunRecord runRecord)
     {
-        string path = Path.Combine(GetOutputFolder(), "RunSummary.csv");
+        string path = Path.Combine(GetSummaryFolder(), "RunSummary.csv");
         bool writeHeader = !File.Exists(path);
         using StreamWriter writer = new StreamWriter(path, true, new UTF8Encoding(true));
         if (writeHeader)

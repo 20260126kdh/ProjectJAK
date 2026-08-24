@@ -50,6 +50,22 @@ public class UpgradePanelUI : MonoBehaviour
     private bool wasHandCardParentActive;
     private bool hasStoredHandCardParentState;
 
+    /// <summary>
+    /// 현재 카드 강화 패널이 화면에 표시 중인지 반환합니다.
+    /// </summary>
+    public bool IsUpgradePanelOpen =>
+        panel != null && panel.activeSelf;
+
+    /// <summary>
+    /// 현재 강화 패널에 표시된 카드 UI를 읽기 전용으로 반환합니다.
+    /// </summary>
+    public IReadOnlyList<CardUI> UpgradeCardUIs => cardUIs;
+
+    /// <summary>
+    /// 카드 강화 연출로 입력이 잠긴 상태인지 반환합니다.
+    /// </summary>
+    public bool IsUpgradeVfxPlaying => isUpgradeVfxPlaying;
+
     [ContextMenu("강화 망치 VFX 테스트")]
     private void PlayUpgradeHammerVfxTest()
     {

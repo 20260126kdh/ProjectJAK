@@ -168,6 +168,30 @@ public class PolishTestFoundationTests
     }
 
     [Test]
+    public void Logger_RecordsSameIssueOnlyOncePerRun()
+    {
+        string outputFolder = CreateTemporaryFolder();
+        GameObject testObject = new GameObject("PolishIssueDedupeTest");
+        try
+        {
+            PolishTestLogger logger = testObject.AddComponent<PolishTestLogger>();
+            logger.SetOutputFolderForTesting(outputFolder);
+            logger.BeginRun("PHY-003", PlayerClass.Physique, 3);
+
+            logger.RecordIssue("PHY-003", 3, "반복 오류", "stack-a");
+            logger.RecordIssue("PHY-003", 3, "반복 오류", "stack-b");
+
+            string[] lines = File.ReadAllLines(
+                Path.Combine(outputFolder, "IssueSummary.csv"));
+            Assert.AreEqual(2, lines.Length);
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(testObject);
+        }
+    }
+
+    [Test]
     public void Coordinator_FirstRunContext_IsReproducible()
     {
         (string runId, int seed) first = CreateFirstRunContext();
@@ -175,6 +199,109 @@ public class PolishTestFoundationTests
 
         Assert.AreEqual("PHY-001", first.runId);
         Assert.AreEqual(first, second);
+    }
+
+    [Test]
+    public void Coordinator_SingleClass_StopsAfterThirtyRuns()
+    {
+        string outputFolder = CreateTemporaryFolder();
+        GameObject testObject = new GameObject("PolishSingleClassCoordinatorTest");
+        try
+        {
+            PolishTestLogger logger = testObject.AddComponent<PolishTestLogger>();
+            logger.SetOutputFolderForTesting(outputFolder);
+            PolishTestRunCoordinator coordinator =
+                testObject.AddComponent<PolishTestRunCoordinator>();
+            FieldInfo loggerField = typeof(PolishTestRunCoordinator).GetField(
+                "testLogger",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(loggerField);
+            loggerField.SetValue(coordinator, logger);
+            Assert.IsTrue(coordinator.ConfigureSingleClass(PlayerClass.Technician));
+
+            for (int run = 1; run <= 30; run++)
+            {
+                Assert.IsTrue(coordinator.TryBeginNextRun());
+                Assert.AreEqual(PlayerClass.Technician, coordinator.CurrentPlayerClass);
+                Assert.AreEqual($"TEC-{run:000}", coordinator.CurrentRunId);
+                coordinator.CompleteCurrentRun(PolishRunResult.Clear, 3, 2);
+            }
+
+            Assert.IsTrue(coordinator.IsCampaignComplete);
+            Assert.IsFalse(coordinator.TryBeginNextRun());
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(testObject);
+        }
+    }
+
+    [Test]
+    public void Coordinator_CustomRunCount_StopsAtConfiguredCount()
+    {
+        GameObject testObject = new GameObject("PolishCustomRunCoordinatorTest");
+        try
+        {
+            PolishTestLogger logger = testObject.AddComponent<PolishTestLogger>();
+            logger.SetOutputFolderForTesting(CreateTemporaryFolder());
+            PolishTestRunCoordinator coordinator =
+                testObject.AddComponent<PolishTestRunCoordinator>();
+            FieldInfo loggerField = typeof(PolishTestRunCoordinator).GetField(
+                "testLogger",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(loggerField);
+            loggerField.SetValue(coordinator, logger);
+            Assert.IsTrue(coordinator.ConfigureRunsPerClass(2));
+            Assert.IsTrue(coordinator.ConfigureSingleClass(PlayerClass.Captain));
+
+            for (int run = 1; run <= 2; run++)
+            {
+                Assert.IsTrue(coordinator.TryBeginNextRun());
+                Assert.AreEqual($"CAP-{run:000}", coordinator.CurrentRunId);
+                coordinator.CompleteCurrentRun(PolishRunResult.Clear, 3, 2);
+            }
+
+            Assert.IsTrue(coordinator.IsCampaignComplete);
+            Assert.IsFalse(coordinator.TryBeginNextRun());
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(testObject);
+        }
+    }
+
+    [Test]
+    public void SimulationCommandLine_ParsesClassRunsSpeedAndOutput()
+    {
+        string outputFolder = CreateTemporaryFolder();
+        string[] args =
+        {
+            "ProjectJAK_Simulator.exe",
+            "-simulate",
+            "-class", "Technician",
+            "-runs", "12",
+            "-speed", "16",
+            "-output", outputFolder
+        };
+
+        Assert.IsTrue(PolishSimulationCommandLine.TryParse(
+            args,
+            out PolishSimulationCommandLine.Settings settings));
+        Assert.AreEqual(PlayerClass.Technician, settings.PlayerClass);
+        Assert.AreEqual(12, settings.RunsPerClass);
+        Assert.AreEqual(16f, settings.PlaybackSpeed);
+        Assert.AreEqual(Path.GetFullPath(outputFolder), settings.OutputRootFolder);
+    }
+
+    [Test]
+    public void SimulationCommandLine_AllClass_UsesNoneAsCampaignSelection()
+    {
+        Assert.IsTrue(PolishSimulationCommandLine.TryParse(
+            new[] { "ProjectJAK_Simulator.exe", "-simulate", "-class", "All" },
+            out PolishSimulationCommandLine.Settings settings));
+        Assert.AreEqual(PlayerClass.None, settings.PlayerClass);
+        Assert.AreEqual(30, settings.RunsPerClass);
+        Assert.AreEqual(20f, settings.PlaybackSpeed);
     }
 
     private (string runId, int seed) CreateFirstRunContext()

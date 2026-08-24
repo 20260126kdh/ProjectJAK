@@ -11,6 +11,8 @@ public class PolishHumanDecision
     public int handIndex = -1;
     public int enemyIndex = -1;
     public int crewOrder = -1;
+    public int preserveHandIndex = -1;
+    public string preserveReason;
     public PolishDangerLevel dangerLevel;
     public int expectedIncomingDamage;
     public string reason;

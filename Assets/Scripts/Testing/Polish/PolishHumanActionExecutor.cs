@@ -10,7 +10,8 @@ public enum PolishActionExecutionResult
     InvalidDecision,
     MissingBattleComponent,
     InvalidHandIndex,
-    InvalidTarget
+    InvalidTarget,
+    CardUseRejected
 }
 
 /// <summary>
@@ -33,13 +34,32 @@ public class PolishHumanActionExecutor : MonoBehaviour
 
         if (decision.decisionType == PolishDecisionType.EndTurn)
         {
-            TurnManager turnManager = FindFirstObjectByType<TurnManager>();
-            if (turnManager == null)
+            HandManager preserveHandManager =
+                FindFirstObjectByType<HandManager>();
+            if (preserveHandManager == null)
             {
                 return PolishActionExecutionResult.MissingBattleComponent;
             }
 
-            turnManager.EndPlayerTurnAndStartNextTurn();
+            if (preserveHandManager.IsCardFlowBusy)
+            {
+                return PolishActionExecutionResult.CardUseRejected;
+            }
+
+            if (decision.preserveHandIndex >=
+                preserveHandManager.HandCardUIs.Count)
+            {
+                return PolishActionExecutionResult.InvalidHandIndex;
+            }
+
+            preserveHandManager.StartPreserveMode();
+            if (decision.preserveHandIndex >= 0)
+            {
+                preserveHandManager.SelectCardByIndex(
+                    decision.preserveHandIndex);
+            }
+
+            preserveHandManager.ConfirmPreserveCard();
             return PolishActionExecutionResult.Success;
         }
 
@@ -56,6 +76,7 @@ public class PolishHumanActionExecutor : MonoBehaviour
             return PolishActionExecutionResult.InvalidHandIndex;
         }
 
+        CardData selectedCard = handManager.HandCards[decision.handIndex];
         handManager.SelectCardByIndex(decision.handIndex);
 
         switch (decision.target)
@@ -69,7 +90,10 @@ public class PolishHumanActionExecutor : MonoBehaviour
                 }
 
                 battleManager.UseSelectedCardOnEnemy(enemy);
-                return PolishActionExecutionResult.Success;
+                return GetCardUseResult(
+                    handManager,
+                    battleManager,
+                    selectedCard);
 
             case PolishDecisionTarget.Player:
             case PolishDecisionTarget.None:
@@ -81,7 +105,10 @@ public class PolishHumanActionExecutor : MonoBehaviour
                 }
 
                 battleManager.UseSelectedCardOnPlayer(player);
-                return PolishActionExecutionResult.Success;
+                return GetCardUseResult(
+                    handManager,
+                    battleManager,
+                    selectedCard);
 
             case PolishDecisionTarget.Crew:
                 Crew crew = FindAliveCrew(decision.crewOrder);
@@ -92,12 +119,29 @@ public class PolishHumanActionExecutor : MonoBehaviour
                 }
 
                 battleManager.UseSelectedCardOnCrew(crew);
-                return PolishActionExecutionResult.Success;
+                return GetCardUseResult(
+                    handManager,
+                    battleManager,
+                    selectedCard);
 
             default:
                 battleManager.ClearSelectedCard();
                 return PolishActionExecutionResult.InvalidTarget;
         }
+    }
+
+    private static PolishActionExecutionResult GetCardUseResult(
+        HandManager handManager,
+        BattleManager battleManager,
+        CardData selectedCard)
+    {
+        if (selectedCard != null && handManager.HandCards.Contains(selectedCard))
+        {
+            battleManager.ClearSelectedCard();
+            return PolishActionExecutionResult.CardUseRejected;
+        }
+
+        return PolishActionExecutionResult.Success;
     }
 
     private static Enemy FindAliveEnemy(int enemyIndex)
