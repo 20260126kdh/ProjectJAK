@@ -114,7 +114,8 @@ MonoBehaviour:
     deathTrailSprite: {fileID: 1514016643808559037, guid: 8b55c3be315b4ac4b8db259df5a3bb4e, type: 3}
     deathImpactSprite: {fileID: -9159489888383394846, guid: 537184e5f15fa4f46891b5e97cfe4a4e, type: 3}
     deathUiSprite: {fileID: 0}
-    deathPanelSprite: {fileID: 21300000, guid: d17fbc7b95584f98af2b21c5563a0205, type: 3}
+    deathBackgroundSprite: {fileID: 21300000, guid: b1744dc9509f45c5b41f02f786b18f6d, type: 3}
+    deathPanelSprite: {fileID: 21300000, guid: 22258e0638cf4d3b8aa27e037661aad5, type: 3}
     deathCharacterSprite: {fileID: 21300000, guid: d17fbc7b95584f98af2b21c5563a0203, type: 3}
     titleButtonNormalSprite: {fileID: 7783560308667545497, guid: ce64488984a5fd046a653faac2475194, type: 3}
     titleButtonHoverSprite: {fileID: -1465613710737277889, guid: 4f9432f533b3cc34882bcfb020bbfdfa, type: 3}

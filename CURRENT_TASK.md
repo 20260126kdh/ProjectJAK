@@ -2598,3 +2598,51 @@ Shipcollector 본체 위치 조정
 - `SpineVisual`만 왼쪽으로 0.35 이동한다.
 - 클릭 판정 Collider도 본체와 같은 거리만큼 이동한다.
 - 크기와 세로 위치는 유지한다.
+# 현재 작업 변경
+
+## 작업명
+사망 전환 최종 배경 이미지 적용
+
+## 현재 상태
+구현 및 세 클래스 프리팹 연결 완료 / Unity Play Mode 확인 필요
+
+## 수정 대상
+- `Assets/Art/UI/Death/Death_Background.png`
+- `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `Assets/Prefabs/Player/Captain.prefab`
+- `Assets/Prefabs/Player/Physique.prefab`
+- `Assets/Prefabs/Player/Technician.prefab`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+- 붉은 확산이 화면 전체를 채운 뒤 공통 사망 배경이 페이드 인한다.
+- 기존 사망 문구, 최종 스테이지, 클래스별 사망 이미지와 타이틀 버튼은 배경 위에 유지한다.
+- 작살, 붉은 확산 시간과 기존 UI 배치는 변경하지 않는다.
+# 현재 작업 변경
+
+## 작업명
+
+플레이어 사망 UI 단일 세로 패널 개편
+
+## 현재 상태
+
+구현 완료 / Unity Play Mode 시각 확인 필요
+
+## 수정 대상
+
+- `Assets/Scripts/UI/PlayerDeathTransitionController.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 기존 사망 문구·진행도 가로 배너를 생성하지 않는다.
+- 새로 제작한 2:3 비율의 세로형 `Death_SummaryPanel`을 단일 패널로 표시한다.
+- 패널 안에 사망 문구, 스테이지·전투 순서·전투 종류, 타이틀 이동 버튼을 표시한다.
+- 3스테이지 아리엘 전투는 `진 보스 전투`로 표시한다.
+- 세 플레이어 Prefab의 사망 패널 참조가 신규 Sprite를 사용한다.
+- 패널 안쪽에는 완전 불투명한 검붉은 내부판을 두어 사망 배경이 비치지 않는다.
+- 패널을 3:4에 가까운 비율로 넓히고 제목·진행도·버튼의 크기와 명암 대비를 높인다.
+- 일반 전투는 흰색, 보스 전투는 붉은색, 진 보스 전투는 금색으로 구분한다.
+- 사망 패널 이미지에는 핏자국을 사용하지 않고 마른 녹·산화 철·긁힘 질감만 사용한다.

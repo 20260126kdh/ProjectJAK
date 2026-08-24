@@ -342,43 +342,50 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         Stretch(panelRect);
 
         Image background = deathPanel.GetComponent<Image>();
-        background.sprite = settings.deathUiSprite;
-        background.preserveAspect = true;
-        background.color = settings.deathUiSprite != null
+        Sprite backgroundSprite = settings.deathUiSprite != null
+            ? settings.deathUiSprite
+            : settings.deathBackgroundSprite;
+        background.sprite = backgroundSprite;
+        // 새 배경은 3:2 원본을 16:9 화면 전체에 채워 빈 여백을 남기지 않는다.
+        // 기존 완성형 사망 UI Sprite의 비율 보존 동작은 그대로 유지한다.
+        background.preserveAspect = settings.deathUiSprite != null;
+        background.color = backgroundSprite != null
             ? Color.white
             : settings.redColor;
 
         if (settings.deathUiSprite == null)
         {
-            CreateMessagePanel(
-                "DeathTitlePanel",
+            RectTransform summaryPanel = CreateDeathSummaryPanel(
                 panelRect,
-                "당신은 죽었습니다.",
-                new Vector2(0f, 315f),
-                new Vector2(960f, 410f),
-                54f,
-                interfaceFont,
                 settings.deathPanelSprite
             );
 
-            int stage = StageManager.Instance != null
-                ? StageManager.Instance.CurrentStage
-                : 1;
-            CreateMessagePanel(
-                "FinalStagePanel",
-                panelRect,
-                $"최종 진행 스테이지  {stage}",
-                new Vector2(0f, 125f),
-                new Vector2(680f, 290f),
-                38f,
+            CreateText(
+                "DeathTitleLabel",
+                summaryPanel,
+                "당신은 죽었습니다.",
+                54f,
+                new Vector2(0f, 250f),
                 interfaceFont,
-                settings.deathPanelSprite
+                new Color(1f, 0.25f, 0.18f, 1f),
+                new Vector2(500f, 110f)
+            );
+
+            CreateText(
+                "DeathProgressLabel",
+                summaryPanel,
+                BuildDeathProgressText(),
+                36f,
+                new Vector2(0f, 25f),
+                interfaceFont,
+                new Color(1f, 0.93f, 0.78f, 1f),
+                new Vector2(500f, 280f)
             );
 
             CreateDeathCharacter(panelRect, settings);
 
             Button titleButton = CreateTitleButton(
-                panelRect,
+                summaryPanel,
                 interfaceFont,
                 settings
             );
@@ -391,18 +398,31 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         group.interactable = false;
     }
 
-    private static void CreateMessagePanel(
-        string objectName,
+    private static RectTransform CreateDeathSummaryPanel(
         Transform parent,
-        string content,
-        Vector2 position,
-        Vector2 size,
-        float fontSize,
-        TMP_FontAsset font,
         Sprite panelSprite)
     {
+        GameObject opaqueInterior = new GameObject(
+            "DeathSummaryOpaqueInterior",
+            typeof(RectTransform),
+            typeof(Image)
+        );
+        opaqueInterior.transform.SetParent(parent, false);
+
+        RectTransform interiorRect =
+            opaqueInterior.GetComponent<RectTransform>();
+        interiorRect.anchorMin = new Vector2(0.5f, 0.5f);
+        interiorRect.anchorMax = new Vector2(0.5f, 0.5f);
+        // 생성 이미지의 장식 테두리보다 안쪽에만 배치해 외곽 투명을 유지합니다.
+        interiorRect.sizeDelta = new Vector2(500f, 770f);
+        interiorRect.anchoredPosition = Vector2.zero;
+
+        Image interiorImage = opaqueInterior.GetComponent<Image>();
+        interiorImage.color = new Color(0.012f, 0.008f, 0.009f, 1f);
+        interiorImage.raycastTarget = false;
+
         GameObject panel = new GameObject(
-            objectName,
+            "DeathSummaryPanel",
             typeof(RectTransform),
             typeof(Image)
         );
@@ -411,26 +431,52 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         RectTransform rect = panel.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = size;
-        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(630f, 840f);
+        rect.anchoredPosition = Vector2.zero;
 
         Image image = panel.GetComponent<Image>();
         image.sprite = panelSprite;
-        image.preserveAspect = panelSprite != null;
+        image.preserveAspect = false;
         image.color = panelSprite != null
             ? Color.white
             : new Color(0.015f, 0.012f, 0.012f, 0.96f);
         image.raycastTarget = false;
 
-        CreateText(
-            objectName + "Label",
-            panel.transform,
-            content,
-            fontSize,
-            Vector2.zero,
-            font,
-            new Color(0.95f, 0.84f, 0.65f, 1f)
-        );
+        return rect;
+    }
+
+    private static string BuildDeathProgressText()
+    {
+        StageManager stageManager = StageManager.Instance;
+        if (stageManager == null)
+        {
+            return
+                "최종 진행도\n\n" +
+                "1 스테이지  ·  1번째 전투\n" +
+                "<color=#F2F2F2>일반 전투</color>";
+        }
+
+        int battleNumber = stageManager.CurrentBattleCount + 1;
+        string battleType =
+            "<color=#F2F2F2>일반 전투</color>";
+
+        if (stageManager.CurrentPhase == StagePhase.BossBattle)
+        {
+            battleType = stageManager.IsStage3ArielBattle
+                ? "<color=#FFD36A>진 보스 전투</color>"
+                : "<color=#FF4B3E>보스 전투</color>";
+
+            // 3스테이지 아리엘은 모르바엘 다음에 이어지는 추가 보스입니다.
+            if (stageManager.IsStage3ArielBattle)
+            {
+                battleNumber++;
+            }
+        }
+
+        return
+            $"최종 진행도\n\n" +
+            $"{stageManager.CurrentStage} 스테이지  ·  " +
+            $"{battleNumber}번째 전투\n{battleType}";
     }
 
     private static void CreateDeathCharacter(
@@ -667,14 +713,15 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         rect.offsetMax = Vector2.zero;
     }
 
-    private static void CreateText(
+    private static TextMeshProUGUI CreateText(
         string objectName,
         Transform parent,
         string content,
         float fontSize,
         Vector2 position,
         TMP_FontAsset font,
-        Color? color = null)
+        Color? color = null,
+        Vector2? size = null)
     {
         GameObject textObject = new GameObject(
             objectName,
@@ -685,7 +732,7 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         RectTransform rect = textObject.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(1100f, 100f);
+        rect.sizeDelta = size ?? new Vector2(1100f, 100f);
         rect.anchoredPosition = position;
 
         TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
@@ -700,6 +747,7 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         text.outlineColor = new Color32(0, 0, 0, 255);
         text.outlineWidth = 0.18f;
         text.raycastTarget = false;
+        return text;
     }
 
     private static Button CreateTitleButton(
@@ -717,8 +765,8 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
         RectTransform rect = buttonObject.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(420f, 90f);
-        rect.anchoredPosition = new Vector2(0f, -145f);
+        rect.sizeDelta = new Vector2(410f, 88f);
+        rect.anchoredPosition = new Vector2(0f, -270f);
 
         Image image = buttonObject.GetComponent<Image>();
         image.sprite = settings.titleButtonNormalSprite;
@@ -736,10 +784,10 @@ public sealed class PlayerDeathTransitionController : MonoBehaviour
             "Label",
             buttonObject.transform,
             "타이틀로 돌아가기",
-            32f,
+            34f,
             Vector2.zero,
             font,
-            new Color(0.115f, 0.519f, 0.390f, 1f)
+            new Color(0.78f, 0.94f, 0.86f, 1f)
         );
         return button;
     }
@@ -785,6 +833,8 @@ public struct PlayerDeathTransitionSettings
     public Sprite deathTrailSprite;
     public Sprite deathImpactSprite;
     public Sprite deathUiSprite;
+    [Tooltip("붉은 확산 완료 후 기존 사망 UI 뒤에 표시할 공통 배경")]
+    public Sprite deathBackgroundSprite;
     [Tooltip("사망 문구와 최종 스테이지에 공통으로 사용하는 프레임")]
     public Sprite deathPanelSprite;
     [Tooltip("왼쪽 아래에 표시할 현재 클래스의 사망 이미지")]
