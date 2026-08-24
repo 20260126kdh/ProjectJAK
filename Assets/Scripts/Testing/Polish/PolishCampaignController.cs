@@ -15,6 +15,7 @@ public class PolishCampaignController : MonoBehaviour
     private const string BattleSceneName = "BattleScene";
     private const string ClassSelectSceneName = "Class_SelectScene";
     private const string GameClearSceneName = "GameClearScene";
+    private const string MainTitleSceneName = "Main_TitleScene";
     private const float ClassSelectionTimeout = 8f;
 
     private PolishTestRunCoordinator runCoordinator;
@@ -33,6 +34,12 @@ public class PolishCampaignController : MonoBehaviour
     /// Editor 전용 표현 생략 경로에서만 사용합니다.
     /// </summary>
     public static bool IsFastModeRunning { get; private set; }
+
+    /// <summary>
+    /// 현재 자동 캠페인 세션이 씬 사이에서 실행 중인지 반환합니다.
+    /// 일반 사망 UI와 독립 시뮬레이터 중복 시작을 차단할 때 사용합니다.
+    /// </summary>
+    public static bool IsSessionRunning { get; private set; }
 
     /// <summary>
     /// 타이틀 화면에서 새 폴리싱 테스트 세션을 만들고 첫 Run을 시작합니다.
@@ -181,6 +188,7 @@ public class PolishCampaignController : MonoBehaviour
             playbackSpeed);
         quitApplicationOnComplete = quitOnComplete;
         IsFastModeRunning = fastMode;
+        IsSessionRunning = true;
         sessionStartedAt = Time.realtimeSinceStartup;
         ApplyTestTimeScale(sessionState.playbackSpeed);
         testLogger.ConfigureSessionOutput(
@@ -197,6 +205,7 @@ public class PolishCampaignController : MonoBehaviour
         Application.logMessageReceived -= HandleLogMessage;
         RestoreTimeScale();
         IsFastModeRunning = false;
+        IsSessionRunning = false;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -219,6 +228,19 @@ public class PolishCampaignController : MonoBehaviour
             return;
         }
 
+        if (scene.name == MainTitleSceneName &&
+            runCoordinator != null &&
+            runCoordinator.IsRunActive)
+        {
+            sessionState.phase = "RecoveringFromUnexpectedTitle";
+            Debug.LogWarning(
+                "[PolishCampaignController] 실행 중 타이틀 씬 진입 감지 - " +
+                "현재 Run의 클래스 선택 씬으로 복구합니다.",
+                this);
+            StartCoroutine(RecoverFromUnexpectedTitle());
+            return;
+        }
+
         if (scene.name == GameClearSceneName && runCoordinator.IsRunActive)
         {
             CompleteRunAndContinue(PolishRunResult.Clear, string.Empty);
@@ -226,6 +248,15 @@ public class PolishCampaignController : MonoBehaviour
         }
 
         StartCoroutine(TrySelectCurrentClass());
+    }
+
+    private IEnumerator RecoverFromUnexpectedTitle()
+    {
+        yield return null;
+        if (runCoordinator != null && runCoordinator.IsRunActive)
+        {
+            SceneManager.LoadScene(ClassSelectSceneName);
+        }
     }
 
     private IEnumerator TrySelectCurrentClass()

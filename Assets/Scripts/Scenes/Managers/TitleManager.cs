@@ -70,6 +70,15 @@ public class TitleManager : MonoBehaviour
             yield break;
         }
 
+        if (PolishCampaignController.IsSessionRunning)
+        {
+            Debug.LogWarning(
+                "[TitleManager] 기존 독립 시뮬레이션 세션이 실행 중이므로 " +
+                "중복 시작을 건너뜁니다.",
+                this);
+            yield break;
+        }
+
         float startedAt = Time.realtimeSinceStartup;
         while ((StageManager.Instance == null || GameManager.Instance == null) &&
                Time.realtimeSinceStartup - startedAt < 10f)

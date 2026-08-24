@@ -2646,3 +2646,27 @@ Shipcollector 본체 위치 조정
 - 패널을 3:4에 가까운 비율로 넓히고 제목·진행도·버튼의 크기와 명암 대비를 높인다.
 - 일반 전투는 흰색, 보스 전투는 붉은색, 진 보스 전투는 금색으로 구분한다.
 - 사망 패널 이미지에는 핏자국을 사용하지 않고 마른 녹·산화 철·긁힘 질감만 사용한다.
+# 현재 작업 변경
+
+## 작업명
+
+독립 시뮬레이터 사망 후 다음 Run 중단 수정
+
+## 현재 상태
+
+구현 완료 / Unity 컴파일 및 신규 시뮬레이터 빌드 필요
+
+## 수정 대상
+
+- `Assets/Scripts/Player/PlayerCombat.cs`
+- `Assets/Scripts/Scenes/Managers/TitleManager.cs`
+- `Assets/Scripts/Testing/Polish/PolishCampaignController.cs`
+- `CURRENT_TASK.md`
+- `Docs/DEVLOG.md`
+
+## 완료 조건
+
+- 자동 캠페인 중 일반 데스 UI가 시작되지 않는다.
+- 실행 중 타이틀 씬에 진입해도 새 시뮬레이션을 중복 시작하거나 종료 코드 2로 끝나지 않는다.
+- 예외적인 타이틀 진입은 현재 Run의 클래스 선택 씬으로 복구한다.
+- 일반 플레이의 사망 연출과 타이틀 이동은 유지한다.

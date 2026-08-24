@@ -414,6 +414,15 @@ public class PlayerCombat : MonoBehaviour
     /// </summary>
     private void TryStartDeathTransition()
     {
+#if UNITY_EDITOR || POLISH_SIMULATION_BUILD
+        // 자동 캠페인은 사망 기록 후 다음 Run을 직접 시작합니다.
+        // 일반 데스 UI가 TimeScale을 정지하거나 타이틀 씬을 여는 경로와 경쟁하지 않게 합니다.
+        if (PolishCampaignController.IsSessionRunning)
+        {
+            return;
+        }
+#endif
+
         if (playerData == null ||
             playerData.CurrentHP > 0 ||
             PlayerDeathTransitionController.IsPlaying)
