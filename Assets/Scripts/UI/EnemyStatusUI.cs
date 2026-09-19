@@ -18,7 +18,7 @@ public class EnemyStatusUI : MonoBehaviour
         "TopBarBackground";
 
     private static readonly Color TopBarBackgroundColor =
-        new Color(0.45f, 0.45f, 0.45f, 0.85f);
+        new Color(1f, 1f, 1f, 0.65f);
 
     private static readonly Vector2 TopBarBackgroundExpansion =
         new Vector2(20f, 10f);
@@ -75,7 +75,7 @@ public class EnemyStatusUI : MonoBehaviour
     }
 
     /// <summary>
-    /// 상태·작살·Intent·방어도 UI 뒤에 공통 회색 배경을 표시합니다.
+    /// 상태·작살·Intent·방어도 UI 뒤에 반투명 흰색 배경을 표시합니다.
     /// 체력바는 별도 루트이므로 배경 적용 대상에서 제외됩니다.
     /// </summary>
     private void ConfigureTopBarBackground()
@@ -123,6 +123,15 @@ public class EnemyStatusUI : MonoBehaviour
         backgroundImage.type = Image.Type.Simple;
         backgroundImage.color = TopBarBackgroundColor;
         backgroundImage.raycastTarget = false;
+    }
+
+    private void Start()
+    {
+        Enemy owner = GetComponentInParent<Enemy>();
+        if (owner == null) return;
+        EnemyBattleUILayout layout = owner.GetComponent<EnemyBattleUILayout>();
+        if (layout == null) layout = owner.gameObject.AddComponent<EnemyBattleUILayout>();
+        layout.Configure(owner, transform);
     }
 
     private void OnEnable()
@@ -245,6 +254,8 @@ public class EnemyStatusUI : MonoBehaviour
 
             if (icon != null)
             {
+                // Destroy 완료 전에도 줄 수와 배경 높이에 제거된 아이콘을 포함하지 않습니다.
+                icon.gameObject.SetActive(false);
                 Destroy(
                     icon.gameObject
                 );

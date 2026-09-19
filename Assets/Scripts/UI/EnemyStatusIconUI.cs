@@ -32,6 +32,7 @@ public class EnemyStatusIconUI : MonoBehaviour,
     [SerializeField]
     private Sprite debuffPopupSprite;
 
+    private bool usesEnemyLayout;
     private StatusEffectType statusEffectType;
     private StatusEffectData currentStatusEffect;
     private GameObject tooltipObject;
@@ -71,6 +72,16 @@ public class EnemyStatusIconUI : MonoBehaviour,
             statusEffect.statusEffectType;
 
         currentStatusEffect = statusEffect;
+        // 플레이어도 같은 아이콘 프리팹을 사용하므로 적 전용 변경은 소유자를 확인합니다.
+        // 숨겨진 상태 패널 아래에서 생성된 적 아이콘도 판별할 수 있어야 합니다.
+        usesEnemyLayout = GetComponentInParent<Enemy>(true) != null;
+        if (usesEnemyLayout)
+        {
+            EnemyBattleUILayout.StyleNumber(valueText, 21f);
+            EnemyBattleUILayout.StyleNumber(turnText, 17f);
+            if (valueText != null) valueText.rectTransform.sizeDelta = new Vector2(34f, 24f);
+            if (turnText != null) turnText.rectTransform.sizeDelta = new Vector2(28f, 20f);
+        }
 
         if (iconImage != null)
         {
@@ -212,7 +223,7 @@ public class EnemyStatusIconUI : MonoBehaviour,
             tooltipText.fontSharedMaterial = valueText.fontSharedMaterial;
         }
 
-        tooltipText.fontSize = 18f;
+        tooltipText.fontSize = usesEnemyLayout ? 20f : 18f;
         tooltipText.color = Color.white;
         tooltipText.alignment = TextAlignmentOptions.TopLeft;
         tooltipText.textWrappingMode = TextWrappingModes.Normal;
@@ -245,6 +256,29 @@ public class EnemyStatusIconUI : MonoBehaviour,
             rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay
                 ? null
                 : rootCanvas.worldCamera;
+
+        // 적의 World Space Canvas 크기 대신 실제 화면 경계로 툴팁을 제한합니다.
+        if (rootCanvas.renderMode == RenderMode.WorldSpace && eventCamera != null)
+        {
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
+                canvasRectTransform, screenPosition + TooltipOffset, eventCamera, out Vector3 worldPoint))
+            {
+                tooltipRectTransform.position = worldPoint;
+                Vector3[] tooltipCorners = new Vector3[4];
+                tooltipRectTransform.GetWorldCorners(tooltipCorners);
+                Vector2 bottomLeft = eventCamera.WorldToScreenPoint(tooltipCorners[0]);
+                Vector2 topRight = eventCamera.WorldToScreenPoint(tooltipCorners[2]);
+                Rect view = eventCamera.pixelRect;
+                Vector3 pivot = eventCamera.WorldToScreenPoint(tooltipRectTransform.position);
+                pivot.x += bottomLeft.x < view.xMin + 8f ? view.xMin + 8f - bottomLeft.x :
+                    Mathf.Min(0f, view.xMax - 8f - topRight.x);
+                pivot.y += bottomLeft.y < view.yMin + 8f ? view.yMin + 8f - bottomLeft.y :
+                    Mathf.Min(0f, view.yMax - 8f - topRight.y);
+                tooltipRectTransform.position = eventCamera.ScreenToWorldPoint(pivot);
+            }
+            tooltipObject.transform.SetAsLastSibling();
+            return;
+        }
 
         if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvasRectTransform,

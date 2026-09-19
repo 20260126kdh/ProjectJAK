@@ -643,6 +643,8 @@ public class EnemyIntentUI : MonoBehaviour
             Transform child =
                 iconContainer.GetChild(i);
 
+            // 같은 프레임에 교체된 의도 아이콘을 중복 배치하지 않습니다.
+            child.gameObject.SetActive(false);
             Destroy(
                 child.gameObject
             );

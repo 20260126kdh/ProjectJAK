@@ -518,8 +518,11 @@ public class CardUI : MonoBehaviour,
     {
         if (tutorialHighlightOutline == null)
         {
+            // 손패 표시 루트 안의 프레임에 붙여 확대·회전·이동을 함께 따릅니다.
+            GameObject highlightTarget = frameImage != null
+                ? frameImage.gameObject : gameObject;
             tutorialHighlightOutline =
-                gameObject.AddComponent<Outline>();
+                highlightTarget.AddComponent<Outline>();
             tutorialHighlightOutline.effectColor = Color.red;
             tutorialHighlightOutline.effectDistance =
                 new Vector2(6f, -6f);

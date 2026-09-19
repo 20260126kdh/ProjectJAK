@@ -1315,3 +1315,27 @@
 - CardPrefab의 selectedScale을 1.5로 변경하고 화면 여백 설정을 추가했다.
 - 관련 경로: Assets/Scripts/UI/CardUI.cs, Assets/Scripts/Cards/Managers/HandManager.cs, Assets/Prefabs/Card/CardPrefab.prefab.
 - Unity 6000.0.78f1에 포함된 Roslyn과 로컬 Unity 참조로 Editor/Player 조건의 C# 정적 컴파일을 수행했다. 두 조건 모두 오류 0개이며 Inspector 직렬화 필드 등의 경고가 출력됐다. Unity 자체 빌드·Play Mode 검증은 수행하지 않았다.
+# 2026-09-19 튜토리얼 테두리 및 적 UI 2단계
+
+- CardUI의 튜토리얼 강조 Outline을 확대되는 프레임으로 이동했다.
+- EnemyBattleUILayout을 추가하고 EnemyStatusUI에서 공통 레이아웃을 연결했다.
+- EnemyIntentIconUI, EnemyStatusIconUI의 숫자 대비·배치와 툴팁 화면 경계를 개선했다.
+- 원본 적 프리팹의 참조와 전투 로직을 유지하고 런타임 UI 인스턴스만 재배치한다.
+- 검증: Unity Roslyn 기반 Editor/Player 조건 C# 정적 컴파일 오류 0개. 적 UI 프리팹 30개의 필수 공통 노드 누락 없음. git diff --check 통과. 현재 Unity가 마지막 변경을 아직 재컴파일하지 않았으며 Play Mode 시각 검증은 미실행.
+
+# 2026-09-19 상태 아이콘 초기화 NullReferenceException 수정
+
+- 턴 종료 후 플레이어 상태 아이콘 생성 중 TMP outlineWidth setter가 초기화되지 않은 내부 렌더러를 참조하는 경로를 확인했다.
+- EnemyBattleUILayout.StyleNumber에서 outlineColor/outlineWidth 직접 설정을 제거하고 기존 프리팹의 외곽선 설정을 유지한다.
+- 플레이어와 적이 공유하는 EnemyStatusIconUI에서 적 소유자일 때만 숫자 크기·배치 변경을 적용한다. 비활성 부모도 검사한다.
+- 플레이어 상태 툴팁은 기존 18 크기로 유지한다. 카드 튜토리얼의 uGUI 빨간 Outline은 변경하지 않는다.
+- 검증: Unity Roslyn 기반 Editor/Player 조건 정적 컴파일 오류 0개, 변경 파일 공백 검사 통과. 실제 Play Mode에서 턴 종료·상태 효과 갱신 재현 확인은 필요하다.
+
+# 2026-09-19 적 UI 기존 배치 복원 및 상단바 줄바꿈
+
+- 사용자 피드백에 따라 EnemyBattleUILayout의 분리 패널·월드 배율 변경·좌우 레인 배치를 제거했다.
+- 기존 체력바·방어도·Canvas 배치를 보존하고 상단바 안의 상태·의도 아이콘만 가변 폭으로 줄바꿈한다.
+- 반투명 흰색 배경이 아이콘 줄 수 및 다단 공격 텍스트 높이에 맞춰 늘고 줄어들도록 했다.
+- 의도 아이콘의 우측 숫자 폭을 확보하고 삭제 예정 아이콘은 즉시 비활성화해 한 프레임 중복 배치를 방지한다.
+- 기존 카드 확대·튜토리얼 테두리 및 TMP 예외 수정은 유지했다.
+- 검증: 실제 배치 계산 코드의 회귀 검사 14개 통과(0~20개, 긴 의도, 겹침, 가로 범위, 우측 정렬, 아이콘 제거 후 축소). Unity Roslyn Editor/Player 정적 컴파일 오류 0개. 실제 Play Mode 화면 확인은 필요하다. 이전 런타임 배치를 제거하려면 Play 종료 후 다시 시작한다.
