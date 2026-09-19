@@ -1306,3 +1306,12 @@
 
 - 일반 빌드에서 제외되는 `PolishSpecialChoiceAutomationController`를 참조하던 테스트 컨트롤러 조건 수정
 - `PolishSingleBattleController`를 `UNITY_EDITOR || POLISH_SIMULATION_BUILD` 범위로 제한
+
+# 2026-09-19 손패 카드 호버·선택 확대
+
+- CardUI에 손패 전용 표시 루트를 구성하여 호버·선택 상태에 따라 1.5배 확대한다.
+- 카드 루트는 유지하여 드로우·버림·보존 연출과 원래 클릭 영역을 보존한다.
+- HandManager에서 원래 손패 순서에 따른 마우스 판정과 표시 순서를 관리한다.
+- CardPrefab의 selectedScale을 1.5로 변경하고 화면 여백 설정을 추가했다.
+- 관련 경로: Assets/Scripts/UI/CardUI.cs, Assets/Scripts/Cards/Managers/HandManager.cs, Assets/Prefabs/Card/CardPrefab.prefab.
+- Unity 6000.0.78f1에 포함된 Roslyn과 로컬 Unity 참조로 Editor/Player 조건의 C# 정적 컴파일을 수행했다. 두 조건 모두 오류 0개이며 Inspector 직렬화 필드 등의 경고가 출력됐다. Unity 자체 빌드·Play Mode 검증은 수행하지 않았다.

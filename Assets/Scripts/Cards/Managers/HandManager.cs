@@ -222,6 +222,47 @@ public class HandManager : MonoBehaviour
     /// </summary>
     public bool IsPreserveMode => isPreserveMode;
 
+    /// <summary>카드 루트를 움직이는 기존 연출 중에는 일반 손패 확대를 중지합니다.</summary>
+    public bool CanShowCardFocus => !isPreserveMode && !IsCardFlowBusy;
+
+    /// <summary>겹친 손패의 원래 배치 순서대로 마우스 입력 대상을 결정합니다.</summary>
+    public bool CanReceiveCardPointer(CardUI card, Vector2 screenPoint, Camera eventCamera)
+    {
+        for (int i = handCardUIs.Count - 1; i >= 0; i--)
+        {
+            CardUI candidate = handCardUIs[i];
+            if (candidate != null && candidate.isActiveAndEnabled &&
+                RectTransformUtility.RectangleContainsScreenPoint(
+                    candidate.transform as RectTransform, screenPoint, eventCamera))
+            {
+                return candidate == card;
+            }
+        }
+        return true;
+    }
+
+    /// <summary>손패 순서를 유지하며 선택 카드와 호버 카드를 마지막에 표시합니다.</summary>
+    public void RefreshCardSiblingOrder()
+    {
+        if (!CanShowCardFocus)
+        {
+            return;
+        }
+
+        foreach (CardUI card in handCardUIs)
+        {
+            if (card != null) card.transform.SetAsLastSibling();
+        }
+        foreach (CardUI card in handCardUIs)
+        {
+            if (card != null && card.IsHandSelected) card.transform.SetAsLastSibling();
+        }
+        foreach (CardUI card in handCardUIs)
+        {
+            if (card != null && card.IsHandHovered) card.transform.SetAsLastSibling();
+        }
+    }
+
     /// <summary>
     /// 드로우, 버림 또는 셔플 연출 때문에 손패 입력을 받을 수 없는 상태인지 반환합니다.
     /// 자동 테스트가 실제 플레이어와 동일한 입력 가능 시점을 기다릴 때 사용합니다.
@@ -781,6 +822,7 @@ public class HandManager : MonoBehaviour
                 continue;
             }
 
+            cardUI.ResetHandFocus();
             testCardStates.Add(
                 new DiscardCardTestState(
                     cardUI,

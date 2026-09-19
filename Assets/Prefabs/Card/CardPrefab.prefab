@@ -755,7 +755,8 @@ MonoBehaviour:
   cardTypeText: {fileID: 2614397478277929380}
   cardRarityText: {fileID: 4058983926442795809}
   selectedMoveY: 40
-  selectedScale: 1.08
+  selectedScale: 1.5
+  focusScreenPadding: 12
   upgradeSelectionOutline: {fileID: 2316150832313614597}
   jinxBlockMark: {fileID: 1439971092900551674}
 --- !u!1 &6440049573879309873
