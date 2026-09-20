@@ -52,6 +52,8 @@ public sealed class TutorialManager : MonoBehaviour
         new List<TutorialDialogueData>();
 
     private GameObject tutorialRoot;
+    private GameObject countHighlight;
+    private TutorialUIOverview uiOverview;
     private Image portraitImage;
     private TMP_Text dialogueText;
     private RectTransform dialogueFrameRect;
@@ -172,6 +174,9 @@ public sealed class TutorialManager : MonoBehaviour
         }
 
         EnsureTutorialUI();
+        TurnManager turnManager = FindFirstObjectByType<TurnManager>();
+        if (countHighlight == null && turnManager != null && turnManager.AttackDefenseCountPanel != null)
+            countHighlight = TutorialUIOverview.CreateRedBorder(turnManager.AttackDefenseCountPanel);
         SetPortrait(playerClass);
 
         currentDialogueIndex = 0;
@@ -189,7 +194,7 @@ public sealed class TutorialManager : MonoBehaviour
     /// </summary>
     public void ShowNextDialogue()
     {
-        if (!isTutorialActive ||
+        if (!isTutorialActive || uiOverview != null ||
             lastDialogueAdvanceFrame == Time.frameCount)
         {
             return;
@@ -506,7 +511,7 @@ public sealed class TutorialManager : MonoBehaviour
     {
         if (isFinalDialogueSequence)
         {
-            CompleteTutorial();
+            ShowUIOverview();
             return;
         }
 
@@ -1009,6 +1014,26 @@ public sealed class TutorialManager : MonoBehaviour
         }
     }
 
+    private void ShowUIOverview()
+    {
+        if (uiOverview != null) return;
+        tutorialRoot.SetActive(false);
+        ClearTargetMarkers();
+        requiredCardID = null;
+        // 안내를 닫기 전까지 기존 튜토리얼 입력 잠금을 유지합니다.
+        isTutorialActive = true;
+        GameObject root = new GameObject("TutorialUIOverview");
+        root.transform.SetParent(transform, false);
+        uiOverview = root.AddComponent<TutorialUIOverview>();
+        uiOverview.Show(dialogueFont, CompleteTutorial);
+    }
+
+    private void OnDestroy()
+    {
+        if (countHighlight != null) Destroy(countHighlight);
+        if (uiOverview != null) Destroy(uiOverview.gameObject);
+    }
+
     private void CompleteTutorial()
     {
         isTutorialActive = false;
@@ -1016,6 +1041,8 @@ public sealed class TutorialManager : MonoBehaviour
         ClearTargetMarkers();
         requiredCardID = null;
         tutorialRoot.SetActive(false);
+        if (countHighlight != null) Destroy(countHighlight);
+        uiOverview = null;
         Debug.Log("[TutorialManager] 첫 전투 튜토리얼 완료");
     }
 

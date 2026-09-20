@@ -65,6 +65,10 @@ public class TurnManager : MonoBehaviour
     public int MaxAttackDefenseCardUseCount =>
         maxAttackDefenseCardUseCount;
 
+    /// <summary>튜토리얼에서 강조할 공격/수비 카드 카운트 패널입니다.</summary>
+    public RectTransform AttackDefenseCountPanel => attackDefenseUseCountText != null
+        ? attackDefenseUseCountText.transform.parent as RectTransform : null;
+
     private void Awake()
     {
         InitializeTurnBanner();

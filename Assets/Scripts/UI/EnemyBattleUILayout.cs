@@ -51,11 +51,7 @@ public class EnemyBattleUILayout : MonoBehaviour
             image.color = new Color(1f, 1f, 1f, 0.65f);
             image.raycastTarget = false;
         }
-        if (block != null)
-        {
-            foreach (TMP_Text text in block.GetComponentsInChildren<TMP_Text>(true))
-                StyleNumber(text, text.fontSize);
-        }
+        // 방어도는 어두운 방패 위에 표시하므로 프리팹의 흰색 숫자 스타일을 유지합니다.
         configured = true;
         RefreshLayout();
     }
